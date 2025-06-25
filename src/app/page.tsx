@@ -3,10 +3,13 @@
 import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { z } from 'zod';
 import { WebsiteSuggestionSchema } from '@/models/website-suggestion.model';
-import { ResponseStream } from '@/components/ui/response-stream';
-import { WebsiteSuggestionInput } from '@/components/WebsiteSuggestionInput';
+import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
+import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteSuggestionCard';
+import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/WebsiteSuggestionCardSkeleton';
 
 const schema = z.array(WebsiteSuggestionSchema);
+
+const MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS = 3;
 
 export default function SiteSuggestions() {
   const { object, submit, isLoading, stop } = useObject({
@@ -14,75 +17,34 @@ export default function SiteSuggestions() {
     schema,
   });
 
-  console.log({ object, isLoading, stop });
+  const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (object?.length ?? 0), 0);
 
   return (
-    <div className='max-w-3xl mx-auto space-y-6 py-6'>
+    <div className='space-y-6 py-6 px-6 w-full lg:px-96 lg:py-16'>
       <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
       <WebsiteSuggestionInput
-        onSubmit={submit}
-        placeholder='Enter a productivity tool...'
-        className='w-full max-w-2xl'
+        onSubmit={(prompt, amount) => submit({ prompt, amount: amount[0] })}
+        placeholder='e.g. Best tools for productivity'
+        className='w-full'
       />
 
-      {isLoading && (
-        <div className='space-y-2'>
-          <p className='text-sm text-gray-500'>Loading suggestions...</p>
-          <button className='text-sm underline text-red-500' type='button' onClick={() => stop()}>
-            Stop Generation
-          </button>
-        </div>
-      )}
-
-      {object?.length === 0 && !isLoading && (
-        <p className='text-gray-500'>No suggestions yet. Click the button above.</p>
-      )}
-
-      <div className='grid gap-4'>
-        {object?.map((site, index) => (
-          <div key={index} className='border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition'>
-            <div className='flex items-center gap-3'>
-              {site?.favicon && <img src={site?.favicon} alt='favicon' className='w-6 h-6 rounded' />}
-              <a
-                href={site?.url}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-lg font-semibold text-blue-600 hover:underline'
-              >
-                <ResponseStream textStream={site?.title ?? ''} mode={'typewriter'} />
-              </a>
-            </div>
-            <ResponseStream
-              fadeDuration={500}
-              textStream={site?.description ?? ''}
-              mode={'typewriter'}
-              className='text-sm text-gray-700 mt-1'
-            />
-            <ResponseStream
-              fadeDuration={500}
-              textStream={site?.reason ?? ''}
-              mode={'typewriter'}
-              className='text-xs text-gray-500 mt-2 italic'
-            />
-
-            {site?.tags?.length && site?.tags?.length > 0 && (
-              <div className='mt-2 flex flex-wrap gap-1 text-xs text-gray-500'>
-                {site?.tags.map((tag, idx) => (
-                  <span key={idx} className='bg-gray-100 px-2 py-1 rounded'>
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {site?.suggestedFolderPath && (
-              <p className='text-xs text-purple-500 mt-2'>
-                Suggested folder: <strong>{site?.suggestedFolderPath.join(' / ')}</strong>
-              </p>
-            )}
+      <div className='flex flex-col gap-4'>
+        {isLoading && (
+          <div className='text-sm text-gray-500 flex items-center justify-between'>
+            <p>Generating suggestions...</p>
+            <button className='text-sm underline text-red-500' type='button' onClick={() => stop()}>
+              Stop
+            </button>
           </div>
-        ))}
+        )}
+        <div className='grid gap-4'>
+          {object?.map((website, index) => (
+            <WebsiteSuggestionCard key={index} website={website} />
+          ))}
+        </div>
+
+        {isLoading && <WebsiteSuggestionCardSkeleton count={skeletonCount} />}
       </div>
     </div>
   );

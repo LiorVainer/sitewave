@@ -25,7 +25,7 @@ const compat = new FlatCompat({
 
 // /** @type {import("eslint").FlatConfig[]} */
 export default defineConfig([
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'src/components/ui/**', 'src/components/animate-ui/**'] },
   js.configs.recommended,
   ...tsEslint.configs.recommended,
   reactHooks.configs['recommended-latest'],
@@ -61,6 +61,7 @@ export default defineConfig([
       'unicorn/prefer-module': 'off',
       'unicorn/no-null': 'off',
       'sonarjs/no-unused-vars': 'off',
+      'sonarjs/slow-regex': 'off',
       'sonarjs/prefer-read-only-props': 'off',
       '@typescript-eslint/no-require-imports': 'off',
     },

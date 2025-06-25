@@ -1,31 +1,43 @@
+'use client';
+
 import { cn } from '@/lib/utils';
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2, Send } from 'lucide-react';
+import SliderNumberFlow from '@/components/ui/slider-number-flow';
+
+import { useSliderWithInput } from '@/hooks/use-slider-with-input';
+import { Slider } from '@/components/ui/slider';
 
 interface WebsiteSuggestionInputProps {
-  onSubmit?: (prompt: string) => void;
+  onSubmit?: (prompt: string, amount: number[]) => void;
   placeholder?: string;
   className?: string;
 }
 
 type InputState = 'idle' | 'focused' | 'loading' | 'submitted';
 
-// Main component
+const MIN_SUGGESTIONS = 0;
+const MAX_SUGGESTIONS = 20;
+const DEFAULT_SUGGESTIONS = 5;
+
 export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
-  onSubmit = async (prompt: string) => {
-    // Default mock API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log('Submitted prompt:', prompt);
-  },
+  onSubmit,
   placeholder = 'Best tools for productivity...',
   className,
 }) => {
   const [prompt, setPrompt] = useState('');
+  const [amount, setAmount] = useState([DEFAULT_SUGGESTIONS]);
   const [state, setState] = useState<InputState>('idle');
+  const { sliderValue, inputValues, validateAndUpdateValue, handleInputChange, handleSliderChange } =
+    useSliderWithInput({ minValue: MIN_SUGGESTIONS, maxValue: MAX_SUGGESTIONS, initialValue: amount });
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setAmount(sliderValue);
+  }, [sliderValue]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +45,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
 
     setState('loading');
     try {
-      await onSubmit(prompt.trim());
+      await onSubmit?.(prompt.trim(), amount);
       setState('submitted');
       setPrompt('');
       // Reset to idle after a brief moment
@@ -63,10 +75,10 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
   const canSubmit = prompt.trim().length > 0 && !isDisabled;
 
   return (
-    <div className={cn('w-full max-w-2xl mx-auto', className)}>
+    <div className={cn('w-full mx-auto', className)}>
       <form onSubmit={handleSubmit} className='relative'>
         {/* Desktop layout */}
-        <div className='hidden md:flex items-center gap-3 p-2 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 shadow-lg'>
+        <div className='w-full hidden md:flex items-center gap-3 p-2 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 shadow-lg'>
           <div className='flex-1 relative'>
             <Input
               ref={inputRef}
@@ -84,12 +96,35 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
               )}
             />
           </div>
-
+          <div className='flex items-center gap-4 w-60'>
+            <Slider
+              className='grow'
+              value={sliderValue}
+              onValueChange={handleSliderChange}
+              min={MIN_SUGGESTIONS}
+              max={MAX_SUGGESTIONS}
+              aria-label='Slider with input'
+            />
+            <Input
+              className='h-8 w-12 px-2 py-1'
+              type='text'
+              inputMode='decimal'
+              value={inputValues[0]}
+              onChange={(e) => handleInputChange(e, 0)}
+              onBlur={() => validateAndUpdateValue(inputValues[0], 0)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  validateAndUpdateValue(inputValues[0], 0);
+                }
+              }}
+              aria-label='Enter value'
+            />
+          </div>
           <motion.div whileHover={canSubmit ? { scale: 1.05 } : {}} whileTap={canSubmit ? { scale: 0.95 } : {}}>
             <Button
               type='submit'
-              variant='gradient'
               size='icon'
+              variant='gradient'
               disabled={!canSubmit}
               className={cn(
                 'relative overflow-hidden transition-all duration-300',
@@ -143,12 +178,20 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
               )}
             />
           </div>
-
+          <SliderNumberFlow
+            className='w-full mt-12'
+            value={amount}
+            onValueChange={setAmount}
+            min={0}
+            max={20}
+            step={1}
+            aria-label='Volume'
+          />
           <motion.div whileHover={canSubmit ? { scale: 1.02 } : {}} whileTap={canSubmit ? { scale: 0.98 } : {}}>
             <Button
               type='submit'
-              variant='gradient'
               size='lg'
+              variant={'gradient'}
               disabled={!canSubmit}
               className={cn(
                 'w-full relative overflow-hidden transition-all duration-300',
