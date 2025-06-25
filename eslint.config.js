@@ -63,6 +63,7 @@ export default defineConfig([
       'sonarjs/no-unused-vars': 'off',
       'sonarjs/slow-regex': 'off',
       'sonarjs/prefer-read-only-props': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-require-imports': 'off',
     },
     settings: {
