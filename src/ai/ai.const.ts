@@ -2,7 +2,12 @@ import { google } from '@ai-sdk/google';
 import { ENV } from '@/env/env.config';
 import { AIGlobalConfig, AIMethodConfigKeys, AIServiceMethod, AIServiceMethodsConfig } from './ai.types';
 
-const model = google(ENV.AI_MODEL ?? 'gemini-2.0-flash-exp');
+const model = google(ENV.AI_MODEL ?? 'gemini-2.0-flash-exp', {
+  useSearchGrounding: true,
+  dynamicRetrievalConfig: {
+    mode: 'MODE_UNSPECIFIED',
+  },
+});
 
 export const AIConfigParams = [
   'model',

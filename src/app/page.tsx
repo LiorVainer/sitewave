@@ -17,10 +17,12 @@ export default function SiteSuggestions() {
     schema,
   });
 
+  console.log('Website suggestions object:', object);
+
   const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (object?.length ?? 0), 0);
 
   return (
-    <div className='space-y-6 py-6 px-6 w-full lg:px-96 lg:py-16'>
+    <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[25cqw] lg:py-16'>
       <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
       <WebsiteSuggestionInput

@@ -13,6 +13,25 @@ export const WebsiteSuggestionSchema = z.object({
 
   favicon: z.string().optional().describe('Optional URL to the website’s favicon or logo image'),
 
+  sources: z
+    .object({
+      name: z.string().describe('Name of the source where the suggestion was found'),
+      url: z.string().describe('URL of the source where the suggestion was found'),
+    })
+    .array()
+    .optional()
+    .describe('Optional array of sources where the suggestion was found'),
+
+  videosOfWebsite: z
+    .array(
+      z.object({
+        title: z.string().describe('Title of the video'),
+        url: z.string().describe('URL to the video'),
+      }),
+    )
+    .optional()
+    .describe('Optional array of videos related to the website'),
+
   suggestedFolderPath: z
     .array(z.string())
     .min(1)
