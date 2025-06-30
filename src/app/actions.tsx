@@ -23,17 +23,22 @@ export async function suggestWebsites(prompt: string, amount: number) {
 }
 
 async function findVideosForTitle(title: string): Promise<{ title: string; url: string }[]> {
-    const res = await youtube.search.list({
-        part: ['snippet'],
-        q: title,
-        type: ['video'],
-        maxResults: 3,
-    });
-    const items = res.data.items ?? [];
-    return items.map((i) => ({
-        title: i.snippet?.title ?? '',
-        url: `https://www.youtube.com/watch?v=${i.id?.videoId}`,
-    }));
+    try {
+        const res = await youtube.search.list({
+            part: ['snippet'],
+            q: title,
+            type: ['video'],
+            maxResults: 3,
+        });
+        const items = res.data.items ?? [];
+        return items.map((i) => ({
+            title: i.snippet?.title ?? '',
+            url: `https://www.youtube.com/watch?v=${i.id?.videoId}`,
+        }));
+    } catch (error) {
+        console.error(`Error fetching videos for title "${title}":`, error);
+        return [];
+    }
 }
 
 async function handleWebsiteSuggestionStreaming(
