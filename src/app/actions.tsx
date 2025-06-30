@@ -59,7 +59,7 @@ async function handleWebsiteSuggestionStreaming(
     for await (const partials of partialObjectStream) {
         const newEnriched: WebsiteSuggestion[] = [];
 
-        for (const vs of partials as WebsiteSuggestion[]) {
+        for (const vs of partials) {
             if (!seen.has(vs.title)) {
                 seen.add(vs.title);
 
