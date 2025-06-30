@@ -24,9 +24,15 @@ export const WebsiteSuggestionsCards = ({ websiteSuggestionsStream, resetSignal 
     }, [resetSignal]);
 
     useEffect(() => {
-        if (streamedSuggestions) {
-            setLocalSuggestions(streamedSuggestions);
-        }
+        if (!streamedSuggestions) return;
+
+        // Append new items that are not already in localSuggestions
+        setLocalSuggestions((prev) => {
+            const existingTitles = new Set(prev.map((w) => w.title));
+            const toAdd = streamedSuggestions.filter((w) => !existingTitles.has(w.title));
+            if (toAdd.length === 0) return prev;
+            return [...prev, ...toAdd];
+        });
     }, [streamedSuggestions]);
 
     return (
@@ -40,7 +46,7 @@ export const WebsiteSuggestionsCards = ({ websiteSuggestionsStream, resetSignal 
                 </div>
             )}
             <div className='grid gap-6'>
-                {streamedSuggestions?.map((website, index) => (
+                {localSuggestions?.map((website, index) => (
                     <WebsiteSuggestionCard key={index} website={website} />
                 ))}
             </div>

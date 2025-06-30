@@ -17,7 +17,7 @@ export async function suggestWebsites(prompt: string, amount: number) {
 
     const stream = createStreamableValue<WebsiteSuggestion[]>();
 
-    await handleWebsiteSuggestionStreaming(prompt, amount, stream);
+    void handleWebsiteSuggestionStreaming(prompt, amount, stream);
 
     return stream.value;
 }
@@ -51,32 +51,27 @@ async function handleWebsiteSuggestionStreaming(
 
     const { partialObjectStream } = streamObject({
         model: GlobalConfig.model,
-        output: 'array',
+        output: 'array', // ensures partialObjectStream: AsyncIterable<WebsiteSuggestion[]>
         schema: WebsiteSuggestionSchema,
         prompt: `Generate ${amount} Website suggestions based on the following context: ${prompt}`,
     });
 
     for await (const partials of partialObjectStream) {
-        for (const partial of partials) {
-            const vs = partial as WebsiteSuggestion;
+        const newEnriched: WebsiteSuggestion[] = [];
 
+        for (const vs of partials as WebsiteSuggestion[]) {
             if (!seen.has(vs.title)) {
                 seen.add(vs.title);
 
                 const vids = await findVideosForTitle(vs.title);
-
-                console.log({ vids, vs });
-                results.push({
-                    ...vs,
-                    videosOfWebsite: vids,
-                });
+                newEnriched.push({ ...vs, videosOfWebsite: vids });
             }
         }
 
-        console.log(`Streamed ${results.length} unique website suggestions so far...`);
-
-        // Stream the full up-to-date list, enriched only for new items
-        stream.update(results);
+        if (newEnriched.length > 0) {
+            // Stream just the new enriched entries
+            stream.update(newEnriched);
+        }
     }
 
     stream.done();
