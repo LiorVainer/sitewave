@@ -1,53 +1,42 @@
 'use client';
 
-import { experimental_useObject as useObject } from '@ai-sdk/react';
-import { z } from 'zod';
-import { WebsiteSuggestionSchema } from '@/models/website-suggestion.model';
+import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
 import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
-import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteSuggestionCard';
-import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/WebsiteSuggestionCardSkeleton';
-
-const schema = z.array(WebsiteSuggestionSchema);
-
-const MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS = 3;
+import { StreamableValue } from 'ai/rsc';
+import { useState } from 'react';
+import { suggestWebsites } from '@/app/actions';
+import { WebsiteSuggestionsCards } from '@/components/WebsiteSuggestionsCards';
 
 export default function SiteSuggestions() {
-  const { object, submit, isLoading, stop } = useObject({
-    api: '/api/ai/website-suggestions',
-    schema,
-  });
+    const [websiteSuggestionsStream, setWebsiteSuggestionsStream] = useState<StreamableValue<
+        PartialWebsiteSuggestion[]
+    > | null>(null);
 
-  console.log('Website suggestions object:', object);
+    const [resetSignal, setResetSignal] = useState(0);
 
-  const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (object?.length ?? 0), 0);
+    const handleSubmit = async (prompt: string, amount: number[]) => {
+        setResetSignal((n) => n + 1);
+        const stream = await suggestWebsites(prompt, amount[0]);
+        setWebsiteSuggestionsStream(stream);
+    };
 
-  return (
-    <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[25cqw] lg:py-16'>
-      <h1 className='text-2xl font-semibold'>Discover Websites</h1>
+    return (
+        <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[25cqw] lg:py-16'>
+            <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
-      <WebsiteSuggestionInput
-        onSubmit={(prompt, amount) => submit({ prompt, amount: amount[0] })}
-        placeholder='e.g. Best tools for productivity'
-        className='w-full'
-      />
+            <WebsiteSuggestionInput
+                // onSubmit={(prompt, amount) => submit({ prompt, amount: amount[0] })}
+                onSubmit={handleSubmit}
+                placeholder='e.g. Best tools for productivity'
+                className='w-full'
+            />
 
-      <div className='flex flex-col gap-4'>
-        {isLoading && (
-          <div className='text-sm text-gray-500 flex items-center justify-between'>
-            <p>Generating suggestions...</p>
-            <button className='text-sm underline text-red-500' type='button' onClick={() => stop()}>
-              Stop
-            </button>
-          </div>
-        )}
-        <div className='grid gap-4'>
-          {object?.map((website, index) => (
-            <WebsiteSuggestionCard key={index} website={website} />
-          ))}
+            {websiteSuggestionsStream && (
+                <WebsiteSuggestionsCards
+                    resetSignal={resetSignal}
+                    websiteSuggestionsStream={websiteSuggestionsStream}
+                />
+            )}
         </div>
-
-        {isLoading && <WebsiteSuggestionCardSkeleton count={skeletonCount} />}
-      </div>
-    </div>
-  );
+    );
 }
