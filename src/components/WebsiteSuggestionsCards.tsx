@@ -1,57 +1,66 @@
-import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteSuggestionCard';
-import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/WebsiteSuggestionCardSkeleton';
-import { StreamableValue, useStreamableValue } from 'ai/rsc';
-import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
-import { useEffect, useState } from 'react';
+'use client';
 
-export interface WebsiteSuggestionsProps {
-    websiteSuggestionsStream: StreamableValue<PartialWebsiteSuggestion[]>;
-    resetSignal: number;
+import { useEffect, useState } from 'react';
+import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
+import { WebsiteSuggestionCard } from './website-suggestions/WebsiteSuggestionCard';
+import { WebsiteSuggestionCardSkeleton } from './website-suggestions/WebsiteSuggestionCardSkeleton';
+
+interface Props {
+  allSuggestions: PartialWebsiteSuggestion[];
+  newSuggestions: PartialWebsiteSuggestion[];
+  isLoading: boolean;
+  resetSignal: number;
+  onFinish?: (all: PartialWebsiteSuggestion[]) => void;
 }
 
-const MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS = 3;
+const MAX_SKELETONS = 3;
 
-export const WebsiteSuggestionsCards = ({ websiteSuggestionsStream, resetSignal }: WebsiteSuggestionsProps) => {
-    const [streamedSuggestions, _error, isLoading] = useStreamableValue(websiteSuggestionsStream);
-    const [localSuggestions, setLocalSuggestions] = useState<PartialWebsiteSuggestion[]>([]);
-    const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (localSuggestions?.length ?? 0), 0);
+export function WebsiteSuggestionsCards({ allSuggestions, newSuggestions, isLoading, resetSignal, onFinish }: Props) {
+  const [localSuggestions, setLocalSuggestions] = useState<PartialWebsiteSuggestion[]>([]);
+  const [hasSaved, setHasSaved] = useState(false);
 
-    console.log(streamedSuggestions, isLoading);
+  useEffect(() => {
+    setHasSaved(false); // don't clear local suggestions
+  }, [resetSignal]);
 
-    useEffect(() => {
-        // Reset suggestions when input is submitted
-        setLocalSuggestions([]);
-    }, [resetSignal]);
+  useEffect(() => {
+    if (!newSuggestions) return;
+    setLocalSuggestions((prev) => {
+      const existing = new Set(prev.map((s) => s.title));
+      const newOnes = newSuggestions.filter((s) => !existing.has(s.title));
+      return [...prev, ...newOnes];
+    });
+  }, [newSuggestions]);
 
-    useEffect(() => {
-        if (!streamedSuggestions) return;
+  useEffect(() => {
+    if (!isLoading && localSuggestions.length > 0 && !hasSaved) {
+      onFinish?.(localSuggestions);
+      setHasSaved(true);
+    }
+  }, [isLoading, localSuggestions, hasSaved, onFinish]);
 
-        // Append new items that are not already in localSuggestions
-        setLocalSuggestions((prev) => {
-            const existingTitles = new Set(prev.map((w) => w.title));
-            const toAdd = streamedSuggestions.filter((w) => !existingTitles.has(w.title));
-            if (toAdd.length === 0) return prev;
-            return [...prev, ...toAdd];
-        });
-    }, [streamedSuggestions]);
+  const skeletonCount = Math.max(MAX_SKELETONS - localSuggestions.length, 0);
 
-    return (
-        <div className='flex flex-col gap-6'>
-            {isLoading && (
-                <div className='text-sm text-gray-500 flex items-center justify-between'>
-                    <p>Generating suggestions...</p>
-                    <button className='text-sm underline text-red-500' type='button' onClick={() => stop()}>
-                        Stop
-                    </button>
-                </div>
-            )}
-            <div className='grid gap-6'>
-                {localSuggestions?.map((website, index) => (
-                    <WebsiteSuggestionCard key={index} website={website} />
-                ))}
-            </div>
+  console.log({ allSuggestions, newSuggestions, localSuggestions, isLoading, resetSignal, skeletonCount });
 
-            {isLoading && <WebsiteSuggestionCardSkeleton count={skeletonCount} />}
+  return (
+    <div className='flex flex-col gap-6'>
+      {isLoading && (
+        <div className='text-sm text-gray-500 flex justify-between items-center'>
+          <p>Generating suggestions...</p>
         </div>
-    );
-};
+      )}
+
+      <div className='grid gap-6'>
+        {allSuggestions.map((s, i) => (
+          <WebsiteSuggestionCard key={i} website={s} />
+        ))}
+        {localSuggestions.map((s, i) => (
+          <WebsiteSuggestionCard key={i} website={s} />
+        ))}
+      </div>
+
+      {isLoading && <WebsiteSuggestionCardSkeleton count={skeletonCount} />}
+    </div>
+  );
+}
