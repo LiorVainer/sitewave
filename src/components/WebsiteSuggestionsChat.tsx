@@ -1,20 +1,27 @@
 import { useState } from 'react';
-import { StreamableValue } from 'ai/rsc';
-import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
 import { suggestWebsites } from '@/app/actions';
 import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
 import { WebsiteSuggestionsCards } from '@/components/WebsiteSuggestionsCards';
+import { useWebsiteSuggestions } from './website-suggestions/WebsiteSuggestionsContext';
+import { LoadMoreButton } from '@/components/LoadMoreButton';
 
 export const WebsiteSuggestionsChat = () => {
-    const [websiteSuggestionsStream, setWebsiteSuggestionsStream] = useState<StreamableValue<
-        PartialWebsiteSuggestion[]
-    > | null>(null);
+    const { setWebsiteSuggestionsStream, websiteSuggestionsStream, clearSuggestions, localSuggestions, suggestedUrls } =
+        useWebsiteSuggestions();
+    const [currentPrompt, setCurrentPrompt] = useState('');
 
-    const [resetSignal, setResetSignal] = useState(0);
+    const handleSubmit = async (amount: number) => {
+        if (!currentPrompt) return;
 
-    const handleSubmit = async (prompt: string, amount: number[]) => {
-        setResetSignal((n) => n + 1);
-        const stream = await suggestWebsites(prompt, amount[0]);
+        clearSuggestions();
+        const stream = await suggestWebsites(currentPrompt, amount);
+        setWebsiteSuggestionsStream(stream);
+    };
+
+    const handleLoadMore = async (amount: number) => {
+        if (!currentPrompt) return;
+
+        const stream = await suggestWebsites(currentPrompt, amount, suggestedUrls);
         setWebsiteSuggestionsStream(stream);
     };
 
@@ -23,18 +30,16 @@ export const WebsiteSuggestionsChat = () => {
             <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
             <WebsiteSuggestionInput
-                // onSubmit={(prompt, amount) => submit({ prompt, amount: amount[0] })}
+                value={currentPrompt}
+                setValue={setCurrentPrompt}
                 onSubmit={handleSubmit}
                 placeholder='e.g. Best tools for productivity'
                 className='w-full'
             />
 
-            {websiteSuggestionsStream && (
-                <WebsiteSuggestionsCards
-                    resetSignal={resetSignal}
-                    websiteSuggestionsStream={websiteSuggestionsStream}
-                />
-            )}
+            {websiteSuggestionsStream && <WebsiteSuggestionsCards />}
+
+            {localSuggestions.length > 0 && <LoadMoreButton handleLoadMore={handleLoadMore} />}
         </div>
     );
 };

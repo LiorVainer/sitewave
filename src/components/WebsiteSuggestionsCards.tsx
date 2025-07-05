@@ -1,39 +1,23 @@
 import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteSuggestionCard';
 import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/WebsiteSuggestionCardSkeleton';
-import { StreamableValue, useStreamableValue } from 'ai/rsc';
-import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
-import { useEffect, useState } from 'react';
+import { useStreamableValue } from 'ai/rsc';
+import { useEffect } from 'react';
+import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
 
-export interface WebsiteSuggestionsProps {
-    websiteSuggestionsStream: StreamableValue<PartialWebsiteSuggestion[]>;
-    resetSignal: number;
-}
+export interface WebsiteSuggestionsProps {}
 
 const MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS = 3;
 
-export const WebsiteSuggestionsCards = ({ websiteSuggestionsStream, resetSignal }: WebsiteSuggestionsProps) => {
-    const [streamedSuggestions, _error, isLoading] = useStreamableValue(websiteSuggestionsStream);
-    const [localSuggestions, setLocalSuggestions] = useState<PartialWebsiteSuggestion[]>([]);
-    const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (localSuggestions?.length ?? 0), 0);
-
-    console.log(streamedSuggestions, isLoading);
+export const WebsiteSuggestionsCards = ({}: WebsiteSuggestionsProps) => {
+    const { websiteSuggestionsStream, localSuggestions, addSuggestion } = useWebsiteSuggestions();
+    const [lastSuggestion, _error, isLoading] = useStreamableValue(websiteSuggestionsStream!);
+    const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (localSuggestions?.length ?? 0), 1);
 
     useEffect(() => {
-        // Reset suggestions when input is submitted
-        setLocalSuggestions([]);
-    }, [resetSignal]);
+        if (!lastSuggestion) return;
 
-    useEffect(() => {
-        if (!streamedSuggestions) return;
-
-        // Append new items that are not already in localSuggestions
-        setLocalSuggestions((prev) => {
-            const existingTitles = new Set(prev.map((w) => w.title));
-            const toAdd = streamedSuggestions.filter((w) => !existingTitles.has(w.title));
-            if (toAdd.length === 0) return prev;
-            return [...prev, ...toAdd];
-        });
-    }, [streamedSuggestions]);
+        addSuggestion(lastSuggestion);
+    }, [lastSuggestion]);
 
     return (
         <div className='flex flex-col gap-6'>

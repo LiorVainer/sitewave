@@ -6,48 +6,41 @@ import { WebsiteSuggestion, WebsiteSuggestionSchema } from '@/models/website-sug
 import { streamObject } from 'ai';
 import { youtubeService } from '@/services/youtube';
 
-export async function suggestWebsites(prompt: string, amount: number) {
-  'use server';
+export async function suggestWebsites(prompt: string, amount: number, existingUrls: string[] = []) {
+    'use server';
 
-  const stream = createStreamableValue<WebsiteSuggestion[]>();
+    const stream = createStreamableValue<WebsiteSuggestion>();
 
-  void handleWebsiteSuggestionStreaming(prompt, amount, stream);
+    void handleWebsiteSuggestionStreaming(prompt, amount, stream, existingUrls);
 
-  return stream.value;
+    return stream.value;
 }
 
 async function handleWebsiteSuggestionStreaming(
-  prompt: string,
-  amount: number,
-  stream: ReturnType<typeof createStreamableValue<WebsiteSuggestion[]>>,
+    prompt: string,
+    amount: number,
+    stream: ReturnType<typeof createStreamableValue<WebsiteSuggestion>>,
+    existingUrls: string[] = [],
 ) {
-  const seen = new Set<string>(); // track processed titles
-  const results: WebsiteSuggestion[] = [];
+    const seen = new Set<string>(existingUrls); // track processed titles, including existing
 
-  const { partialObjectStream } = streamObject({
-    model: GlobalConfig.model,
-    output: 'array', // ensures partialObjectStream: AsyncIterable<WebsiteSuggestion[]>
-    schema: WebsiteSuggestionSchema,
-    prompt: `Generate ${amount} Website suggestions based on the following context: ${prompt}`,
-  });
+    const { partialObjectStream } = streamObject({
+        model: GlobalConfig.model,
+        output: 'array',
+        schema: WebsiteSuggestionSchema,
+        prompt: `Generate ${amount} Website suggestions based on the following context: ${prompt}. Do not include any of these titles: ${existingUrls.join(', ')}`,
+    });
 
-  for await (const partials of partialObjectStream) {
-    const newEnriched: WebsiteSuggestion[] = [];
+    for await (const partials of partialObjectStream) {
+        for (const vs of partials) {
+            if (!seen.has(vs.url)) {
+                seen.add(vs.url);
 
-    for (const vs of partials) {
-      if (!seen.has(vs.title)) {
-        seen.add(vs.title);
-
-        const vids = await youtubeService.findVideosForTitle(vs.title);
-        newEnriched.push({ ...vs, videosOfWebsite: vids });
-      }
+                const vids = await youtubeService.findVideosForTitle(vs.title);
+                stream.update({ ...vs, videosOfWebsite: vids });
+            }
+        }
     }
 
-    if (newEnriched.length > 0) {
-      // Stream just the new enriched entries
-      stream.update(newEnriched);
-    }
-  }
-
-  stream.done();
+    stream.done();
 }

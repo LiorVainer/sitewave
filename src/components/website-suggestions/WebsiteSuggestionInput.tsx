@@ -1,18 +1,16 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2, Send } from 'lucide-react';
-import SliderNumberFlow from '@/components/ui/slider-number-flow';
-
-import { useSliderWithInput } from '@/hooks/use-slider-with-input';
-import { Slider } from '@/components/ui/slider';
 
 interface WebsiteSuggestionInputProps {
-    onSubmit?: (prompt: string, amount: number[]) => void;
+    value: string;
+    setValue: (value: string) => void;
+    onSubmit?: (amount: number) => void;
     placeholder?: string;
     className?: string;
 }
@@ -27,30 +25,31 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
     onSubmit,
     placeholder = 'Best tools for productivity...',
     className,
+    value,
+    setValue,
 }) => {
-    const [prompt, setPrompt] = useState('');
-    const [amount, setAmount] = useState([DEFAULT_SUGGESTIONS]);
+    // const [amount, setAmount] = useState([DEFAULT_SUGGESTIONS]);
     const [state, setState] = useState<InputState>('idle');
-    const { sliderValue, inputValues, validateAndUpdateValue, handleInputChange, handleSliderChange } =
-        useSliderWithInput({ minValue: MIN_SUGGESTIONS, maxValue: MAX_SUGGESTIONS, initialValue: amount });
+    // const { sliderValue, inputValues, validateAndUpdateValue, handleInputChange, handleSliderChange } =
+    //     useSliderWithInput({ minValue: MIN_SUGGESTIONS, maxValue: MAX_SUGGESTIONS, initialValue: amount });
     const inputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        setAmount(sliderValue);
-    }, [sliderValue]);
+    // useEffect(() => {
+    //     setAmount(sliderValue);
+    // }, [sliderValue]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!prompt.trim() || state === 'loading') return;
+        if (!value.trim() || state === 'loading') return;
 
         setState('loading');
         try {
-            await onSubmit?.(prompt.trim(), amount);
+            await onSubmit?.(DEFAULT_SUGGESTIONS);
             setState('submitted');
             // Reset to idle after a brief moment
             setTimeout(() => setState('idle'), 1000);
         } catch (error) {
-            console.error('Error submitting prompt:', error);
+            console.error('Error submitting value:', error);
             setState('idle');
         }
     };
@@ -71,7 +70,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
     };
 
     const isDisabled = state === 'loading';
-    const canSubmit = prompt.trim().length > 0 && !isDisabled;
+    const canSubmit = value.trim().length > 0 && !isDisabled;
 
     return (
         <div className={cn('w-full mx-auto', className)}>
@@ -81,8 +80,8 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                     <div className='flex-1 relative'>
                         <Input
                             ref={inputRef}
-                            value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
                             onKeyDown={handleKeyDown}
                             onFocus={handleFocus}
                             onBlur={handleBlur}
@@ -95,30 +94,30 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                             )}
                         />
                     </div>
-                    <div className='flex items-center gap-4 w-60'>
-                        <Slider
-                            className='grow'
-                            value={sliderValue}
-                            onValueChange={handleSliderChange}
-                            min={MIN_SUGGESTIONS}
-                            max={MAX_SUGGESTIONS}
-                            aria-label='Slider with input'
-                        />
-                        <Input
-                            className='h-8 w-12 px-2 py-1'
-                            type='text'
-                            inputMode='decimal'
-                            value={inputValues[0]}
-                            onChange={(e) => handleInputChange(e, 0)}
-                            onBlur={() => validateAndUpdateValue(inputValues[0], 0)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    validateAndUpdateValue(inputValues[0], 0);
-                                }
-                            }}
-                            aria-label='Enter value'
-                        />
-                    </div>
+                    {/*<div className='flex items-center gap-4 w-60'>*/}
+                    {/*    <Slider*/}
+                    {/*        className='grow'*/}
+                    {/*        value={sliderValue}*/}
+                    {/*        onValueChange={handleSliderChange}*/}
+                    {/*        min={MIN_SUGGESTIONS}*/}
+                    {/*        max={MAX_SUGGESTIONS}*/}
+                    {/*        aria-label='Slider with input'*/}
+                    {/*    />*/}
+                    {/*    <Input*/}
+                    {/*        className='h-8 w-12 px-2 py-1'*/}
+                    {/*        type='text'*/}
+                    {/*        inputMode='decimal'*/}
+                    {/*        value={inputValues[0]}*/}
+                    {/*        onChange={(e) => handleInputChange(e, 0)}*/}
+                    {/*        onBlur={() => validateAndUpdateValue(inputValues[0], 0)}*/}
+                    {/*        onKeyDown={(e) => {*/}
+                    {/*            if (e.key === 'Enter') {*/}
+                    {/*                validateAndUpdateValue(inputValues[0], 0);*/}
+                    {/*            }*/}
+                    {/*        }}*/}
+                    {/*        aria-label='Enter value'*/}
+                    {/*    />*/}
+                    {/*</div>*/}
                     <motion.div
                         whileHover={canSubmit ? { scale: 1.05 } : {}}
                         whileTap={canSubmit ? { scale: 0.95 } : {}}
@@ -166,8 +165,8 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                     <div className='relative'>
                         <Input
                             ref={inputRef}
-                            value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
                             onKeyDown={handleKeyDown}
                             onFocus={handleFocus}
                             onBlur={handleBlur}
@@ -180,15 +179,15 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                             )}
                         />
                     </div>
-                    <SliderNumberFlow
-                        className='w-full mt-12'
-                        value={amount}
-                        onValueChange={setAmount}
-                        min={0}
-                        max={20}
-                        step={1}
-                        aria-label='Volume'
-                    />
+                    {/*<SliderNumberFlow*/}
+                    {/*    className='w-full mt-12'*/}
+                    {/*    value={amount}*/}
+                    {/*    onValueChange={setAmount}*/}
+                    {/*    min={0}*/}
+                    {/*    max={20}*/}
+                    {/*    step={1}*/}
+                    {/*    aria-label='Volume'*/}
+                    {/*/>*/}
                     <motion.div
                         whileHover={canSubmit ? { scale: 1.02 } : {}}
                         whileTap={canSubmit ? { scale: 0.98 } : {}}
