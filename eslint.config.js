@@ -53,7 +53,9 @@ export default defineConfig([
         },
         rules: {
             ...reactHooks.configs.recommended.rules,
-            'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+            'react-refresh/only-export-components': 'off',
+            'no-empty-pattern': 'off',
+            '@typescript-eslint/no-empty-object-type': 'off',
             'prettier/prettier': 'warn',
             'unicorn/prevent-abbreviations': 'off',
             'unicorn/filename-case': 'off',
