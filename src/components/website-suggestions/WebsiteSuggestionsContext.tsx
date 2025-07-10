@@ -1,6 +1,8 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
 import { StreamableValue } from 'ai/rsc';
+import { ComparisonColumn } from '@/models/website-comparison.model';
+import { DynamicZodType } from '@/lib/zod.utils';
 
 interface WebsiteSuggestionsContextType {
     localSuggestions: PartialWebsiteSuggestion[];
@@ -10,6 +12,10 @@ interface WebsiteSuggestionsContextType {
     clearSuggestions: () => void;
     addSuggestion: (suggestion: PartialWebsiteSuggestion) => void;
     suggestedUrls: string[];
+    comparisonColumns: ComparisonColumn[];
+    setComparisonColumns: React.Dispatch<React.SetStateAction<ComparisonColumn[]>>;
+    comparisonRows: DynamicZodType[];
+    setComparisonRows: React.Dispatch<React.SetStateAction<DynamicZodType[]>>;
 }
 
 export const WebsiteSuggestionsContext = createContext<WebsiteSuggestionsContextType | undefined>(undefined);
@@ -24,16 +30,25 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     const [localSuggestions, setLocalSuggestions] = useState<PartialWebsiteSuggestion[]>([]);
     const [websiteSuggestionsStream, setWebsiteSuggestionsStream] =
         useState<StreamableValue<PartialWebsiteSuggestion> | null>(null);
+    const [comparisonColumns, setComparisonColumns] = useState<ComparisonColumn[]>([]);
+    const [comparisonRows, setComparisonRows] = useState<DynamicZodType[]>([]);
 
     const suggestedUrls = useMemo(() => {
         return localSuggestions.map((s) => s.url).filter(Boolean) as string[];
     }, [localSuggestions]);
 
+    const clearComparison = () => {
+        setComparisonRows([]);
+        setComparisonColumns([]);
+    };
+
     const clearSuggestions = () => {
+        clearComparison();
         setLocalSuggestions([]);
     };
 
     const addSuggestion = (suggestion: PartialWebsiteSuggestion) => {
+        clearComparison();
         setLocalSuggestions((prev) => {
             return [...prev, suggestion];
         });
@@ -49,6 +64,10 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 addSuggestion,
                 clearSuggestions,
                 suggestedUrls,
+                comparisonColumns,
+                setComparisonColumns,
+                comparisonRows,
+                setComparisonRows,
             }}
         >
             {children}

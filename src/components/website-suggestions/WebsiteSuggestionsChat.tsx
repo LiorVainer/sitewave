@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { suggestWebsites } from '@/app/actions';
 import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
-import { WebsiteSuggestionsCards } from '@/components/WebsiteSuggestionsCards';
-import { useWebsiteSuggestions } from './website-suggestions/WebsiteSuggestionsContext';
+import { WebsiteSuggestionsCards } from '@/components/website-suggestions/WebsiteSuggestionsCards';
+import { useWebsiteSuggestions } from './WebsiteSuggestionsContext';
 import { LoadMoreButton } from '@/components/LoadMoreButton';
+import { Tabs, TabsContent, TabsContents, TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
+import { WebsiteComparisonTable } from '@/components/website-suggestions/WebsiteComparisonTable';
 
 export const WebsiteSuggestionsChat = () => {
     const { setWebsiteSuggestionsStream, websiteSuggestionsStream, clearSuggestions, localSuggestions, suggestedUrls } =
@@ -26,7 +28,7 @@ export const WebsiteSuggestionsChat = () => {
     };
 
     return (
-        <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[25cqw] lg:py-16'>
+        <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16'>
             <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
             <WebsiteSuggestionInput
@@ -36,9 +38,18 @@ export const WebsiteSuggestionsChat = () => {
                 placeholder='e.g. Best tools for productivity'
                 className='w-full'
             />
-
-            {websiteSuggestionsStream && <WebsiteSuggestionsCards />}
-
+            {websiteSuggestionsStream && (
+                <Tabs className='w-full' defaultValue={'list'}>
+                    <TabsList className='w-full'>
+                        <TabsTrigger value={'list'}>List</TabsTrigger>
+                        <TabsTrigger value={'table'}>Table</TabsTrigger>
+                    </TabsList>
+                    <TabsContents transition={{ duration: 0 }}>
+                        <TabsContent value={'list'}>{<WebsiteSuggestionsCards />}</TabsContent>
+                        <TabsContent value={'table'}>{<WebsiteComparisonTable />}</TabsContent>
+                    </TabsContents>
+                </Tabs>
+            )}
             {localSuggestions.length > 0 && <LoadMoreButton handleLoadMore={handleLoadMore} />}
         </div>
     );

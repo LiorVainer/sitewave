@@ -69,6 +69,7 @@ export default defineConfig([
             '@typescript-eslint/no-require-imports': 'off',
             '@typescript-eslint/no-unused-vars': 'warn',
             'sonarjs/no-dead-store': 'off',
+            'sonarjs/void-use': 'off',
             'unicorn/no-abusive-eslint-disable': 'off',
         },
         settings: {
