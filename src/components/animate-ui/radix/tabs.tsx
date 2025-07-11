@@ -184,16 +184,9 @@ function TabsContents({
   }, [children]);
 
   return (
-    <div
-      data-slot="tabs-contents"
-      // layout
-      // animate={{ height: height }}
-      // transition={transition}
-      className={className}
-      {...props}
-    >
+
       <div ref={containerRef}>{children}</div>
-    </div>
+
   );
 }
 

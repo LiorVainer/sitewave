@@ -1,21 +1,26 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+'use client';
+
+import { createContext, Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
 import { StreamableValue } from 'ai/rsc';
 import { ComparisonColumn } from '@/models/website-comparison.model';
 import { DynamicZodType } from '@/lib/zod.utils';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useWebsitesComparison } from '@/hooks/use-websites-comparison';
 
 interface WebsiteSuggestionsContextType {
     localSuggestions: PartialWebsiteSuggestion[];
-    setLocalSuggestions: React.Dispatch<React.SetStateAction<PartialWebsiteSuggestion[]>>;
+    setLocalSuggestions: Dispatch<SetStateAction<PartialWebsiteSuggestion[]>>;
     websiteSuggestionsStream: StreamableValue<PartialWebsiteSuggestion> | null;
-    setWebsiteSuggestionsStream: React.Dispatch<React.SetStateAction<StreamableValue<PartialWebsiteSuggestion> | null>>;
+    setWebsiteSuggestionsStream: Dispatch<SetStateAction<StreamableValue<PartialWebsiteSuggestion> | null>>;
     clearSuggestions: () => void;
     addSuggestion: (suggestion: PartialWebsiteSuggestion) => void;
     suggestedUrls: string[];
     comparisonColumns: ComparisonColumn[];
-    setComparisonColumns: React.Dispatch<React.SetStateAction<ComparisonColumn[]>>;
     comparisonRows: DynamicZodType[];
-    setComparisonRows: React.Dispatch<React.SetStateAction<DynamicZodType[]>>;
+    isLoadingComparison: boolean;
+    currentPrompt: string;
+    setCurrentPrompt: Dispatch<SetStateAction<string>>;
 }
 
 export const WebsiteSuggestionsContext = createContext<WebsiteSuggestionsContextType | undefined>(undefined);
@@ -27,20 +32,25 @@ export const useWebsiteSuggestions = () => {
 };
 
 export const WebsiteSuggestionsProvider = ({ children }: { children: React.ReactNode }) => {
-    const [localSuggestions, setLocalSuggestions] = useState<PartialWebsiteSuggestion[]>([]);
+    const [currentPrompt, setCurrentPrompt] = useLocalStorage('suggest-websites-prompt', '');
+    const [localSuggestions, setLocalSuggestions] = useLocalStorage<PartialWebsiteSuggestion[]>(
+        'websites-suggestions',
+        [],
+    );
     const [websiteSuggestionsStream, setWebsiteSuggestionsStream] =
         useState<StreamableValue<PartialWebsiteSuggestion> | null>(null);
-    const [comparisonColumns, setComparisonColumns] = useState<ComparisonColumn[]>([]);
-    const [comparisonRows, setComparisonRows] = useState<DynamicZodType[]>([]);
+
+    const {
+        clearComparison,
+        startComparison,
+        columns: comparisonColumns,
+        rows: comparisonRows,
+        isLoading: isLoadingComparison,
+    } = useWebsitesComparison({ websitesSuggestions: localSuggestions });
 
     const suggestedUrls = useMemo(() => {
         return localSuggestions.map((s) => s.url).filter(Boolean) as string[];
     }, [localSuggestions]);
-
-    const clearComparison = () => {
-        setComparisonRows([]);
-        setComparisonColumns([]);
-    };
 
     const clearSuggestions = () => {
         clearComparison();
@@ -48,7 +58,7 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     };
 
     const addSuggestion = (suggestion: PartialWebsiteSuggestion) => {
-        clearComparison();
+        startComparison();
         setLocalSuggestions((prev) => {
             return [...prev, suggestion];
         });
@@ -65,9 +75,10 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 clearSuggestions,
                 suggestedUrls,
                 comparisonColumns,
-                setComparisonColumns,
                 comparisonRows,
-                setComparisonRows,
+                isLoadingComparison,
+                currentPrompt,
+                setCurrentPrompt,
             }}
         >
             {children}

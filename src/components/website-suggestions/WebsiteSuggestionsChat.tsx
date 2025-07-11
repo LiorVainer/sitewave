@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { suggestWebsites } from '@/app/actions';
 import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
 import { WebsiteSuggestionsCards } from '@/components/website-suggestions/WebsiteSuggestionsCards';
@@ -6,14 +5,23 @@ import { useWebsiteSuggestions } from './WebsiteSuggestionsContext';
 import { LoadMoreButton } from '@/components/LoadMoreButton';
 import { Tabs, TabsContent, TabsContents, TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
 import { WebsiteComparisonTable } from '@/components/website-suggestions/WebsiteComparisonTable';
+import { StreamingWebsiteSuggestionsCards } from '@/components/website-suggestions/StreamingWebsiteSuggestionsCards';
 
 export const WebsiteSuggestionsChat = () => {
-    const { setWebsiteSuggestionsStream, websiteSuggestionsStream, clearSuggestions, localSuggestions, suggestedUrls } =
-        useWebsiteSuggestions();
-    const [currentPrompt, setCurrentPrompt] = useState('');
+    const {
+        currentPrompt,
+        setCurrentPrompt,
+        setWebsiteSuggestionsStream,
+        websiteSuggestionsStream,
+        clearSuggestions,
+        localSuggestions,
+        suggestedUrls,
+    } = useWebsiteSuggestions();
 
     const handleSubmit = async (amount: number) => {
         if (!currentPrompt) return;
+
+        console.log('Submitting prompt:', currentPrompt, 'with amount:', amount);
 
         clearSuggestions();
         const stream = await suggestWebsites(currentPrompt, amount);
@@ -22,6 +30,8 @@ export const WebsiteSuggestionsChat = () => {
 
     const handleLoadMore = async (amount: number) => {
         if (!currentPrompt) return;
+
+        console.log('handleLoadMore prompt:', currentPrompt, 'with amount:', amount);
 
         const stream = await suggestWebsites(currentPrompt, amount, suggestedUrls);
         setWebsiteSuggestionsStream(stream);
@@ -38,18 +48,24 @@ export const WebsiteSuggestionsChat = () => {
                 placeholder='e.g. Best tools for productivity'
                 className='w-full'
             />
-            {websiteSuggestionsStream && (
+            {websiteSuggestionsStream || localSuggestions.length > 0 ? (
                 <Tabs className='w-full' defaultValue={'list'}>
                     <TabsList className='w-full'>
                         <TabsTrigger value={'list'}>List</TabsTrigger>
                         <TabsTrigger value={'table'}>Table</TabsTrigger>
                     </TabsList>
                     <TabsContents transition={{ duration: 0 }}>
-                        <TabsContent value={'list'}>{<WebsiteSuggestionsCards />}</TabsContent>
+                        <TabsContent value={'list'}>
+                            {websiteSuggestionsStream ? (
+                                <StreamingWebsiteSuggestionsCards />
+                            ) : (
+                                <WebsiteSuggestionsCards />
+                            )}
+                        </TabsContent>
                         <TabsContent value={'table'}>{<WebsiteComparisonTable />}</TabsContent>
                     </TabsContents>
                 </Tabs>
-            )}
+            ) : null}
             {localSuggestions.length > 0 && <LoadMoreButton handleLoadMore={handleLoadMore} />}
         </div>
     );
