@@ -13,7 +13,6 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import unicorn from 'eslint-plugin-unicorn';
 import importPlugin from 'eslint-plugin-import';
-import sonarjs from 'eslint-plugin-sonarjs';
 import promise from 'eslint-plugin-promise';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,7 +30,7 @@ export default defineConfig([
     reactHooks.configs['recommended-latest'],
     reactRefresh.configs.recommended,
     unicorn.configs.recommended,
-    sonarjs.configs.recommended,
+    // sonarjs.configs.recommended,
     promise.configs['flat/recommended'],
     eslintConfigPrettier,
     prettierRecommended,
