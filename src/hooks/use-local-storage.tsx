@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (val: T | ((prev: T) => T)) => void] {
     const readValue = (): T => {
-        if (globalThis.window == undefined) return initialValue;
+        if (globalThis.window === undefined) return initialValue;
         try {
             const item = localStorage.getItem(key);
             return item ? (JSON.parse(item) as T) : initialValue;
@@ -16,9 +16,10 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (val: T | 
 
     const setValue = (value: T | ((prev: T) => T)) => {
         try {
+            // @ts-expect-error this is a workaround for the type error on the value parameter that is not recognized as a function
             const valueToStore = typeof value === 'function' ? value(readValue()) : value;
             setStoredValue(valueToStore);
-            if (globalThis.window != undefined) {
+            if (globalThis.window !== undefined) {
                 localStorage.setItem(key, JSON.stringify(valueToStore));
             }
         } catch (error) {
