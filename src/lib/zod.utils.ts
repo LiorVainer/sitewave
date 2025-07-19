@@ -1,4 +1,4 @@
-import { ComparisonColumn } from '@/models/website-comparison.model';
+import { ComparisonColumn, StaticZodFields } from '@/models/website-comparison.model';
 import z, { ZodObject, ZodTypeAny } from 'zod';
 
 const zodTypeMap = {
@@ -7,17 +7,22 @@ const zodTypeMap = {
     boolean: z.boolean(),
 } satisfies Record<ComparisonColumn['zodType'], ZodTypeAny>;
 
+export const staticZodSchema = z.object(StaticZodFields);
+export type StaticZodType = z.infer<typeof staticZodSchema>;
+
 export type DynamicZodRecordSchema = Record<string, ZodTypeAny>;
 export type DynamicZodSchemaObject = ZodObject<DynamicZodRecordSchema>;
-export type DynamicZodType = z.infer<DynamicZodSchemaObject>;
+
+export type FullDynamicZodType<T extends DynamicZodSchemaObject = any> = StaticZodType & z.infer<T>;
 
 export function generateZodSchemaFromColumns(columns: ComparisonColumn[]): DynamicZodSchemaObject {
-    const shape: DynamicZodRecordSchema = {};
+    const shape: DynamicZodRecordSchema = { ...StaticZodFields };
 
     try {
         for (const col of columns) {
-            const base = zodTypeMap[col.zodType];
-            shape[col.zodKey] = base.describe(col.zodDesc);
+            if (col.zodKey in StaticZodFields) continue;
+            console.log(`Adding column to Zod schema: ${col.zodKey} (${col.zodType})`);
+            shape[col.zodKey] = zodTypeMap[col.zodType].describe(col.zodDesc);
         }
     } catch (error) {
         console.error('Error generating Zod schema:', error);

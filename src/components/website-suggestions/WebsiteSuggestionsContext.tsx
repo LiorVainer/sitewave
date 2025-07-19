@@ -4,7 +4,7 @@ import { createContext, Dispatch, SetStateAction, useContext, useMemo, useState 
 import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
 import { StreamableValue } from 'ai/rsc';
 import { ComparisonColumn } from '@/models/website-comparison.model';
-import { DynamicZodType } from '@/lib/zod.utils';
+import { FullDynamicZodType } from '@/lib/zod.utils';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useWebsitesComparison } from '@/hooks/use-websites-comparison';
 
@@ -15,9 +15,10 @@ interface WebsiteSuggestionsContextType {
     setWebsiteSuggestionsStream: Dispatch<SetStateAction<StreamableValue<PartialWebsiteSuggestion> | null>>;
     clearSuggestions: () => void;
     addSuggestion: (suggestion: PartialWebsiteSuggestion) => void;
+    startComparison: () => void;
     suggestedUrls: string[];
     comparisonColumns: ComparisonColumn[];
-    comparisonRows: DynamicZodType[];
+    comparisonRows: FullDynamicZodType[];
     isLoadingComparison: boolean;
     currentPrompt: string;
     setCurrentPrompt: Dispatch<SetStateAction<string>>;
@@ -58,7 +59,6 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     };
 
     const addSuggestion = (suggestion: PartialWebsiteSuggestion) => {
-        startComparison();
         setLocalSuggestions((prev) => {
             return [...prev, suggestion];
         });
@@ -72,6 +72,7 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 websiteSuggestionsStream,
                 setWebsiteSuggestionsStream,
                 addSuggestion,
+                startComparison,
                 clearSuggestions,
                 suggestedUrls,
                 comparisonColumns,

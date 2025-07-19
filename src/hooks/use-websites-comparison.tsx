@@ -1,12 +1,11 @@
 'use client';
 
-import { DynamicZodType, generateZodSchemaFromColumns } from '@/lib/zod.utils';
+import { FullDynamicZodType, generateZodSchemaFromColumns } from '@/lib/zod.utils';
 import { ComparisonColumn, WebsiteComparisonColumnsSchema } from '@/models/website-comparison.model';
 import { useEffect, useState } from 'react';
 import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { MustColumns } from '@/constants/comparison-table';
 
 interface UseWebsitesComparisonProps {
     websitesSuggestions: PartialWebsiteSuggestion[];
@@ -14,7 +13,7 @@ interface UseWebsitesComparisonProps {
 
 export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesComparisonProps) => {
     const [columns, setColumns] = useLocalStorage<ComparisonColumn[]>('comparison-columns', []);
-    const [rows, setRows] = useLocalStorage<DynamicZodType[]>('comparison-rows', []);
+    const [rows, setRows] = useLocalStorage<FullDynamicZodType[]>('comparison-rows', []);
     const {
         object: columnList,
         submit: submitColumns,
@@ -23,6 +22,7 @@ export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesCompar
         api: '/api/ai/website-comparison/columns',
         schema: WebsiteComparisonColumnsSchema,
     });
+    const rowsSchema = generateZodSchemaFromColumns(columns);
 
     const {
         object: rowList,
@@ -30,7 +30,7 @@ export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesCompar
         isLoading: isLoadingRows,
     } = useObject({
         api: '/api/ai/website-comparison/rows',
-        schema: generateZodSchemaFromColumns(columns),
+        schema: rowsSchema,
     });
 
     const [step, setStep] = useState<'idle' | 'columns' | 'rows'>('idle');
@@ -41,15 +41,11 @@ export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesCompar
         void submitColumns({ websites: websitesSuggestions });
     };
 
+    console.log({ step, isLoadingColumns, isLoadingRows, columnList, rowList });
+
     useEffect(() => {
         if (!isLoadingColumns && columnList && columnList?.length > 0 && step === 'columns') {
-            const filteredGeneratedColumns = columnList.filter((col) =>
-                col?.id ? !['title', 'url'].includes(col.id) : true,
-            );
-            const mergedColumns = MustColumns
-                ? [...MustColumns, ...filteredGeneratedColumns]
-                : filteredGeneratedColumns;
-            setColumns(mergedColumns as ComparisonColumn[]);
+            setColumns(columnList as ComparisonColumn[]);
             setStep('rows');
             submitRows({ websites: websitesSuggestions, columns: columnList });
         }
@@ -57,8 +53,7 @@ export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesCompar
 
     useEffect(() => {
         if (!isLoadingRows && rowList?.length) {
-            setRows(rowList as DynamicZodType[]);
-            setStep('idle');
+            setRows(rowList as FullDynamicZodType[]);
         }
     }, [rowList, isLoadingRows, setRows]);
 
@@ -75,7 +70,7 @@ export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesCompar
         startComparison,
         clearComparison,
         columns: columns as ComparisonColumn[],
-        rows: rows as DynamicZodType[],
+        rows: rows as FullDynamicZodType[],
         isLoadingColumns,
         isLoadingRows,
         columnList,

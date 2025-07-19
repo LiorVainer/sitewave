@@ -1,7 +1,7 @@
 import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteSuggestionCard';
 import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/WebsiteSuggestionCardSkeleton';
 import { useStreamableValue } from 'ai/rsc';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
 
 export interface StreamingWebsiteSuggestionsCardsProps {}
@@ -9,15 +9,20 @@ export interface StreamingWebsiteSuggestionsCardsProps {}
 const MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS = 3;
 
 export const StreamingWebsiteSuggestionsCards = ({}: StreamingWebsiteSuggestionsCardsProps) => {
-    const { websiteSuggestionsStream, localSuggestions, addSuggestion } = useWebsiteSuggestions();
+    const { websiteSuggestionsStream, localSuggestions, addSuggestion, startComparison } = useWebsiteSuggestions();
+    const visitedAlready = useRef<boolean>(false);
     const [lastSuggestion, _error, isLoading] = useStreamableValue(websiteSuggestionsStream!);
     const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (localSuggestions?.length ?? 0), 1);
 
     useEffect(() => {
+        if (!isLoading && !visitedAlready.current) {
+            startComparison();
+            visitedAlready.current = true;
+        }
         if (!lastSuggestion || !isLoading) return;
 
         addSuggestion(lastSuggestion);
-    }, [lastSuggestion]);
+    }, [isLoading, lastSuggestion]);
 
     return (
         <div className='flex flex-col gap-6'>

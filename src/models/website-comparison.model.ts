@@ -27,3 +27,9 @@ export type ComparisonRow = z.infer<typeof ComparisonRowSchema>;
 export const WebsiteComparisonRowsSchema = z.array(z.array(ComparisonRowSchema));
 
 export type WebsiteComparisonRows = z.infer<typeof WebsiteComparisonRowsSchema>;
+
+export const StaticZodFields = {
+    favicon: z.string().optional().describe('Optional URL to the website’s favicon or logo image'),
+    title: z.string().describe('Website title (pinned)'),
+    url: z.string().describe('Website URL'),
+};

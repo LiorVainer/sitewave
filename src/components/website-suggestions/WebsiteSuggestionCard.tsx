@@ -16,12 +16,15 @@ export const WebsiteSuggestionCard = ({ website }: SuggestionCardProps) => {
     const videoId = videoUrl?.split('v=')[1]?.split('&')[0];
     // Fallback thumbnail sizes: default → mqdefault → hqdefault
     const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
+    const faviconUrl = website?.url
+        ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(website?.url)}&sz=32`
+        : website?.favicon;
     return (
         <Card className='transition hover:shadow-md border border-border'>
             <CardContent className='space-y-4'>
                 <div className='flex justify-between items-start'>
                     <div className='flex items-center gap-3'>
-                        {website?.favicon && <img src={website.favicon} alt='' className='w-6 h-6 rounded' />}
+                        {website?.favicon && <img src={faviconUrl} alt='' className='w-6 h-6 rounded' />}
                         <a
                             href={website?.url ?? '#'}
                             target='_blank'

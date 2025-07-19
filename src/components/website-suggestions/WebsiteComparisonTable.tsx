@@ -14,48 +14,54 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
 import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DynamicZodType } from '../../lib/zod.utils';
+import { FullDynamicZodType } from '../../lib/zod.utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { staticComparisonColumns } from '@/constants/comparison-table-config.const';
+import { StaticZodFields } from '@/models/website-comparison.model';
 
 export function WebsiteComparisonTable() {
     const { comparisonColumns: columns, comparisonRows: rows, isLoadingComparison } = useWebsiteSuggestions();
 
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const tableColumns = useMemo<ColumnDef<DynamicZodType>[]>(
+    console.log({ rows });
+
+    const dynamicColumns = useMemo<ColumnDef<FullDynamicZodType>[]>(
         () =>
-            columns.map(
-                (col): ColumnDef<DynamicZodType> => ({
-                    id: col.id,
-                    accessorFn: (row) => row[col.zodKey],
-                    header: () => (
-                        <Button
-                            variant='ghost'
-                            onClick={() =>
-                                setSorting((prev) =>
-                                    prev[0]?.id === col.id
-                                        ? [{ id: col.id, desc: !prev[0].desc }]
-                                        : [{ id: col.id, desc: false }],
-                                )
-                            }
-                            className='p-0 text-left hover:bg-transparent'
-                        >
-                            <div className='flex items-center gap-2'>
-                                {col.header}
-                                <ArrowUpDown className='w-4 h-4' />
-                            </div>
-                        </Button>
-                    ),
-                    cell: (info) => info.getValue(),
-                    enablePinning: true,
-                }),
-            ),
+            columns
+                .filter((col) => !Object.keys(StaticZodFields).includes(col.zodKey))
+                .map(
+                    (col): ColumnDef<FullDynamicZodType> => ({
+                        id: col.id,
+                        accessorFn: (row) => row[col.zodKey],
+                        header: () => (
+                            <Button
+                                variant='ghost'
+                                onClick={() =>
+                                    setSorting((prev) =>
+                                        prev[0]?.id === col.id
+                                            ? [{ id: col.id, desc: !prev[0].desc }]
+                                            : [{ id: col.id, desc: false }],
+                                    )
+                                }
+                                className='p-0 text-left hover:bg-transparent'
+                            >
+                                <div className='flex items-center gap-2'>
+                                    {col.header}
+                                    <ArrowUpDown className='w-4 h-4' />
+                                </div>
+                            </Button>
+                        ),
+                        cell: (info) => info.getValue(),
+                        enablePinning: true,
+                    }),
+                ),
         [columns],
     );
 
     const table = useReactTable({
         data: rows,
-        columns: tableColumns,
+        columns: [...staticComparisonColumns, ...dynamicColumns],
         initialState: {
             columnPinning: {
                 left: ['title'],
@@ -63,10 +69,12 @@ export function WebsiteComparisonTable() {
         },
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        enablePinning: true,
+        enableColumnPinning: true,
         state: { sorting },
         onSortingChange: setSorting,
     });
+
+    console.log('Table rows:', table.getRowModel().rows.length, 'columns:', table.getAllColumns().length);
 
     return (
         <div className='space-y-4'>
@@ -114,7 +122,9 @@ export function WebsiteComparisonTable() {
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell
                                         key={cell.id}
-                                        className={cell.column.getIsPinned() === 'left' ? 'sticky left-0 z-10' : ''}
+                                        className={
+                                            cell.column.getIsPinned() === 'left' ? 'sticky left-0 z-10 bg-white' : ''
+                                        }
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
