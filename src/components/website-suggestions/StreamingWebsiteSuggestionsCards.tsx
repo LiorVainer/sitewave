@@ -1,23 +1,24 @@
 import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteSuggestionCard';
 import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/WebsiteSuggestionCardSkeleton';
 import { useStreamableValue } from 'ai/rsc';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
 
-export interface StreamingWebsiteSuggestionsCardsProps {}
+export interface StreamingWebsiteSuggestionsCardsProps {
+    onStreamEnd?: () => void;
+}
 
 const MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS = 3;
 
-export const StreamingWebsiteSuggestionsCards = ({}: StreamingWebsiteSuggestionsCardsProps) => {
+export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsiteSuggestionsCardsProps) => {
     const { websiteSuggestionsStream, localSuggestions, addSuggestion, startComparison } = useWebsiteSuggestions();
-    const visitedAlready = useRef<boolean>(false);
     const [lastSuggestion, _error, isLoading] = useStreamableValue(websiteSuggestionsStream!);
     const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (localSuggestions?.length ?? 0), 1);
 
     useEffect(() => {
-        if (!isLoading && !visitedAlready.current) {
+        if (!isLoading) {
             startComparison();
-            visitedAlready.current = true;
+            onStreamEnd?.();
         }
         if (!lastSuggestion || !isLoading) return;
 

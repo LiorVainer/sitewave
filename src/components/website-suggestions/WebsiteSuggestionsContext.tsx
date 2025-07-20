@@ -22,6 +22,8 @@ interface WebsiteSuggestionsContextType {
     isLoadingComparison: boolean;
     currentPrompt: string;
     setCurrentPrompt: Dispatch<SetStateAction<string>>;
+    showStreamingCards: boolean;
+    setShowStreamingCards: Dispatch<SetStateAction<boolean>>;
 }
 
 export const WebsiteSuggestionsContext = createContext<WebsiteSuggestionsContextType | undefined>(undefined);
@@ -40,6 +42,8 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     );
     const [websiteSuggestionsStream, setWebsiteSuggestionsStream] =
         useState<StreamableValue<PartialWebsiteSuggestion> | null>(null);
+
+    const [showStreamingCards, setShowStreamingCards] = useLocalStorage('show-streaming-cards', true);
 
     const {
         clearComparison,
@@ -80,6 +84,8 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 isLoadingComparison,
                 currentPrompt,
                 setCurrentPrompt,
+                showStreamingCards,
+                setShowStreamingCards,
             }}
         >
             {children}

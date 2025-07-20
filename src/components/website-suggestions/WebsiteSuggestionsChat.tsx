@@ -37,6 +37,8 @@ export const WebsiteSuggestionsChat = () => {
         setWebsiteSuggestionsStream(stream);
     };
 
+    console.log('websiteSuggestionsStream', websiteSuggestionsStream);
+
     return (
         <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16'>
             <h1 className='text-2xl font-semibold'>Discover Websites</h1>
@@ -57,7 +59,9 @@ export const WebsiteSuggestionsChat = () => {
                     <TabsContents transition={{ duration: 0 }}>
                         <TabsContent value={'list'}>
                             {websiteSuggestionsStream ? (
-                                <StreamingWebsiteSuggestionsCards />
+                                <StreamingWebsiteSuggestionsCards
+                                    onStreamEnd={() => setWebsiteSuggestionsStream(null)}
+                                />
                             ) : (
                                 <WebsiteSuggestionsCards />
                             )}
