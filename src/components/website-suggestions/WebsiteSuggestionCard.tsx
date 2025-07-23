@@ -6,49 +6,65 @@ import { Folder } from 'lucide-react';
 
 interface SuggestionCardProps {
     website?: PartialWebsiteSuggestion;
+    isStreaming?: boolean;
 }
 
 const RESPONSE_STREAM_SPEED = 30; // Adjust speed as needed
 
-export const WebsiteSuggestionCard = ({ website }: SuggestionCardProps) => {
+export const WebsiteSuggestionCard = ({ website, isStreaming = false }: SuggestionCardProps) => {
     const video = website?.videosOfWebsite?.[0];
     const videoUrl = video?.url;
     const videoId = videoUrl?.split('v=')[1]?.split('&')[0];
     // Fallback thumbnail sizes: default → mqdefault → hqdefault
     const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
+    const faviconUrl = website?.url
+        ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(website?.url)}&sz=32`
+        : website?.favicon;
     return (
         <Card className='transition hover:shadow-md border border-border'>
             <CardContent className='space-y-4'>
                 <div className='flex justify-between items-start'>
                     <div className='flex items-center gap-3'>
-                        {website?.favicon && <img src={website.favicon} alt='' className='w-6 h-6 rounded' />}
+                        {website?.favicon && <img src={faviconUrl} alt='' className='w-6 h-6 rounded' />}
                         <a
                             href={website?.url ?? '#'}
                             target='_blank'
                             rel='noopener noreferrer'
                             className='text-lg font-semibold text-blue-600 hover:underline'
                         >
-                            <ResponseStream textStream={website?.title ?? ''} mode='typewriter' />
+                            {isStreaming ? (
+                                <ResponseStream textStream={website?.title ?? ''} mode='typewriter' />
+                            ) : (
+                                website?.title
+                            )}
                         </a>
                     </div>
                     {website?.url && <CopyButton variant='outline' content={website.url} size='sm' />}
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-8 gap-6 items-center'>
-                    <div className='col-span-1 md:col-span-5 flex flex-col justify-between gap-4'>
+                <div className='grid grid-cols-1 md:grid-cols-8 gap-6 items-center '>
+                    <div className='col-span-1 md:col-span-5 flex flex-col justify-between gap-4 h-full'>
                         <div className='flex flex-col gap-2'>
-                            <ResponseStream
-                                speed={RESPONSE_STREAM_SPEED}
-                                textStream={website?.description ?? ''}
-                                mode='typewriter'
-                                className='text-sm text-gray-700'
-                            />
-                            <ResponseStream
-                                speed={RESPONSE_STREAM_SPEED}
-                                textStream={website?.reason ?? ''}
-                                mode='typewriter'
-                                className='text-xs text-muted-foreground italic'
-                            />
+                            {isStreaming ? (
+                                <ResponseStream
+                                    speed={RESPONSE_STREAM_SPEED}
+                                    textStream={website?.description ?? ''}
+                                    mode='typewriter'
+                                    className='text-sm text-gray-700'
+                                />
+                            ) : (
+                                <p className='text-sm text-gray-700'>{website?.description}</p>
+                            )}
+                            {isStreaming ? (
+                                <ResponseStream
+                                    speed={RESPONSE_STREAM_SPEED}
+                                    textStream={website?.reason ?? ''}
+                                    mode='typewriter'
+                                    className='text-xs text-muted-foreground italic'
+                                />
+                            ) : (
+                                <p className='text-xs text-muted-foreground italic'>{website?.reason}</p>
+                            )}
                         </div>
 
                         <div className='flex flex-col gap-2'>

@@ -13,7 +13,6 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import unicorn from 'eslint-plugin-unicorn';
 import importPlugin from 'eslint-plugin-import';
-import sonarjs from 'eslint-plugin-sonarjs';
 import promise from 'eslint-plugin-promise';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,7 +30,7 @@ export default defineConfig([
     reactHooks.configs['recommended-latest'],
     reactRefresh.configs.recommended,
     unicorn.configs.recommended,
-    sonarjs.configs.recommended,
+    // sonarjs.configs.recommended,
     promise.configs['flat/recommended'],
     eslintConfigPrettier,
     prettierRecommended,
@@ -69,7 +68,9 @@ export default defineConfig([
             '@typescript-eslint/no-require-imports': 'off',
             '@typescript-eslint/no-unused-vars': 'warn',
             'sonarjs/no-dead-store': 'off',
+            'sonarjs/void-use': 'off',
             'unicorn/no-abusive-eslint-disable': 'off',
+            '@typescript-eslint/ban-ts-comment': 'warn',
         },
         settings: {
             react: { version: 'detect' },

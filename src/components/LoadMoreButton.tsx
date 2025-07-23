@@ -10,7 +10,7 @@ export const LoadMoreButton = ({ handleLoadMore, label }: LoadMoreButtonProps) =
     const isMobile = useIsMobile();
 
     return isMobile ? (
-        <Button variant={'gradient'} className={'w-full'}>
+        <Button variant={'gradient'} className={'w-full'} onClick={() => handleLoadMore(5)}>
             Load More Suggestions
         </Button>
     ) : (
