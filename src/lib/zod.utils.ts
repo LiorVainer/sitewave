@@ -21,7 +21,6 @@ export function generateZodSchemaFromColumns(columns: ComparisonColumn[]): Dynam
     try {
         for (const col of columns) {
             if (col.zodKey in StaticZodFields) continue;
-            console.log(`Adding column to Zod schema: ${col.zodKey} (${col.zodType})`);
             shape[col.zodKey] = zodTypeMap[col.zodType].describe(col.zodDesc);
         }
     } catch (error) {

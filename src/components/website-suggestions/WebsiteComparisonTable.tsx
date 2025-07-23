@@ -14,17 +14,24 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
 import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { FullDynamicZodType } from '../../lib/zod.utils';
+import { FullDynamicZodType } from '@/lib/zod.utils';
+import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { staticComparisonColumns } from '@/constants/comparison-table-config.const';
+import {
+    staticDesktopComparisonColumns,
+    staticMobileComparisonColumns,
+    staticSharedComparisonColumns,
+} from '@/constants/comparison-table-config.const';
 import { StaticZodFields } from '@/models/website-comparison.model';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const cellClassName = 'px-6 py-4';
+const headerClassName = 'px-6 py-2';
 
 export function WebsiteComparisonTable() {
     const { comparisonColumns: columns, comparisonRows: rows, isLoadingComparison } = useWebsiteSuggestions();
 
     const [sorting, setSorting] = useState<SortingState>([]);
-
-    console.log({ rows });
 
     const dynamicColumns = useMemo<ColumnDef<FullDynamicZodType>[]>(
         () =>
@@ -59,42 +66,51 @@ export function WebsiteComparisonTable() {
         [columns],
     );
 
+    const isMobile = useIsMobile();
+
+    const columnPinning = useMemo(() => {
+        return isMobile ? { left: ['favicon'] } : { left: ['favicon', 'title'] };
+    }, [isMobile]);
+
+    const staticColumns = useMemo<ColumnDef<FullDynamicZodType>[]>(
+        () =>
+            isMobile
+                ? [...staticMobileComparisonColumns, ...staticSharedComparisonColumns]
+                : [...staticDesktopComparisonColumns, ...staticSharedComparisonColumns],
+        [isMobile],
+    );
+
     const table = useReactTable({
         data: rows,
-        columns: [...staticComparisonColumns, ...dynamicColumns],
-        initialState: {
-            columnPinning: {
-                left: ['title'],
-            },
-        },
+        columns: [...staticColumns, ...dynamicColumns],
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         enableColumnPinning: true,
-        state: { sorting },
+        state: { sorting, columnPinning },
         onSortingChange: setSorting,
     });
 
-    console.log('Table rows:', table.getRowModel().rows.length, 'columns:', table.getAllColumns().length);
+    const columnCount = Math.max(5, columns.length || 0);
 
     return (
         <div className='space-y-4'>
-            {isLoadingComparison && columns.length > 0 && (
+            {isLoadingComparison && (
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            {columns.map((col) => (
-                                <TableHead key={col.id}>
-                                    <Skeleton className='h-4 w-24' />
+                            {Array.from({ length: columnCount }).map((_, idx) => (
+                                <TableHead key={`skel-head-${idx}`}>
+                                    <Skeleton className={cn('h-4 w-24', cellClassName)} />
                                 </TableHead>
                             ))}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {Array.from({ length: 5 }).map((_, i) => (
-                            <TableRow key={i}>
-                                {columns.map((col) => (
-                                    <TableCell key={col.id}>
-                                        <Skeleton className='h-4 w-full' />
+                        {Array.from({ length: 5 }).map((_, rowIdx) => (
+                            <TableRow key={`skel-row-${rowIdx}`}>
+                                {Array.from({ length: columnCount }).map((_, colIdx) => (
+                                    <TableCell key={`skel-cell-${rowIdx}-${colIdx}`} className={headerClassName}>
+                                        <Skeleton className={cn('h-4 w-full', cellClassName)} />
                                     </TableCell>
                                 ))}
                             </TableRow>
@@ -104,12 +120,15 @@ export function WebsiteComparisonTable() {
             )}
 
             {!isLoadingComparison && columns.length > 0 && rows.length > 0 && (
-                <Table className='bg-white rounded-lg'>
+                <Table className='bg-white rounded-lg table-auto'>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead
+                                        key={header.id}
+                                        className={cn(header.column.columnDef.meta?.className, cellClassName)}
+                                    >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}
@@ -118,13 +137,15 @@ export function WebsiteComparisonTable() {
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id}>
+                            <TableRow key={row.id} className={'px-6 py-2'}>
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell
                                         key={cell.id}
-                                        className={
-                                            cell.column.getIsPinned() === 'left' ? 'sticky left-0 z-10 bg-white' : ''
-                                        }
+                                        className={cn(
+                                            cell.column.columnDef.meta?.className,
+                                            cell.column.getIsPinned() === 'left' ? 'sticky left-0 z-10 bg-white' : '',
+                                            cellClassName,
+                                        )}
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>

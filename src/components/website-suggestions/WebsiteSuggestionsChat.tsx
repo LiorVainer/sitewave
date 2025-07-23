@@ -21,8 +21,6 @@ export const WebsiteSuggestionsChat = () => {
     const handleSubmit = async (amount: number) => {
         if (!currentPrompt) return;
 
-        console.log('Submitting prompt:', currentPrompt, 'with amount:', amount);
-
         clearSuggestions();
         const stream = await suggestWebsites(currentPrompt, amount);
         setWebsiteSuggestionsStream(stream);
@@ -31,13 +29,9 @@ export const WebsiteSuggestionsChat = () => {
     const handleLoadMore = async (amount: number) => {
         if (!currentPrompt) return;
 
-        console.log('handleLoadMore prompt:', currentPrompt, 'with amount:', amount);
-
         const stream = await suggestWebsites(currentPrompt, amount, suggestedUrls);
         setWebsiteSuggestionsStream(stream);
     };
-
-    console.log('websiteSuggestionsStream', websiteSuggestionsStream);
 
     return (
         <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16'>

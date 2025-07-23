@@ -12,11 +12,6 @@ type Payload = {
 export async function POST(req: Request) {
     const { websites }: Payload = await req.json();
 
-    console.log(
-        `Generating comparison columns for ${websites.length} websites:`,
-        websites.map((w) => w.title).join(', '),
-    );
-
     const result = streamObject({
         model: GlobalConfig.model,
         schema: WebsiteComparisonColumnsSchema,

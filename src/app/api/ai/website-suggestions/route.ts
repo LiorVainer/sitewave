@@ -13,8 +13,6 @@ type Payload = {
 export async function POST(req: Request) {
     const { amount, prompt }: Payload = await req.json();
 
-    console.log(`Generating ${amount} website suggestions with prompt: ${prompt}`);
-
     const result = streamObject({
         model: GlobalConfig.model,
         output: 'array',

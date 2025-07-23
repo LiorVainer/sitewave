@@ -129,7 +129,7 @@ function TabsContent({
       <motion.div
         data-slot="tabs-content"
         className={cn('flex-1 outline-none', className)}
-        layout
+        // layout
         initial={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         exit={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
