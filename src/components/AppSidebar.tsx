@@ -61,7 +61,8 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { WebsiteSuggestionsProvider } from '@/components/website-suggestions/WebsiteSuggestionsContext';
+import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
+import { UserButton } from '@clerk/nextjs';
 
 const DATA = {
     user: {
@@ -365,8 +366,8 @@ export const AppSidebar = ({
             </Sidebar>
 
             <SidebarInset>
-                <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-                    <div className='flex items-center gap-2 px-4'>
+                <header className='flex h-16 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
+                    <div className='flex items-center gap-2'>
                         <SidebarTrigger className='-ml-1' />
                         <Separator orientation='vertical' className='mr-2 h-4' />
                         <Breadcrumb>
@@ -381,6 +382,7 @@ export const AppSidebar = ({
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
+                    <UserButton />
                 </header>
                 <div className='flex flex-1 flex-col gap-4 p-4 pt-0 bg-gradient-to-br from-blue-50 via-white to-purple-50'>
                     <div className='min-h-[100vh] flex-1 rounded-xl w-full md:min-h-min @container/main'>

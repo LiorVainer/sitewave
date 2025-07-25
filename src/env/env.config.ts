@@ -23,6 +23,13 @@ export const EnvSchema = z.object({
     // =======================
     CONVEX_DEPLOYMENT: z.string(),
     NEXT_PUBLIC_CONVEX_URL: z.string(),
+
+    // =======================
+    // 🔐 Authentication
+    // =======================
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional(),
+    CLERK_SECRET_KEY: z.string().optional(),
+    CLERK_JWT_ISSUER_DOMAIN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

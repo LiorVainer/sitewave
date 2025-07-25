@@ -2,6 +2,6 @@
 
 import { WebsiteSuggestionsChat } from '@/components/website-suggestions/WebsiteSuggestionsChat';
 
-export default function SiteSuggestions() {
+export default function Home() {
     return <WebsiteSuggestionsChat />;
 }

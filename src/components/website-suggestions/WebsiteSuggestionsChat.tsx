@@ -1,7 +1,7 @@
 import { suggestWebsites } from '@/app/actions';
 import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
 import { WebsiteSuggestionsCards } from '@/components/website-suggestions/WebsiteSuggestionsCards';
-import { useWebsiteSuggestions } from './WebsiteSuggestionsContext';
+import { useWebsiteSuggestions } from '../../context/WebsiteSuggestionsContext';
 import { LoadMoreButton } from '@/components/LoadMoreButton';
 import { Tabs, TabsContent, TabsContents, TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
 import { WebsiteComparisonTable } from '@/components/website-suggestions/WebsiteComparisonTable';
@@ -44,6 +44,7 @@ export const WebsiteSuggestionsChat = () => {
                 placeholder='e.g. Best tools for productivity'
                 className='w-full'
             />
+
             {websiteSuggestionsStream || localSuggestions.length > 0 ? (
                 <Tabs className='w-full' defaultValue={'list'}>
                     <TabsList className='w-full'>

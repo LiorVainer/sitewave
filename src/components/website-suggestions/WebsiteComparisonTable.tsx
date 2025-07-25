@@ -11,7 +11,7 @@ import {
 import { useMemo, useState } from 'react';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
+import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
 import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FullDynamicZodType } from '@/lib/zod.utils';

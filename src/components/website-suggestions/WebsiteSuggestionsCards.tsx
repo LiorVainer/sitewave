@@ -1,5 +1,5 @@
 import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteSuggestionCard';
-import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
+import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
 
 export interface WebsiteSuggestionsProps {}
 

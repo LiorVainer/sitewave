@@ -22,6 +22,8 @@
   "dependencies": {
     "@ai-sdk/google": "^1.2.19",
     "@ai-sdk/react": "^1.2.12",
+    "@clerk/elements": "^0.23.45",
+    "@clerk/nextjs": "^6.26.0",
     "@number-flow/react": "^0.5.10",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-label": "^2.1.7",
