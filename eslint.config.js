@@ -73,6 +73,7 @@ export default defineConfig([
             'unicorn/no-abusive-eslint-disable': 'off',
             'unicorn/prefer-string-raw': 'off',
             '@typescript-eslint/ban-ts-comment': 'warn',
+            'react/no-unescaped-entities': 'off',
         },
         settings: {
             react: { version: 'detect' },
