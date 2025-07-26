@@ -70,6 +70,7 @@ export default defineConfig([
             'sonarjs/no-dead-store': 'off',
             'sonarjs/void-use': 'off',
             'unicorn/no-abusive-eslint-disable': 'off',
+            'unicorn/prefer-string-raw': 'off',
             '@typescript-eslint/ban-ts-comment': 'warn',
         },
         settings: {
