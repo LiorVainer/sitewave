@@ -1,36 +1,68 @@
-name: 🚀 Next.js CI with pnpm
+name: ✅ Next.js CI with pnpm
 
 on:
   pull_request:
     branches: [master, dev]
 
 jobs:
-  build:
+  setup:
+    name: ⚙️ Setup & Cache
     runs-on: ubuntu-latest
-
+    outputs:
+      pnpm_cache_path: ${{ steps.cache.outputs.cache-hit }}
     steps:
-      - name: 📥 Checkout
+      - name: ⬇️ Checkout code
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js
+      - name: 🧰 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'pnpm'
 
-      - name: 📦 Install pnpm 10.5
+      - name: 📦 Setup pnpm 10.5
         uses: pnpm/action-setup@v2
         with:
           version: 10.5
 
-      - name: 🔧 Install deps
+      - name: 🧪 Verify pnpm installed
+        run: pnpm -v
+
+      - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🧹 Prettier check
-        run: pnpm prettier . --check
+  lint:
+    name: 🔍 Lint
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.5
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
 
-      - name: 🔍 ESLint check
-        run: pnpm lint
+  prettier:
+    name: 🧹 Prettier
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.5
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm prettier . --check
 
-      - name: 🛠 Build app
-        run: pnpm build
+  build:
+    name: 🛠 Build
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.5
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
