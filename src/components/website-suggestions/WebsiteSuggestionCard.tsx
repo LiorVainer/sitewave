@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 import { ResponseStream } from '@/components/ui/response-stream';
