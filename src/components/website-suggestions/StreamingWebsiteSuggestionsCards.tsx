@@ -2,7 +2,7 @@ import { WebsiteSuggestionCard } from '@/components/website-suggestions/WebsiteS
 import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/WebsiteSuggestionCardSkeleton';
 import { useStreamableValue } from 'ai/rsc';
 import { useEffect } from 'react';
-import { useWebsiteSuggestions } from '@/components/website-suggestions/WebsiteSuggestionsContext';
+import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
 
 export interface StreamingWebsiteSuggestionsCardsProps {
     onStreamEnd?: () => void;

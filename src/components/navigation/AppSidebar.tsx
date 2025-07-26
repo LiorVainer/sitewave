@@ -34,7 +34,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
@@ -42,16 +41,12 @@ import {
     DropdownMenuTrigger,
 } from '@/components/animate-ui/radix/dropdown-menu';
 import {
-    BadgeCheck,
-    Bell,
     Bot,
     ChevronRight,
     ChevronsUpDown,
-    CreditCard,
     Folder,
     Forward,
     Frame,
-    LogOut,
     MoreHorizontal,
     Plus,
     Settings2,
@@ -59,9 +54,10 @@ import {
     Star,
     Trash2,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { WebsiteSuggestionsProvider } from '@/components/website-suggestions/WebsiteSuggestionsContext';
+import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
+import { NavUser } from '@/components/navigation/NavUser';
+import { PageWrapper } from '@/components/general/PageWrapper';
 
 const DATA = {
     user: {
@@ -290,83 +286,14 @@ export const AppSidebar = ({
                     {/* Nav Project */}
                 </SidebarContent>
                 <SidebarFooter>
-                    {/* Nav User */}
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <SidebarMenuButton
-                                        size='lg'
-                                        className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-                                    >
-                                        <Avatar className='h-8 w-8 rounded-lg'>
-                                            <AvatarImage src={DATA.user.avatar} alt={DATA.user.name} />
-                                            <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
-                                        </Avatar>
-                                        <div className='grid flex-1 text-left text-sm leading-tight'>
-                                            <span className='truncate font-semibold'>{DATA.user.name}</span>
-                                            <span className='truncate text-xs'>{DATA.user.email}</span>
-                                        </div>
-                                        <ChevronsUpDown className='ml-auto size-4' />
-                                    </SidebarMenuButton>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                    className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
-                                    side={isMobile ? 'bottom' : 'right'}
-                                    align='end'
-                                    sideOffset={4}
-                                >
-                                    <DropdownMenuLabel className='p-0 font-normal'>
-                                        <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
-                                            <Avatar className='h-8 w-8 rounded-lg'>
-                                                <AvatarImage src={DATA.user.avatar} alt={DATA.user.name} />
-                                                <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
-                                            </Avatar>
-                                            <div className='grid flex-1 text-left text-sm leading-tight'>
-                                                <span className='truncate font-semibold'>{DATA.user.name}</span>
-                                                <span className='truncate text-xs'>{DATA.user.email}</span>
-                                            </div>
-                                        </div>
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem>
-                                            <Sparkles />
-                                            Upgrade to Pro
-                                        </DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem>
-                                            <BadgeCheck />
-                                            Account
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <CreditCard />
-                                            Billing
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <Bell />
-                                            Notifications
-                                        </DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem>
-                                        <LogOut />
-                                        Log out
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                    {/* Nav User */}
+                    <NavUser />
                 </SidebarFooter>
                 <SidebarRail />
             </Sidebar>
 
             <SidebarInset>
-                <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-                    <div className='flex items-center gap-2 px-4'>
+                <header className='flex h-16 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
+                    <div className='flex items-center gap-2'>
                         <SidebarTrigger className='-ml-1' />
                         <Separator orientation='vertical' className='mr-2 h-4' />
                         <Breadcrumb>
@@ -382,11 +309,9 @@ export const AppSidebar = ({
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className='flex flex-1 flex-col gap-4 p-4 pt-0 bg-gradient-to-br from-blue-50 via-white to-purple-50'>
-                    <div className='min-h-[100vh] flex-1 rounded-xl w-full md:min-h-min @container/main'>
-                        <WebsiteSuggestionsProvider>{children}</WebsiteSuggestionsProvider>
-                    </div>
-                </div>
+                <PageWrapper className='flex flex-col gap-4 p-4 pt-0 flex-1 rounded-xl w-full md:min-h-min @container/main'>
+                    <WebsiteSuggestionsProvider>{children}</WebsiteSuggestionsProvider>
+                </PageWrapper>
             </SidebarInset>
         </SidebarProvider>
     );

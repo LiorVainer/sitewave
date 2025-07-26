@@ -74,7 +74,7 @@ export const staticMobileComparisonColumns: ColumnDef<FullDynamicZodType>[] = [
             className: 'w-auto',
         },
     }),
-    columnHelper.display({
+    columnHelper.accessor('title', {
         id: 'title',
         header: ({ column }) => (
             <Button
