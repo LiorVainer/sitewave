@@ -16,7 +16,7 @@ jobs:
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'pnpm'
 
       - name: 🔧 Setup pnpm
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.5.0
       - run: pnpm install --frozen-lockfile
       - run: pnpm prettier . --check
 
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.5.0
       - run: pnpm install --frozen-lockfile
       - run: pnpm eslint . --ext .ts,.tsx,.js,.jsx
 
@@ -60,6 +60,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.5.0
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
