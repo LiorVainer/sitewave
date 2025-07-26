@@ -27,7 +27,7 @@ export default function RootLayout({
     return (
         <html lang='en'>
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-                <ClerkProvider signInUrl={'/login'} afterSignOutUrl={'/login'}>
+                <ClerkProvider>
                     <ConvexClientProvider>{children}</ConvexClientProvider>
                 </ClerkProvider>
             </body>

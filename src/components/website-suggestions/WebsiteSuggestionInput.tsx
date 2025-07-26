@@ -17,8 +17,6 @@ interface WebsiteSuggestionInputProps {
 
 type InputState = 'idle' | 'focused' | 'loading' | 'submitted';
 
-const MIN_SUGGESTIONS = 0;
-const MAX_SUGGESTIONS = 20;
 const DEFAULT_SUGGESTIONS = 5;
 
 export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
@@ -28,15 +26,8 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
     value,
     setValue,
 }) => {
-    // const [amount, setAmount] = useState([DEFAULT_SUGGESTIONS]);
     const [state, setState] = useState<InputState>('idle');
-    // const { sliderValue, inputValues, validateAndUpdateValue, handleInputChange, handleSliderChange } =
-    //     useSliderWithInput({ minValue: MIN_SUGGESTIONS, maxValue: MAX_SUGGESTIONS, initialValue: amount });
     const inputRef = useRef<HTMLInputElement>(null);
-
-    // useEffect(() => {
-    //     setAmount(sliderValue);
-    // }, [sliderValue]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

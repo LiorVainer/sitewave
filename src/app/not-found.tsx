@@ -1,9 +1,14 @@
-import { RedirectToSignIn, SignedOut } from '@clerk/nextjs';
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function NotFoundPage() {
-    return (
-        <SignedOut>
-            <RedirectToSignIn />
-        </SignedOut>
-    );
+    const router = useRouter();
+
+    useEffect(() => {
+        router.push('/');
+    }, [router]);
+
+    return <p className='text-center mt-10'>Redirecting to home...</p>;
 }
