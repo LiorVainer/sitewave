@@ -12,7 +12,7 @@ export const BookmarksFoldersSidebarGroup = () => {
         <SidebarGroup>
             <SidebarGroupLabel>Bookmarks</SidebarGroupLabel>
             <SidebarMenu>
-                {foldersWithBookmarks?.map((folder) => (
+                {foldersWithBookmarks?.map((folder: any) => (
                     <FolderTreeItem key={folder._id} folder={folder} />
                 ))}
             </SidebarMenu>
