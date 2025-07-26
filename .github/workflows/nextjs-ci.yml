@@ -1,4 +1,4 @@
-name: 🧪 Check Sitewave CI
+name: 🚀 Next.js CI with pnpm
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout repository
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
       - name: ⚙️ Setup Node.js
@@ -18,19 +18,19 @@ jobs:
           node-version: 18
           cache: 'pnpm'
 
-      - name: 📦 Setup pnpm 10.5
+      - name: 📦 Install pnpm 10.5
         uses: pnpm/action-setup@v2
         with:
           version: 10.5
 
-      - name: 📥 Install dependencies
+      - name: 🔧 Install deps
         run: pnpm install --frozen-lockfile
 
-      - name: 🧹 Prettier
+      - name: 🧹 Prettier check
         run: pnpm prettier . --check
 
-      - name: 🔍 Lint
+      - name: 🔍 ESLint check
         run: pnpm lint
 
-      - name: 🛠 Build
+      - name: 🛠 Build app
         run: pnpm build
