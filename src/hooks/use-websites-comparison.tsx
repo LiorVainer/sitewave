@@ -41,8 +41,6 @@ export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesCompar
         void submitColumns({ websites: websitesSuggestions });
     };
 
-    console.log({ step, isLoadingColumns, isLoadingRows, columnList, rowList });
-
     useEffect(() => {
         if (!isLoadingColumns && columnList && columnList?.length > 0 && step === 'columns') {
             setColumns(columnList as ComparisonColumn[]);

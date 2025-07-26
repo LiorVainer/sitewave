@@ -1,8 +1,15 @@
+'use client';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 import { ResponseStream } from '@/components/ui/response-stream';
-import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
+import { PartialWebsiteSuggestion, WebsiteSuggestionSchema } from '@/models/website-suggestion.model';
 import { Folder } from 'lucide-react';
+import { api } from '../../../convex/_generated/api';
+import { useConvexAuth, useMutation } from 'convex/react';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { SignedIn } from '@clerk/nextjs';
 
 interface SuggestionCardProps {
     website?: PartialWebsiteSuggestion;
@@ -13,6 +20,7 @@ const RESPONSE_STREAM_SPEED = 30; // Adjust speed as needed
 
 export const WebsiteSuggestionCard = ({ website, isStreaming = false }: SuggestionCardProps) => {
     const video = website?.videosOfWebsite?.[0];
+    const { isAuthenticated } = useConvexAuth();
     const videoUrl = video?.url;
     const videoId = videoUrl?.split('v=')[1]?.split('&')[0];
     // Fallback thumbnail sizes: default → mqdefault → hqdefault
@@ -20,6 +28,32 @@ export const WebsiteSuggestionCard = ({ website, isStreaming = false }: Suggesti
     const faviconUrl = website?.url
         ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(website?.url)}&sz=32`
         : website?.favicon;
+
+    const saveBookmark = useMutation(api.bookmarks.saveWebsiteSuggestionAsBookmark);
+
+    const handleSave = async () => {
+        if (!isAuthenticated || !website?.title || !website?.url || !website.suggestedFolderPath) return;
+        const { data: websiteSuggestion, error } = WebsiteSuggestionSchema.safeParse(website);
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        try {
+            const response = await saveBookmark({ websiteSuggestion });
+            console.log('Bookmark saved response:', response);
+
+            toast('Bookmark Saved', {
+                description: `“${website.title}” has been saved successfully.`,
+                duration: 3000,
+            });
+        } catch {
+            toast('Failed to save', {
+                description: 'Something went wrong while saving the bookmark.',
+            });
+        }
+    };
+
     return (
         <Card className='transition hover:shadow-md border border-border'>
             <CardContent className='space-y-4'>
@@ -39,7 +73,16 @@ export const WebsiteSuggestionCard = ({ website, isStreaming = false }: Suggesti
                             )}
                         </a>
                     </div>
-                    {website?.url && <CopyButton variant='outline' content={website.url} size='sm' />}
+                    {website?.url && (
+                        <div className='flex gap-2'>
+                            <CopyButton variant='outline' content={website.url} size='sm' />
+                            <SignedIn>
+                                <Button variant='outline' size='sm' onClick={handleSave}>
+                                    Save
+                                </Button>
+                            </SignedIn>
+                        </div>
+                    )}
                 </div>
 
                 <div className='grid grid-cols-1 md:grid-cols-8 gap-6 items-center '>
