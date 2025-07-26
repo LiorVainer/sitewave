@@ -45,6 +45,7 @@ import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext'
 import { NavUser } from '@/components/navigation/NavUser';
 import { PageWrapper } from '@/components/general/PageWrapper';
 import { BookmarksFoldersSidebarGroup } from '@/components/navigation/BookmarksFoldersSidebarGroup';
+import { SignedIn } from '@clerk/nextjs';
 
 const DATA = {
     user: {
@@ -220,7 +221,9 @@ export const AppSidebar = ({
                         </SidebarMenu>
                     </SidebarGroup>
 
-                    <BookmarksFoldersSidebarGroup />
+                    <SignedIn>
+                        <BookmarksFoldersSidebarGroup />
+                    </SignedIn>
                 </SidebarContent>
                 <SidebarFooter>
                     <NavUser />

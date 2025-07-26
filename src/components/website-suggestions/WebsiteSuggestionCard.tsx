@@ -6,9 +6,10 @@ import { ResponseStream } from '@/components/ui/response-stream';
 import { PartialWebsiteSuggestion, WebsiteSuggestionSchema } from '@/models/website-suggestion.model';
 import { Folder } from 'lucide-react';
 import { api } from '../../../convex/_generated/api';
-import { useMutation } from 'convex/react';
+import { useConvexAuth, useMutation } from 'convex/react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
+import { SignedIn } from '@clerk/nextjs';
 
 interface SuggestionCardProps {
     website?: PartialWebsiteSuggestion;
@@ -19,6 +20,7 @@ const RESPONSE_STREAM_SPEED = 30; // Adjust speed as needed
 
 export const WebsiteSuggestionCard = ({ website, isStreaming = false }: SuggestionCardProps) => {
     const video = website?.videosOfWebsite?.[0];
+    const { isAuthenticated } = useConvexAuth();
     const videoUrl = video?.url;
     const videoId = videoUrl?.split('v=')[1]?.split('&')[0];
     // Fallback thumbnail sizes: default → mqdefault → hqdefault
@@ -30,14 +32,13 @@ export const WebsiteSuggestionCard = ({ website, isStreaming = false }: Suggesti
     const saveBookmark = useMutation(api.bookmarks.saveWebsiteSuggestionAsBookmark);
 
     const handleSave = async () => {
-        if (!website?.title || !website?.url || !website.suggestedFolderPath) return;
+        if (!isAuthenticated || !website?.title || !website?.url || !website.suggestedFolderPath) return;
         const { data: websiteSuggestion, error } = WebsiteSuggestionSchema.safeParse(website);
         if (error) {
             console.error(error);
             return;
         }
 
-        console.log('Saving bookmark for website:', website.title, website.url, website.suggestedFolderPath);
         try {
             const response = await saveBookmark({ websiteSuggestion });
             console.log('Bookmark saved response:', response);
@@ -75,9 +76,11 @@ export const WebsiteSuggestionCard = ({ website, isStreaming = false }: Suggesti
                     {website?.url && (
                         <div className='flex gap-2'>
                             <CopyButton variant='outline' content={website.url} size='sm' />
-                            <Button variant='outline' size='sm' onClick={handleSave}>
-                                Save
-                            </Button>
+                            <SignedIn>
+                                <Button variant='outline' size='sm' onClick={handleSave}>
+                                    Save
+                                </Button>
+                            </SignedIn>
                         </div>
                     )}
                 </div>
