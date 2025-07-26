@@ -12,7 +12,6 @@ import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import unicorn from 'eslint-plugin-unicorn';
-import importPlugin from 'eslint-plugin-import';
 import promise from 'eslint-plugin-promise';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +19,7 @@ const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
     baseDirectory: __dirname,
+    recommendedConfig: js.configs.recommended,
 });
 
 // /** @type {import("eslint").FlatConfig[]} */
@@ -27,15 +27,16 @@ export default defineConfig([
     { ignores: ['dist', 'src/components/ui/**', 'src/components/animate-ui/**'] },
     js.configs.recommended,
     ...tsEslint.configs.recommended,
-    reactHooks.configs['recommended-latest'],
+    // reactHooks.configs['recommended-latest'],
     reactRefresh.configs.recommended,
     unicorn.configs.recommended,
     // sonarjs.configs.recommended,
     promise.configs['flat/recommended'],
     eslintConfigPrettier,
     prettierRecommended,
+    ...compat.extends('next'),
     {
-        extends: [importPlugin.flatConfigs.typescript],
+        // extends: [importPlugin.flatConfigs.typescript],
         files: ['**/*.{ts,tsx}'],
         languageOptions: {
             ecmaVersion: 2020,
