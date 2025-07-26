@@ -1,20 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import { Slot } from 'radix-ui';
-import { VariantProps, cva } from 'class-variance-authority';
-import { PanelLeftIcon } from 'lucide-react';
-import { type Transition } from 'motion/react';
+import {Slot} from 'radix-ui';
+import {cva, VariantProps} from 'class-variance-authority';
+import {PanelLeftIcon} from 'lucide-react';
+import {type Transition} from 'motion/react';
 
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/animate-ui/radix/sheet';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/animate-ui/radix/tooltip';
-import { MotionHighlight, MotionHighlightItem } from '@/components/animate-ui/effects/motion-highlight';
+import {cn} from '@/lib/utils';
+import {useIsMobile} from '@/hooks/use-mobile';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Separator} from '@/components/ui/separator';
+import {Skeleton} from '@/components/ui/skeleton';
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from '@/components/animate-ui/radix/sheet';
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/animate-ui/radix/tooltip';
+import {MotionHighlight, MotionHighlightItem} from '@/components/animate-ui/effects/motion-highlight';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -683,7 +683,7 @@ function SidebarMenuSub({ className, ...props }: SidebarMenuSubProps) {
             data-slot='sidebar-menu-sub'
             data-sidebar='menu-sub'
             className={cn(
-                'border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5',
+                'border-sidebar-border ml-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l pl-2.5 py-0.5',
                 'group-data-[collapsible=icon]:hidden',
                 className,
             )}
