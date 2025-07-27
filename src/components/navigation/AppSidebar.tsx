@@ -15,21 +15,15 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarGroup,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarInset,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
     SidebarProvider,
     SidebarRail,
     SidebarTrigger,
 } from '@/components/animate-ui/radix/sidebar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/animate-ui/radix/collapsible';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,7 +33,7 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@/components/animate-ui/radix/dropdown-menu';
-import { Bot, ChevronRight, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } from 'lucide-react';
+import { Bot, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
 import { NavUser } from '@/components/navigation/NavUser';
@@ -184,42 +178,42 @@ export const AppSidebar = ({
 
                 <SidebarContent>
                     {/* Nav Main */}
-                    <SidebarGroup>
-                        <SidebarGroupLabel>Platform</SidebarGroupLabel>
-                        <SidebarMenu>
-                            {DATA.navMain.map((item) => (
-                                <Collapsible
-                                    key={item.title}
-                                    asChild
-                                    defaultOpen={item.isActive}
-                                    className='group/collapsible'
-                                >
-                                    <SidebarMenuItem>
-                                        <CollapsibleTrigger asChild>
-                                            <SidebarMenuButton tooltip={item.title}>
-                                                {item.icon && <item.icon />}
-                                                <span>{item.title}</span>
-                                                <ChevronRight className='ml-auto transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90' />
-                                            </SidebarMenuButton>
-                                        </CollapsibleTrigger>
-                                        <CollapsibleContent>
-                                            <SidebarMenuSub>
-                                                {item.items?.map((subItem) => (
-                                                    <SidebarMenuSubItem key={subItem.title}>
-                                                        <SidebarMenuSubButton asChild>
-                                                            <a href={subItem.url}>
-                                                                <span>{subItem.title}</span>
-                                                            </a>
-                                                        </SidebarMenuSubButton>
-                                                    </SidebarMenuSubItem>
-                                                ))}
-                                            </SidebarMenuSub>
-                                        </CollapsibleContent>
-                                    </SidebarMenuItem>
-                                </Collapsible>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroup>
+                    {/*<SidebarGroup>*/}
+                    {/*    <SidebarGroupLabel>Platform</SidebarGroupLabel>*/}
+                    {/*    <SidebarMenu>*/}
+                    {/*        {DATA.navMain.map((item) => (*/}
+                    {/*            <Collapsible*/}
+                    {/*                key={item.title}*/}
+                    {/*                asChild*/}
+                    {/*                defaultOpen={item.isActive}*/}
+                    {/*                className='group/collapsible'*/}
+                    {/*            >*/}
+                    {/*                <SidebarMenuItem>*/}
+                    {/*                    <CollapsibleTrigger asChild>*/}
+                    {/*                        <SidebarMenuButton tooltip={item.title}>*/}
+                    {/*                            {item.icon && <item.icon />}*/}
+                    {/*                            <span>{item.title}</span>*/}
+                    {/*                            <ChevronRight className='ml-auto transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90' />*/}
+                    {/*                        </SidebarMenuButton>*/}
+                    {/*                    </CollapsibleTrigger>*/}
+                    {/*                    <CollapsibleContent>*/}
+                    {/*                        <SidebarMenuSub>*/}
+                    {/*                            {item.items?.map((subItem) => (*/}
+                    {/*                                <SidebarMenuSubItem key={subItem.title}>*/}
+                    {/*                                    <SidebarMenuSubButton asChild>*/}
+                    {/*                                        <a href={subItem.url}>*/}
+                    {/*                                            <span>{subItem.title}</span>*/}
+                    {/*                                        </a>*/}
+                    {/*                                    </SidebarMenuSubButton>*/}
+                    {/*                                </SidebarMenuSubItem>*/}
+                    {/*                            ))}*/}
+                    {/*                        </SidebarMenuSub>*/}
+                    {/*                    </CollapsibleContent>*/}
+                    {/*                </SidebarMenuItem>*/}
+                    {/*            </Collapsible>*/}
+                    {/*        ))}*/}
+                    {/*    </SidebarMenu>*/}
+                    {/*</SidebarGroup>*/}
 
                     <SignedIn>
                         <BookmarksFoldersSidebarGroup />
@@ -249,7 +243,7 @@ export const AppSidebar = ({
                         </Breadcrumb>
                     </div>
                 </header>
-                <PageWrapper className='flex flex-col gap-4 p-4 pt-0 flex-1 rounded-xl w-full md:min-h-min @container/main'>
+                <PageWrapper className='flex flex-col gap-4 p-4 pt-0 flex-1 w-full md:min-h-min @container/main'>
                     <WebsiteSuggestionsProvider>{children}</WebsiteSuggestionsProvider>
                 </PageWrapper>
             </SidebarInset>
