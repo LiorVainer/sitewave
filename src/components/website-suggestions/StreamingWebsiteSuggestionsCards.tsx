@@ -3,6 +3,7 @@ import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/
 import { useStreamableValue } from 'ai/rsc';
 import { useEffect } from 'react';
 import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
+import { WebsiteSuggestionWithMandatoryFields } from '@/models/website-suggestion.model';
 
 export interface StreamingWebsiteSuggestionsCardsProps {
     onStreamEnd?: () => void;
@@ -23,7 +24,7 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
         if (!lastSuggestion || !isLoading) return;
 
         if (lastSuggestion.title && lastSuggestion.url && lastSuggestion.description) {
-            addSuggestion(lastSuggestion);
+            addSuggestion(lastSuggestion as WebsiteSuggestionWithMandatoryFields);
         }
     }, [isLoading, lastSuggestion]);
 

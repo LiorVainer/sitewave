@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import * as React from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Link from 'next/link';
 
 export const NavUser = () => {
     const { user, openUserProfile, signOut } = useClerk();
@@ -22,10 +23,10 @@ export const NavUser = () => {
         <SidebarMenu>
             <SignedOut>
                 <SidebarMenuButton asChild>
-                    <a href='/sign-in'>
+                    <Link href='/sign-in'>
                         <LucideLogIn />
-                        <span>Login</span>
-                    </a>
+                        <span>Sign In</span>
+                    </Link>
                 </SidebarMenuButton>
             </SignedOut>
             <SignedIn>

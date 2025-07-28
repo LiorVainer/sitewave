@@ -9,8 +9,8 @@ import { api } from '../../../convex/_generated/api';
 import { useConvexAuth, useMutation, useQuery } from 'convex/react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
-import { SignedIn } from '@clerk/nextjs';
 import { WebsitesVotes } from '@/components/website-suggestions/WebsitesVotes';
+import { AuthSensitiveWrapper } from '@/components/wrappers/AuthSensitiveWrapper';
 
 interface SuggestionCardProps {
     websiteSuggestion?: PartialWebsiteSuggestion;
@@ -91,11 +91,11 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                         {websiteSuggestion?.url && (
                             <div className='flex gap-2'>
                                 <CopyButton variant='outline' content={websiteSuggestion.url} size='md' />
-                                <SignedIn>
+                                <AuthSensitiveWrapper>
                                     <Button size='sm' onClick={handleSave}>
                                         Save
                                     </Button>
-                                </SignedIn>
+                                </AuthSensitiveWrapper>
                             </div>
                         )}
                     </div>
