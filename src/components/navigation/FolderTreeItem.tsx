@@ -8,6 +8,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/animate-ui/radix/collapsible';
 import { ChevronRight, Folder as FolderIcon } from 'lucide-react';
 import { FolderNode } from '@/types/folder.types';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     folder: FolderNode;
@@ -15,6 +16,7 @@ interface Props {
 
 export const FolderTreeItem = ({ folder }: Props) => {
     const hasChildren = folder.children.length > 0 || folder.bookmarks.length > 0;
+    const router = useRouter();
 
     if (!hasChildren) return null;
 
@@ -22,7 +24,11 @@ export const FolderTreeItem = ({ folder }: Props) => {
         <Collapsible asChild>
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={folder.name}>
+                    <SidebarMenuButton
+                        tooltip={folder.name}
+                        onClick={() => router.push('/folder/' + folder._id)}
+                        className='group flex items-center gap-2'
+                    >
                         <FolderIcon className='text-muted-foreground' />
                         <span>{folder.name}</span>
                         <ChevronRight className='ml-auto transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90' />

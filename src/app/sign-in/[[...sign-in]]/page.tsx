@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/ui/icons';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { PageWrapper } from '@/components/general/PageWrapper';
+import { PageWrapper } from '@/components/layout/PageWrapper';
 import { Constants } from '@/constants/app.const';
 
 export default function SignInPage() {

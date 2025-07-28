@@ -4,6 +4,7 @@ import { getOrCreateFolderPath } from './helpers/folder.helpers';
 import { zMutation } from './helpers/zod.helpers';
 import { WebsiteSuggestionSchema } from '../src/models/website-suggestion.model';
 import { FolderNode } from '../src/types/folder.types';
+import { v } from 'convex/values';
 
 export const getUserFoldersWithBookmarks = query({
     args: {},
@@ -86,7 +87,37 @@ export const saveWebsiteSuggestionAsBookmark = zMutation({
             userId,
             title: args.websiteSuggestion.title,
             url: args.websiteSuggestion.url,
+            description: args.websiteSuggestion.description,
+            videosOfWebsite: args.websiteSuggestion.videosOfWebsite,
             folderId,
         });
+    },
+});
+
+export const getFolderContents = query({
+    args: { folderId: v.id('folders') },
+    handler: async (ctx, { folderId }) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error('Not authenticated');
+
+        const folder = await ctx.db.get(folderId);
+        if (!folder || folder.userId !== identity.subject) return null;
+
+        const subfolders = await ctx.db
+            .query('folders')
+            .withIndex('by_parentFolder', (q) => q.eq('parentFolderId', folderId))
+            .collect();
+
+        const bookmarks = await ctx.db
+            .query('bookmarks')
+            .withIndex('by_userId', (q) => q.eq('userId', identity.subject))
+            .filter((q) => q.eq(q.field('folderId'), folderId))
+            .collect();
+
+        return {
+            folder,
+            subfolders,
+            bookmarks,
+        };
     },
 });

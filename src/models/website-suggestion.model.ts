@@ -15,8 +15,6 @@ export const WebsiteSuggestionSchema = z.object({
         .optional()
         .describe("Optional tags for categorizing the website (e.g., ['ai', 'writing'])"),
 
-    favicon: z.string().optional().describe('Optional URL to the website’s favicon or logo image'),
-
     sources: z
         .object({
             name: z.string().describe('Name of the source where the suggestion was found'),

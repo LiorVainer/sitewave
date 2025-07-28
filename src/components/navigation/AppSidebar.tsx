@@ -37,9 +37,10 @@ import { Bot, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } f
 import { useIsMobile } from '@/hooks/use-mobile';
 import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
 import { NavUser } from '@/components/navigation/NavUser';
-import { PageWrapper } from '@/components/general/PageWrapper';
+import { PageWrapper } from '@/components/layout/PageWrapper';
 import { BookmarksFoldersSidebarGroup } from '@/components/navigation/BookmarksFoldersSidebarGroup';
 import { SignedIn } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 const DATA = {
     user: {
@@ -113,6 +114,7 @@ export const AppSidebar = ({
     children: React.ReactNode;
 }>) => {
     const isMobile = useIsMobile();
+    const router = useRouter();
     const [activeTeam, setActiveTeam] = React.useState(DATA.teams[0]);
 
     if (!activeTeam) return null;
@@ -233,7 +235,11 @@ export const AppSidebar = ({
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem className='hidden md:block'>
-                                    <BreadcrumbLink href='#'>Home</BreadcrumbLink>
+                                    <BreadcrumbLink asChild>
+                                        <span className='cursor-pointer' onClick={() => router.replace('/')}>
+                                            Home
+                                        </span>
+                                    </BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className='hidden md:block' />
                                 <BreadcrumbItem>
