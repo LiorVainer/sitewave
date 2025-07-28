@@ -5,12 +5,13 @@ import { FC, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, X } from 'lucide-react';
 
 interface WebsiteSuggestionInputProps {
     value: string;
     setValue: (value: string) => void;
     onSubmit?: (amount: number) => void;
+    clearSuggestions: () => void;
     placeholder?: string;
     className?: string;
 }
@@ -25,6 +26,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
     className,
     value,
     setValue,
+    clearSuggestions,
 }) => {
     const [state, setState] = useState<InputState>('idle');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -67,7 +69,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
         <div className={cn('w-full mx-auto', className)}>
             <form onSubmit={handleSubmit} className='relative'>
                 {/* Desktop layout */}
-                <div className='w-full hidden md:flex items-center gap-3 p-2 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 shadow-lg'>
+                <div className='w-full hidden md:flex items-center gap-2 p-2 box-border rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 shadow-lg'>
                     <div className='flex-1 relative'>
                         <Input
                             ref={inputRef}
@@ -109,6 +111,20 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                     {/*        aria-label='Enter value'*/}
                     {/*    />*/}
                     {/*</div>*/}
+                    {value && (
+                        <Button
+                            type='submit'
+                            size='icon'
+                            variant='outline'
+                            onClick={() => {
+                                clearSuggestions();
+                                setValue('');
+                            }}
+                            className={cn('relative overflow-hidden transition-all duration-300')}
+                        >
+                            <X />
+                        </Button>
+                    )}
                     <motion.div
                         whileHover={canSubmit ? { scale: 1.05 } : {}}
                         whileTap={canSubmit ? { scale: 0.95 } : {}}

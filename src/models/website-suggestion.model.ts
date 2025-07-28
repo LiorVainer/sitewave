@@ -44,6 +44,9 @@ export type WebsiteSuggestion = z.infer<typeof WebsiteSuggestionSchema>;
 
 export type PartialWebsiteSuggestion = DeepPartial<WebsiteSuggestion>;
 
+export type WebsiteSuggestionWithMandatoryFields = PartialWebsiteSuggestion &
+    Pick<WebsiteSuggestion, 'url' | 'title' | 'description'>;
+
 export const WebsiteSuggestionsGenerationPayloadSchema = z.object({
     amount: z.number().min(1).max(10).describe('Number of website suggestions to generate (1-20)'),
     prompt: z.string().min(1).describe('Prompt or context for generating website suggestions'),

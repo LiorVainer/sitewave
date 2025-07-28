@@ -41,13 +41,16 @@ export const WebsiteSuggestionsChat = () => {
             <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
             <div className='flex flex-col gap-8'>
-                <WebsiteSuggestionInput
-                    value={currentPrompt}
-                    setValue={setCurrentPrompt}
-                    onSubmit={handleSubmit}
-                    placeholder='e.g. Best tools for productivity'
-                    className='w-full'
-                />
+                <div className='flex gap-2 items-stretch'>
+                    <WebsiteSuggestionInput
+                        value={currentPrompt}
+                        setValue={setCurrentPrompt}
+                        onSubmit={handleSubmit}
+                        clearSuggestions={clearSuggestions}
+                        placeholder='e.g. Best tools for productivity'
+                        className='w-full'
+                    />
+                </div>
 
                 {showTabs ? (
                     <Tabs className='w-full' defaultValue={'list'}>

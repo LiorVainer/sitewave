@@ -10,7 +10,7 @@ export const WebsiteSuggestionsCards = ({}: WebsiteSuggestionsProps) => {
         <div className='flex flex-col gap-6'>
             <div className='grid gap-6'>
                 {localSuggestions?.map((website, index) => (
-                    <WebsiteSuggestionCard key={index} website={website} />
+                    <WebsiteSuggestionCard key={index} websiteSuggestion={website} />
                 ))}
             </div>
         </div>

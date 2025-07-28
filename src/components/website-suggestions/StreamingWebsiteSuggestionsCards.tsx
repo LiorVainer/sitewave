@@ -22,7 +22,9 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
         }
         if (!lastSuggestion || !isLoading) return;
 
-        addSuggestion(lastSuggestion);
+        if (lastSuggestion.title && lastSuggestion.url && lastSuggestion.description) {
+            addSuggestion(lastSuggestion);
+        }
     }, [isLoading, lastSuggestion]);
 
     return (
@@ -37,7 +39,7 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
             )}
             <div className='grid gap-6'>
                 {localSuggestions?.map((website, index) => (
-                    <WebsiteSuggestionCard isStreaming key={index} website={website} />
+                    <WebsiteSuggestionCard isStreaming key={index} websiteSuggestion={website} />
                 ))}
             </div>
 

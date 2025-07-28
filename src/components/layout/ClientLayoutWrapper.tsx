@@ -7,7 +7,7 @@ import { AppSidebar } from '@/components/navigation/AppSidebar';
 export const ClientLayoutWrapper = ({ children }: { children: ReactNode }) => {
     const pathname = usePathname();
 
-    const noLayoutRoutes = ['/login'];
+    const noLayoutRoutes = ['/sign-in'];
 
     const isExcluded = noLayoutRoutes.includes(pathname);
 

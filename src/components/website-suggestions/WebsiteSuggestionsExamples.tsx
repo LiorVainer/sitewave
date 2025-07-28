@@ -13,7 +13,7 @@ export const WebsiteSuggestionsExamples = ({ onExamplePress }: WebsiteSuggestion
                     onExamplePress(prompt);
                 }}
                 variant='ghost'
-                className='@4xl/main:h-[100px] bg-white flex flex-col border-1 flex-wrap items-start'
+                className='h-[100px] bg-white flex flex-col border-1 flex-wrap items-start'
                 key={subject}
             >
                 <h2 className='text-sm font-semibold text-gray-800'>{subject}</h2>
