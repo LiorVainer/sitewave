@@ -8,8 +8,6 @@ export const WebsiteSuggestionSchema = z.object({
 
     description: z.string().min(1).describe('A short summary of what the website does or offers'),
 
-    reason: z.string().min(1).describe("Explanation of why this site was recommended for the user's query"),
-
     tags: z
         .array(z.string())
         .optional()

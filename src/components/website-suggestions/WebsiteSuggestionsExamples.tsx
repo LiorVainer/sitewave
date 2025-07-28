@@ -6,7 +6,7 @@ export type WebsiteSuggestionsExamplesProps = {
 };
 
 export const WebsiteSuggestionsExamples = ({ onExamplePress }: WebsiteSuggestionsExamplesProps) => (
-    <div className='grid grid-cols-2 gap-4'>
+    <div className='grid @xl/main:grid-cols-2 gap-4'>
         {Object.entries(PROMPTS_EXAMPLES).map(([subject, prompt]) => (
             <Button
                 onClick={() => {

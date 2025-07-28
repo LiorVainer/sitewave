@@ -169,7 +169,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
 
                 {/* Mobile layout */}
                 <div className='md:hidden space-y-3'>
-                    <div className='relative'>
+                    <div className='relative flex items-center gap-2'>
                         <Input
                             ref={inputRef}
                             value={value}
@@ -185,6 +185,20 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                                 state === 'loading' && 'bg-gray-50',
                             )}
                         />
+                        {value && (
+                            <Button
+                                type='submit'
+                                size='icon'
+                                variant='outline'
+                                onClick={() => {
+                                    clearSuggestions();
+                                    setValue('');
+                                }}
+                                className={cn('relative overflow-hidden transition-all duration-300')}
+                            >
+                                <X />
+                            </Button>
+                        )}
                     </div>
                     {/*<SliderNumberFlow*/}
                     {/*    className='w-full mt-12'*/}

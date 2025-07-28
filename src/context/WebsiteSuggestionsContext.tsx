@@ -69,19 +69,19 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     };
 
     const addSuggestion = async (suggestion: WebsiteSuggestionWithMandatoryFields) => {
-        const creartedWebsite = await addSuggestionIfNotExists({
+        const createdWebsite = await addSuggestionIfNotExists({
             url: suggestion.url,
             name: suggestion.title,
             description: suggestion.description,
         });
 
         setLocalSuggestions((prev) => {
-            const alreadyExists = prev.some((s) => s.url === creartedWebsite?.url);
+            const alreadyExists = prev.some((s) => s.url === createdWebsite?.url);
             if (alreadyExists) return prev;
             return [
                 ...prev,
-                creartedWebsite
-                    ? mergeWebsiteAndWebsiteSuggestion({ suggestion, website: creartedWebsite as Doc<'websites'> })
+                createdWebsite
+                    ? mergeWebsiteAndWebsiteSuggestion({ suggestion, website: createdWebsite as Doc<'websites'> })
                     : suggestion,
             ];
         });

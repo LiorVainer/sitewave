@@ -20,10 +20,12 @@ export async function POST(req: Request) {
 - header (UI display label),
 - accessorKey (same as id).
 
-Always include the following columns:
+Always Dont Include the following columns:
 1. "url" - the website URL
 2. "title" - the website title
 3. "description" - a brief description of the website
+
+They are not relevant for comparison.
 
 Websites:
 ${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url}`).join('\n')}

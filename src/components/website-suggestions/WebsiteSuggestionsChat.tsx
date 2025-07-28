@@ -37,7 +37,7 @@ export const WebsiteSuggestionsChat = () => {
     const showTabs = websiteSuggestionsStream || localSuggestions.length > 0;
 
     return (
-        <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16'>
+        <div className='space-y-6 py-6 px-0 w-full @xl/main:px-6 @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16'>
             <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
             <div className='flex flex-col gap-8'>

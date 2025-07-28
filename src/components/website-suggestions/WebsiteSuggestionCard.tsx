@@ -66,9 +66,9 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
     };
 
     return (
-        <Card className='transition hover:shadow-md border border-border'>
-            <CardContent className='space-y-4'>
-                <div className='flex justify-between items-start'>
+        <Card className='transition hover:shadow-md border border-border py-4 @xl/main:py-6'>
+            <CardContent className='space-y-4 px-4 @xl/main:px-6'>
+                <div className='flex flex-col-reverse gap-6 @xl/main:flex-row @xl/main:justify-between items-start'>
                     <div className='flex items-center gap-3'>
                         {websiteSuggestion?.url && (
                             <img src={faviconUrl} alt='website-icon' className='w-6 h-6 rounded' />
@@ -86,7 +86,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                             )}
                         </a>
                     </div>
-                    <div className='flex gap-4 flex-col-reverse @xl/main:flex-row items-end @xl/main:items-center'>
+                    <div className='flex gap-4 @xl/main:flex-row justify-between w-full @xl/main:items-center @xl/main:justify-end'>
                         {website && <WebsitesVotes website={website} />}
                         {websiteSuggestion?.url && (
                             <div className='flex gap-2'>
@@ -113,16 +113,6 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                                 />
                             ) : (
                                 <p className='text-sm text-gray-700'>{websiteSuggestion?.description}</p>
-                            )}
-                            {isStreaming ? (
-                                <ResponseStream
-                                    speed={RESPONSE_STREAM_SPEED}
-                                    textStream={websiteSuggestion?.reason ?? ''}
-                                    mode='typewriter'
-                                    className='text-xs text-muted-foreground italic'
-                                />
-                            ) : (
-                                <p className='text-xs text-muted-foreground italic'>{websiteSuggestion?.reason}</p>
                             )}
                         </div>
 
