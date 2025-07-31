@@ -3,6 +3,7 @@ import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/
 import { useStreamableValue } from 'ai/rsc';
 import { useEffect } from 'react';
 import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
+import { WebsiteSuggestionWithMandatoryFields } from '@/models/website-suggestion.model';
 
 export interface StreamingWebsiteSuggestionsCardsProps {
     onStreamEnd?: () => void;
@@ -22,7 +23,9 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
         }
         if (!lastSuggestion || !isLoading) return;
 
-        addSuggestion(lastSuggestion);
+        if (lastSuggestion.title && lastSuggestion.url && lastSuggestion.description) {
+            addSuggestion(lastSuggestion as WebsiteSuggestionWithMandatoryFields);
+        }
     }, [isLoading, lastSuggestion]);
 
     return (
@@ -37,7 +40,7 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
             )}
             <div className='grid gap-6'>
                 {localSuggestions?.map((website, index) => (
-                    <WebsiteSuggestionCard isStreaming key={index} website={website} />
+                    <WebsiteSuggestionCard isStreaming key={index} websiteSuggestion={website} />
                 ))}
             </div>
 

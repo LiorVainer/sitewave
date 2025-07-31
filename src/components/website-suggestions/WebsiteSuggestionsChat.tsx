@@ -6,6 +6,8 @@ import { LoadMoreButton } from '@/components/LoadMoreButton';
 import { Tabs, TabsContent, TabsContents, TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
 import { WebsiteComparisonTable } from '@/components/website-suggestions/WebsiteComparisonTable';
 import { StreamingWebsiteSuggestionsCards } from '@/components/website-suggestions/StreamingWebsiteSuggestionsCards';
+import { WebsiteSuggestionsExamples } from '@/components/website-suggestions/WebsiteSuggestionsExamples';
+import { Toaster } from '@/components/ui/sonner';
 
 export const WebsiteSuggestionsChat = () => {
     const {
@@ -33,39 +35,49 @@ export const WebsiteSuggestionsChat = () => {
         setWebsiteSuggestionsStream(stream);
     };
 
+    const showTabs = websiteSuggestionsStream || localSuggestions.length > 0;
+
     return (
-        <div className='space-y-6 py-6 px-6 w-full @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16'>
+        <div className='space-y-6 py-6 px-0 w-full @xl/main:px-6 @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16'>
+            <Toaster />
             <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
-            <WebsiteSuggestionInput
-                value={currentPrompt}
-                setValue={setCurrentPrompt}
-                onSubmit={handleSubmit}
-                placeholder='e.g. Best tools for productivity'
-                className='w-full'
-            />
+            <div className='flex flex-col gap-8'>
+                <div className='flex gap-2 items-stretch'>
+                    <WebsiteSuggestionInput
+                        value={currentPrompt}
+                        setValue={setCurrentPrompt}
+                        onSubmit={handleSubmit}
+                        clearSuggestions={clearSuggestions}
+                        placeholder='e.g. Best tools for productivity'
+                        className='w-full'
+                    />
+                </div>
 
-            {websiteSuggestionsStream || localSuggestions.length > 0 ? (
-                <Tabs className='w-full' defaultValue={'list'}>
-                    <TabsList className='w-full'>
-                        <TabsTrigger value={'list'}>List</TabsTrigger>
-                        <TabsTrigger value={'table'}>Table</TabsTrigger>
-                    </TabsList>
-                    <TabsContents transition={{ duration: 0 }}>
-                        <TabsContent value={'list'}>
-                            {websiteSuggestionsStream ? (
-                                <StreamingWebsiteSuggestionsCards
-                                    onStreamEnd={() => setWebsiteSuggestionsStream(null)}
-                                />
-                            ) : (
-                                <WebsiteSuggestionsCards />
-                            )}
-                        </TabsContent>
-                        <TabsContent value={'table'}>{<WebsiteComparisonTable />}</TabsContent>
-                    </TabsContents>
-                </Tabs>
-            ) : null}
-            {localSuggestions.length > 0 && <LoadMoreButton handleLoadMore={handleLoadMore} />}
+                {showTabs ? (
+                    <Tabs className='w-full' defaultValue={'list'}>
+                        <TabsList className='w-full'>
+                            <TabsTrigger value='list'>List</TabsTrigger>
+                            <TabsTrigger value='table'>Table</TabsTrigger>
+                        </TabsList>
+                        <TabsContents transition={{ duration: 0 }}>
+                            <TabsContent value={'list'}>
+                                {websiteSuggestionsStream ? (
+                                    <StreamingWebsiteSuggestionsCards
+                                        onStreamEnd={() => setWebsiteSuggestionsStream(null)}
+                                    />
+                                ) : (
+                                    <WebsiteSuggestionsCards />
+                                )}
+                            </TabsContent>
+                            <TabsContent value={'table'}>{<WebsiteComparisonTable />}</TabsContent>
+                        </TabsContents>
+                    </Tabs>
+                ) : null}
+
+                {!showTabs && <WebsiteSuggestionsExamples onExamplePress={setCurrentPrompt} />}
+                {localSuggestions.length > 0 && <LoadMoreButton handleLoadMore={handleLoadMore} />}
+            </div>
         </div>
     );
 };
