@@ -3,14 +3,15 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 import { ResponseStream } from '@/components/ui/response-stream';
-import { PartialWebsiteSuggestion, WebsiteSuggestionSchema } from '@/models/website-suggestion.model';
+import { PartialWebsiteSuggestion, WebsiteSuggestion } from '@/models/website-suggestion.model';
 import { Folder } from 'lucide-react';
-import { api } from '../../../convex/_generated/api';
-import { useConvexAuth, useMutation, useQuery } from 'convex/react';
-import { toast } from 'sonner';
+import { api } from '@convex/api';
+import { useConvexAuth, useQuery } from 'convex/react';
 import { Button } from '../ui/button';
 import { WebsitesVotes } from '@/components/website-suggestions/WebsitesVotes';
 import { AuthSensitiveWrapper } from '@/components/wrappers/AuthSensitiveWrapper';
+import { Dialog, DialogTrigger } from '../ui/dialog';
+import { BookmarkSaveModal } from '@/components/bookmarks/BookmarkSaveModal';
 
 interface SuggestionCardProps {
     websiteSuggestion?: PartialWebsiteSuggestion;
@@ -30,40 +31,10 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
         websiteSuggestion?.url &&
         `https://www.google.com/s2/favicons?domain=${encodeURIComponent(websiteSuggestion?.url)}&sz=32`;
 
-    const saveBookmark = useMutation(api.bookmarks.saveWebsiteSuggestionAsBookmark);
     const website = useQuery(
         api.websites.getWebsiteByUrl,
         websiteSuggestion?.url ? { url: websiteSuggestion.url } : 'skip',
     );
-
-    const handleSave = async () => {
-        if (
-            !isAuthenticated ||
-            !websiteSuggestion?.title ||
-            !websiteSuggestion?.url ||
-            !websiteSuggestion.suggestedFolderPath
-        )
-            return;
-        const { data: validWebsiteSuggestion, error } = WebsiteSuggestionSchema.safeParse(websiteSuggestion);
-        if (error) {
-            console.error(error);
-            return;
-        }
-
-        try {
-            const response = await saveBookmark({ websiteSuggestion: validWebsiteSuggestion });
-            console.log('Bookmark saved response:', response);
-
-            toast('Bookmark Saved', {
-                description: `“${validWebsiteSuggestion.title}” has been saved successfully.`,
-                duration: 3000,
-            });
-        } catch {
-            toast('Failed to save', {
-                description: 'Something went wrong while saving the bookmark.',
-            });
-        }
-    };
 
     return (
         <Card className='transition hover:shadow-md border border-border py-4 @xl/main:py-6'>
@@ -77,7 +48,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                             href={websiteSuggestion?.url ?? '#'}
                             target='_blank'
                             rel='noopener noreferrer'
-                            className='text-lg font-semibold text-blue-600 hover:underline'
+                            className='text-lg font-semibold text-blue-600 hover:underline text-nowrap'
                         >
                             {isStreaming ? (
                                 <ResponseStream textStream={websiteSuggestion?.title ?? ''} mode='typewriter' />
@@ -85,16 +56,21 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                                 websiteSuggestion?.title
                             )}
                         </a>
+                        {websiteSuggestion?.url && (
+                            <CopyButton variant='outline' content={websiteSuggestion?.url} size='sm' />
+                        )}
                     </div>
                     <div className='flex gap-4 @xl/main:flex-row justify-between w-full @xl/main:items-center @xl/main:justify-end'>
                         {website && <WebsitesVotes website={website} />}
-                        {websiteSuggestion?.url && (
+                        {websiteSuggestion?.url && !isStreaming && (
                             <div className='flex gap-2'>
-                                <CopyButton variant='outline' content={websiteSuggestion.url} size='md' />
                                 <AuthSensitiveWrapper>
-                                    <Button size='sm' onClick={handleSave}>
-                                        Save
-                                    </Button>
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button size='sm'>Save</Button>
+                                        </DialogTrigger>
+                                        <BookmarkSaveModal websiteSuggestion={websiteSuggestion as WebsiteSuggestion} />
+                                    </Dialog>
                                 </AuthSensitiveWrapper>
                             </div>
                         )}

@@ -1,0 +1,71 @@
+'use client';
+import { Tree, TreeItem } from '@/components/tree';
+import { SidebarMenu, SidebarMenuButton } from '@/components/animate-ui/radix/sidebar';
+import { FolderIcon, FolderOpenIcon, LinkIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { useBookmarkTree } from '@/components/bookmarks/bookmarks-tree/hooks/useBookmarkTree';
+
+export const HIGHLIGHT_CLASS = 'in-data-[search-match=true]:bg-blue-400/20!';
+
+export type BookmarkTreeFoldersProps = {
+    tree: ReturnType<typeof useBookmarkTree>['tree'];
+    navigableItems?: boolean;
+};
+
+export function BookmarkTreeFolders({ tree, navigableItems }: BookmarkTreeFoldersProps) {
+    const router = useRouter();
+
+    return (
+        <Tree indent={15} tree={tree}>
+            {tree.getItems().map((item) => {
+                const data = item.getItemData();
+                return (
+                    <TreeItem key={item.getId()} item={item} asChild>
+                        <SidebarMenu>
+                            <SidebarMenuButton
+                                tooltip={item.getItemName()}
+                                onClick={() =>
+                                    data.type === 'folder' && navigableItems && router.push('/folder/' + item.getId())
+                                }
+                                className={cn(HIGHLIGHT_CLASS, 'group flex items-center gap-2 cursor-pointer')}
+                            >
+                                <span className='flex items-center gap-2'>
+                                    {data.type === 'folder' ? (
+                                        <span className='flex items-center gap-2'>
+                                            {item.isExpanded() ? (
+                                                <FolderOpenIcon className='size-4 text-muted-foreground' />
+                                            ) : (
+                                                <FolderIcon className='size-4 text-muted-foreground' />
+                                            )}
+                                            {data.name}
+                                        </span>
+                                    ) : navigableItems ? (
+                                        <a
+                                            href={data.url}
+                                            target='_blank'
+                                            rel='noopener noreferrer'
+                                            className={cn(
+                                                HIGHLIGHT_CLASS,
+                                                'group flex items-center gap-2 px-2 py-1 rounded',
+                                            )}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <LinkIcon className='size-4 text-muted-foreground' />
+                                            {data.name}
+                                        </a>
+                                    ) : (
+                                        <span className='flex items-center gap-2'>
+                                            <LinkIcon className='size-4 text-muted-foreground' />
+                                            {data.name}
+                                        </span>
+                                    )}
+                                </span>
+                            </SidebarMenuButton>
+                        </SidebarMenu>
+                    </TreeItem>
+                );
+            })}
+        </Tree>
+    );
+}

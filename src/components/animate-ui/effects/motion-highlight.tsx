@@ -1,9 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { AnimatePresence, Transition, motion } from 'motion/react';
+import {AnimatePresence, motion, Transition} from 'motion/react';
 
-import { cn } from '@/lib/utils';
+import {cn} from '@/lib/utils';
 
 type MotionHighlightMode = 'children' | 'parent';
 
@@ -98,7 +98,7 @@ type MotionHighlightProps<T extends string> = React.ComponentProps<'div'> &
         | ControlledChildrenModeMotionHighlightProps<T>
         | UncontrolledParentModeMotionHighlightProps<T>
         | UncontrolledChildrenModeMotionHighlightProps<T>
-    );
+    ); 
 
 function MotionHighlight<T extends string>({ ref, ...props }: MotionHighlightProps<T>) {
     const {
