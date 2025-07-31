@@ -44,8 +44,6 @@ export function useBookmarkTree({ data, onFolderSelect }: UseBookmarkTreeProps) 
 
         const lastSelectedItemPath = getSelectedFolderPath(lastSelectedItem);
 
-        console.log('Selected folder path:', lastSelectedItemPath);
-
         if (onFolderSelect) {
             onFolderSelect(lastSelectedItemPath?.slice(1) ?? []);
         }
