@@ -1,11 +1,12 @@
 'use client';
 import { Tree, TreeItem } from '@/components/tree';
 import { SidebarMenu, SidebarMenuButton, useSidebar } from '@/components/animate-ui/radix/sidebar';
-import { FolderIcon, FolderOpenIcon, LinkIcon } from 'lucide-react';
+import { FolderIcon, FolderOpenIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useBookmarkTree } from '@/components/bookmarks/bookmarks-tree/hooks/useBookmarkTree';
 import { Checkbox } from '@/components/ui/checkbox';
+import { faviconUrlFromWebsiteUrl } from '@/lib/websites/website.utils';
 
 export const HIGHLIGHT_CLASS = 'in-data-[search-match=true]:bg-blue-400/20!';
 
@@ -66,18 +67,23 @@ export function BookmarkTreeFolders({ tree, navigableItems, checkableItems }: Bo
                                                 href={data.url}
                                                 target='_blank'
                                                 rel='noopener noreferrer'
-                                                className={cn(
-                                                    HIGHLIGHT_CLASS,
-                                                    'group flex items-center gap-2 px-2 py-1 rounded',
-                                                )}
+                                                className={cn('group flex items-center gap-2 px-2 py-1 rounded')}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <LinkIcon className='size-4 text-muted-foreground' />
+                                                <img
+                                                    src={faviconUrlFromWebsiteUrl(data.url)}
+                                                    alt='website-icon'
+                                                    className='w-4 h-4 rounded'
+                                                />
                                                 {data.name}
                                             </a>
                                         ) : (
                                             <span className='flex items-center gap-2'>
-                                                <LinkIcon className='size-4 text-muted-foreground' />
+                                                <img
+                                                    src={faviconUrlFromWebsiteUrl(data.url)}
+                                                    alt='website-icon'
+                                                    className='w-4 h-4 rounded'
+                                                />
                                                 {data.name}
                                             </span>
                                         )}

@@ -12,6 +12,7 @@ import { WebsitesVotes } from '@/components/website-suggestions/WebsitesVotes';
 import { AuthSensitiveWrapper } from '@/components/wrappers/AuthSensitiveWrapper';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { BookmarkSaveModal } from '@/components/bookmarks/BookmarkSaveModal';
+import { faviconUrlFromWebsiteUrl } from '@/lib/websites/website.utils';
 
 interface SuggestionCardProps {
     websiteSuggestion?: PartialWebsiteSuggestion;
@@ -27,9 +28,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
     const videoId = videoUrl?.split('v=')[1]?.split('&')[0];
     // Fallback thumbnail sizes: default → mqdefault → hqdefault
     const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
-    const faviconUrl =
-        websiteSuggestion?.url &&
-        `https://www.google.com/s2/favicons?domain=${encodeURIComponent(websiteSuggestion?.url)}&sz=32`;
+    const faviconUrl = websiteSuggestion?.url && faviconUrlFromWebsiteUrl(websiteSuggestion?.url);
 
     const website = useQuery(
         api.websites.getWebsiteByUrl,
