@@ -58,7 +58,7 @@ export function buildTreeMap(
 export const getSelectedFolderPath = (selected: ItemInstance<TreeNode>) => {
     const path: string[] = [];
 
-    let current = selected;
+    let current: ItemInstance<TreeNode> | undefined = selected;
     while (current) {
         path.unshift(current.getItemName());
         current = current.getParent();
