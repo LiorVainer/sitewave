@@ -4,6 +4,7 @@ import { getOrCreateFolderPath } from './helpers/folder.helpers';
 import { zMutation } from './helpers/zod.helpers';
 import { WebsiteSuggestionSchema } from '../src/models/website-suggestion.model';
 import { v } from 'convex/values';
+import z from 'zod';
 
 export const getUserFoldersAndBookmarksFlat = query({
     args: {},
@@ -42,17 +43,17 @@ export const getUserFoldersAndBookmarksFlat = query({
 export const saveWebsiteSuggestionAsBookmark = zMutation({
     args: {
         websiteSuggestion: WebsiteSuggestionSchema,
+        selectedFolderPath: z.optional(z.array(z.string())),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
+        const bookmarkFolderPath = args.selectedFolderPath ?? args.websiteSuggestion.suggestedFolderPath;
         if (!identity) throw new Error('Not authenticated');
 
         const userId = identity.subject;
 
         // 🗂 Upsert folder path and get final folder ID
-        const folderId = args.websiteSuggestion.suggestedFolderPath
-            ? await getOrCreateFolderPath(ctx, userId, args.websiteSuggestion.suggestedFolderPath)
-            : undefined;
+        const folderId = bookmarkFolderPath ? await getOrCreateFolderPath(ctx, userId, bookmarkFolderPath) : undefined;
 
         // 🧠 Optional: Check if bookmark exists and skip or update
 

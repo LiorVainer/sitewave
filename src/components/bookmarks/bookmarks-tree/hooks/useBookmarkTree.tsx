@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTree } from '@headless-tree/react';
 import {
+    checkboxesFeature,
     expandAllFeature,
     hotkeysCoreFeature,
     searchFeature,
@@ -10,15 +11,45 @@ import {
     syncDataLoaderFeature,
     TreeState,
 } from '@headless-tree/core';
-import { buildTreeMap } from '@/lib/tree/tree.utils';
+import { buildTreeMap, getSelectedFolderPath } from '@/lib/tree/tree.utils';
 import { FolderTreeNode, TreeNode } from '@/types/tree.types';
 import { FunctionReturnType } from 'convex/server';
 import { api } from '@convex/api';
 
-export function useBookmarkTree(data: FunctionReturnType<typeof api.bookmarks.getUserFoldersAndBookmarksFlat>) {
+export type UseBookmarkTreeProps = {
+    data: FunctionReturnType<typeof api.bookmarks.getUserFoldersAndBookmarksFlat>;
+    onFolderSelect?: (folderPath: string[]) => void;
+};
+
+export function useBookmarkTree({ data, onFolderSelect }: UseBookmarkTreeProps) {
     const [state, setState] = useState<Partial<TreeState<TreeNode>>>({});
     const [searchValue, setSearchValue] = useState('');
     const [filteredItems, setFilteredItems] = useState<string[]>([]);
+    const [selectedItems, _setSelectedItems] = useState<string[]>([]);
+
+    const setSelectedItems: Dispatch<SetStateAction<string[]>> = (value) => {
+        let newSelected: string[];
+
+        if (typeof value === 'function') {
+            const newSelected = value(selectedItems);
+            _setSelectedItems(newSelected);
+        } else {
+            newSelected = value;
+            _setSelectedItems(newSelected);
+        }
+
+        const lastSelectedItem = tree.getItems().find((item) => item.getId() === newSelected.at(-1));
+
+        if (!lastSelectedItem) return;
+
+        const lastSelectedItemPath = getSelectedFolderPath(lastSelectedItem);
+
+        console.log('Selected folder path:', lastSelectedItemPath);
+
+        if (onFolderSelect) {
+            onFolderSelect(lastSelectedItemPath?.slice(1) ?? []);
+        }
+    };
 
     const treeItems = useMemo(() => {
         if (!data) return {};
@@ -31,8 +62,9 @@ export function useBookmarkTree(data: FunctionReturnType<typeof api.bookmarks.ge
         setState,
         initialState: {
             expandedItems: ['root'],
-            selectedItems: [],
+            selectedItems,
         },
+        setSelectedItems,
         indent: 20,
         getItemName: (item) => item.getItemData().name,
         isItemFolder: (item) => item.getItemData().type === 'folder',
@@ -40,7 +72,15 @@ export function useBookmarkTree(data: FunctionReturnType<typeof api.bookmarks.ge
             getItem: (id) => treeItems[id],
             getChildren: (id) => (treeItems[id]?.type === 'folder' ? (treeItems[id] as FolderTreeNode).children : []),
         },
-        features: [syncDataLoaderFeature, selectionFeature, hotkeysCoreFeature, expandAllFeature, searchFeature],
+        canCheckFolders: true,
+        features: [
+            syncDataLoaderFeature,
+            selectionFeature,
+            hotkeysCoreFeature,
+            expandAllFeature,
+            searchFeature,
+            checkboxesFeature,
+        ],
     });
 
     useEffect(() => {
@@ -88,14 +128,38 @@ export function useBookmarkTree(data: FunctionReturnType<typeof api.bookmarks.ge
             ...prev,
             expandedItems: [...new Set([...(prev.expandedItems ?? []), ...folderIds])],
         }));
-    }, [searchValue]);
+    }, [searchValue, tree, treeItems]);
+
+    const selectedFolderPath = useMemo(() => {
+        const selected = tree.getSelectedItems();
+        console.log(
+            'Selected items:',
+            selected.map((item) => item.getItemName()),
+        );
+        if (selected.length === 0) return null;
+
+        const lastSelected = selected.at(-1);
+
+        const path: string[] = [];
+
+        let current = lastSelected;
+        while (current) {
+            path.unshift(current.getId());
+            current = current.getParent();
+        }
+
+        return path; // e.g., ['Company', 'Engineering', 'Frontend']
+    }, [tree.getSelectedItems()]);
 
     return {
         tree,
         searchValue,
         setSearchValue,
         filteredItems,
+        selectedFolderPath,
         state,
         setState,
     };
 }
+
+export type UseBookmarkTree = ReturnType<typeof useBookmarkTree>;

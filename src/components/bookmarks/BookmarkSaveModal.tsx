@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { BookmarkTree } from '@/components/bookmarks/bookmarks-tree/BookmarkTree';
 import { Folder } from 'lucide-react';
 import { GroupMotionHighlight } from '@/components/animate-ui/effects/group-motion-highlight';
+import { useState } from 'react';
 
 export type BookmarkSaveModalProps = {
     websiteSuggestion: WebsiteSuggestion;
@@ -25,6 +26,8 @@ export const BookmarkSaveModal = ({ websiteSuggestion }: BookmarkSaveModalProps)
     const { isAuthenticated } = useConvexAuth();
     const foldersAndBookmarks = useQuery(api.bookmarks.getUserFoldersAndBookmarksFlat, isAuthenticated ? {} : 'skip');
     const saveBookmark = useMutation(api.bookmarks.saveWebsiteSuggestionAsBookmark);
+    const [selectedFolderPath, setSelectedFolderPath] = useState<string[]>(websiteSuggestion.suggestedFolderPath);
+
     const handleSaveBookmark = async () => {
         if (!websiteSuggestion?.title || !websiteSuggestion?.url || !websiteSuggestion.suggestedFolderPath) return;
         const { data: validWebsiteSuggestion, error } = WebsiteSuggestionSchema.safeParse(websiteSuggestion);
@@ -34,7 +37,7 @@ export const BookmarkSaveModal = ({ websiteSuggestion }: BookmarkSaveModalProps)
             return;
         }
 
-        toast.promise(saveBookmark({ websiteSuggestion: validWebsiteSuggestion }), {
+        toast.promise(saveBookmark({ websiteSuggestion: validWebsiteSuggestion, selectedFolderPath }), {
             loading: 'Saving...',
             success: 'Bookmark saved successfully!',
             error: 'Failed to save bookmark.',
@@ -52,23 +55,28 @@ export const BookmarkSaveModal = ({ websiteSuggestion }: BookmarkSaveModalProps)
                     <DialogDescription asChild>
                         <GroupMotionHighlight>
                             <div className='px-6 py-4'>
-                                {foldersAndBookmarks && <BookmarkTree data={foldersAndBookmarks} />}
+                                {foldersAndBookmarks && (
+                                    <BookmarkTree data={foldersAndBookmarks} onFolderSelect={setSelectedFolderPath} />
+                                )}
                             </div>
                         </GroupMotionHighlight>
                     </DialogDescription>
                 </div>
-                <DialogFooter className='border-t px-6 py-4'>
-                    {websiteSuggestion?.suggestedFolderPath && websiteSuggestion?.suggestedFolderPath?.length > 0 && (
-                        <div className='flex items-center gap-1 text-xs text-purple-500'>
-                            <Folder className='w-3.5 h-3.5 shrink-0' />
-                            <span className='truncate'>{websiteSuggestion.suggestedFolderPath.join(' / ')}</span>
-                        </div>
-                    )}
-                    <DialogClose asChild>
-                        <Button type='button' onClick={handleSaveBookmark}>
-                            Save
-                        </Button>
-                    </DialogClose>
+                <DialogFooter className='border-t px-6 py-4 flex items-center justify-between w-full'>
+                    <div className='flex items-center justify-between w-full'>
+                        {websiteSuggestion?.suggestedFolderPath &&
+                            websiteSuggestion?.suggestedFolderPath?.length > 0 && (
+                                <div className='flex items-center gap-1 text-xs text-purple-500'>
+                                    <Folder className='w-3.5 h-3.5 shrink-0' />
+                                    <span className='truncate'>{selectedFolderPath.join(' / ')}</span>
+                                </div>
+                            )}
+                        <DialogClose asChild>
+                            <Button type='button' onClick={handleSaveBookmark}>
+                                Save
+                            </Button>
+                        </DialogClose>
+                    </div>
                 </DialogFooter>
             </DialogHeader>
         </DialogContent>

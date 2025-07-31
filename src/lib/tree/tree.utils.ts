@@ -1,4 +1,5 @@
 import { FolderTreeNode, TreeNode } from '@/types/tree.types';
+import { ItemInstance } from '@headless-tree/core';
 
 export function buildTreeMap(
     folders: { _id: string; name: string; parentFolderId: string | null }[],
@@ -53,3 +54,17 @@ export function buildTreeMap(
 
     return map;
 }
+
+export const getSelectedFolderPath = (selected: ItemInstance<TreeNode>) => {
+    if (selected.length === 0) return null;
+
+    const path: string[] = [];
+
+    let current = selected;
+    while (current) {
+        path.unshift(current.getItemName());
+        current = current.getParent();
+    }
+
+    return path;
+};
