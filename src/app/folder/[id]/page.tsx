@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Folder } from 'lucide-react';
 import Link from 'next/link';
@@ -8,6 +8,7 @@ import { api } from '@convex/api';
 import { useConvexAuth, useQuery } from 'convex/react';
 import { Id } from '@convex/dataModel';
 import { SignedIn } from '@clerk/nextjs';
+import { WebsiteBookmarkCard } from '@/components/websites/WebsiteBookmarkCard';
 
 export default function FolderPage() {
     const { id } = useParams();
@@ -17,6 +18,8 @@ export default function FolderPage() {
         api.bookmarks.getFolderContents,
         isAuthenticated && folderId ? { folderId: folderId } : 'skip',
     );
+
+    const router = useRouter();
 
     if (data === null) return <p className='p-6 text-red-500'>Folder not found or access denied</p>;
 
@@ -32,7 +35,7 @@ export default function FolderPage() {
                 {data?.subfolders && data?.subfolders.length > 0 && (
                     <div>
                         <h2 className='text-lg font-medium'>Subfolders</h2>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-4 mt-2'>
                             {data.subfolders.map((sub) => (
                                 <Link key={sub._id} href={`/folder/${sub._id}`}>
                                     <Card className='hover:shadow-md transition cursor-pointer'>
@@ -51,21 +54,9 @@ export default function FolderPage() {
                 {data?.bookmarks && data?.bookmarks?.length > 0 && (
                     <div>
                         <h2 className='text-lg font-medium mt-6'>Bookmarks</h2>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2'>
+                        <div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 mt-2'>
                             {data.bookmarks.map((bookmark) => (
-                                <Card key={bookmark._id} className='hover:shadow-md transition'>
-                                    <CardContent className='p-4 space-y-2'>
-                                        <a
-                                            href={bookmark.url}
-                                            target='_blank'
-                                            rel='noopener noreferrer'
-                                            className='text-blue-600 font-medium hover:underline'
-                                        >
-                                            {bookmark.title}
-                                        </a>
-                                        <p className='text-xs text-muted-foreground truncate'>{bookmark.url}</p>
-                                    </CardContent>
-                                </Card>
+                                <WebsiteBookmarkCard key={bookmark.website?.url} website={bookmark.website!} />
                             ))}
                         </div>
                     </div>

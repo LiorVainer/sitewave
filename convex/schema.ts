@@ -17,6 +17,15 @@ export default defineSchema({
                 comment: v.optional(v.string()),
             }),
         ),
+        videosOfWebsite: v.optional(
+            v.array(
+                v.object({
+                    title: v.string(),
+                    url: v.string(),
+                }),
+            ),
+        ),
+        tags: v.optional(v.array(v.string())),
     }).index('by_url', ['url']),
 
     folders: defineTable({
@@ -30,12 +39,10 @@ export default defineSchema({
 
     bookmarks: defineTable({
         userId: v.string(),
-        title: v.string(),
-        url: v.string(),
-        description: v.string(),
-        videosOfWebsite: v.optional(v.array(v.object({ title: v.string(), url: v.string() }))),
+        websiteId: v.optional(v.id('websites')), // ✅ Reference to websites table
         folderId: v.optional(v.id('folders')),
     })
         .index('by_userId', ['userId'])
-        .index('by_folderId', ['folderId']),
+        .index('by_folderId', ['folderId'])
+        .index('by_websiteId', ['websiteId']),
 });

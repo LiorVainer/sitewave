@@ -6,13 +6,13 @@ import { ResponseStream } from '@/components/ui/response-stream';
 import { PartialWebsiteSuggestion, WebsiteSuggestion } from '@/models/website-suggestion.model';
 import { Folder } from 'lucide-react';
 import { api } from '@convex/api';
-import { useConvexAuth, useQuery } from 'convex/react';
+import { useQuery } from 'convex/react';
 import { Button } from '../ui/button';
 import { WebsitesVotes } from '@/components/website-suggestions/WebsitesVotes';
 import { AuthSensitiveWrapper } from '@/components/wrappers/AuthSensitiveWrapper';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { BookmarkSaveModal } from '@/components/bookmarks/BookmarkSaveModal';
-import { faviconUrlFromWebsiteUrl } from '@/lib/websites/website.utils';
+import { WebsiteLogo } from '@/components/websites/WebsiteLogo';
 
 interface SuggestionCardProps {
     websiteSuggestion?: PartialWebsiteSuggestion;
@@ -23,12 +23,10 @@ const RESPONSE_STREAM_SPEED = 30; // Adjust speed as needed
 
 export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }: SuggestionCardProps) => {
     const video = websiteSuggestion?.videosOfWebsite?.[0];
-    const { isAuthenticated } = useConvexAuth();
     const videoUrl = video?.url;
     const videoId = videoUrl?.split('v=')[1]?.split('&')[0];
     // Fallback thumbnail sizes: default → mqdefault → hqdefault
     const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
-    const faviconUrl = websiteSuggestion?.url && faviconUrlFromWebsiteUrl(websiteSuggestion?.url);
 
     const website = useQuery(
         api.websites.getWebsiteByUrl,
@@ -40,9 +38,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
             <CardContent className='space-y-4 px-4 @xl/main:px-6'>
                 <div className='flex flex-col-reverse gap-6 @xl/main:flex-row @xl/main:justify-between items-start'>
                     <div className='flex items-center gap-3'>
-                        {websiteSuggestion?.url && (
-                            <img src={faviconUrl} alt='website-icon' className='w-6 h-6 rounded' />
-                        )}
+                        {websiteSuggestion?.url && <WebsiteLogo url={websiteSuggestion?.url} />}
                         <a
                             href={websiteSuggestion?.url ?? '#'}
                             target='_blank'

@@ -24,18 +24,24 @@ export const getUserFoldersAndBookmarksFlat = query({
             .withIndex('by_userId', (q) => q.eq('userId', userId))
             .collect();
 
+        // Populate each bookmark with its website
+        const bookmarksWithWebsites = await Promise.all(
+            bookmarks.map(async (bookmark) => {
+                const website = bookmark.websiteId ? await ctx.db.get(bookmark.websiteId) : null;
+                return {
+                    ...bookmark,
+                    website,
+                };
+            }),
+        );
+
         return {
             folders: folders.map((f) => ({
                 _id: f._id,
                 name: f.name,
                 parentFolderId: f.parentFolderId ?? null,
             })),
-            bookmarks: bookmarks.map((b) => ({
-                _id: b._id,
-                title: b.title,
-                url: b.url,
-                folderId: b.folderId ?? null,
-            })),
+            bookmarks: bookmarksWithWebsites,
         };
     },
 });
@@ -55,14 +61,38 @@ export const saveWebsiteSuggestionAsBookmark = zMutation({
         // 🗂 Upsert folder path and get final folder ID
         const folderId = bookmarkFolderPath ? await getOrCreateFolderPath(ctx, userId, bookmarkFolderPath) : undefined;
 
-        // 🧠 Optional: Check if bookmark exists and skip or update
+        // 🌐 Upsert website
+        const existingWebsite = await ctx.db
+            .query('websites')
+            .withIndex('by_url', (q) => q.eq('url', args.websiteSuggestion.url))
+            .unique();
+
+        const existingBookmark = await ctx.db
+            .query('bookmarks')
+            .withIndex('by_websiteId', (q) => q.eq('websiteId', existingWebsite?._id))
+            .first();
+
+        if (existingBookmark)
+            return await ctx.db.patch(existingBookmark._id, {
+                folderId,
+            });
+
+        const websiteId = existingWebsite
+            ? existingWebsite._id
+            : await ctx.db.insert('websites', {
+                  url: args.websiteSuggestion.url,
+                  name: args.websiteSuggestion.title,
+                  description: args.websiteSuggestion.description,
+                  upvotes: [],
+                  downvotes: [],
+                  ratings: [],
+                  videosOfWebsite: args.websiteSuggestion.videosOfWebsite ?? [],
+                  tags: args.websiteSuggestion.tags ?? [],
+              });
 
         await ctx.db.insert('bookmarks', {
             userId,
-            title: args.websiteSuggestion.title,
-            url: args.websiteSuggestion.url,
-            description: args.websiteSuggestion.description,
-            videosOfWebsite: args.websiteSuggestion.videosOfWebsite,
+            websiteId,
             folderId,
         });
     },
@@ -88,10 +118,21 @@ export const getFolderContents = query({
             .filter((q) => q.eq(q.field('folderId'), folderId))
             .collect();
 
+        // Populate each bookmark with its website
+        const bookmarksWithWebsites = await Promise.all(
+            bookmarks.map(async (bookmark) => {
+                const website = bookmark.websiteId ? await ctx.db.get(bookmark.websiteId) : null;
+                return {
+                    ...bookmark,
+                    website,
+                };
+            }),
+        );
+
         return {
             folder,
             subfolders,
-            bookmarks,
+            bookmarks: bookmarksWithWebsites,
         };
     },
 });

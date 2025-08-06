@@ -1,9 +1,10 @@
 import { FolderTreeNode, TreeNode } from '@/types/tree.types';
 import { ItemInstance } from '@headless-tree/core';
+import { PopulatedBookmarkDocument } from '@/data/data.types';
 
 export function buildTreeMap(
     folders: { _id: string; name: string; parentFolderId: string | null }[],
-    bookmarks: { _id: string; title: string; url: string; folderId: string | null }[],
+    bookmarks: PopulatedBookmarkDocument[],
 ): Record<string, TreeNode> {
     const map: Record<string, TreeNode> = {};
     const childrenMap: Record<string, string[]> = {};
@@ -27,9 +28,9 @@ export function buildTreeMap(
         const bookmarkId = `bookmark-${bookmark._id}`;
         map[bookmarkId] = {
             id: bookmarkId,
-            name: bookmark.title,
+            name: bookmark.website!.name,
             type: 'bookmark',
-            url: bookmark.url,
+            url: bookmark.website!.url,
         };
 
         const parentId = bookmark.folderId ?? 'root';

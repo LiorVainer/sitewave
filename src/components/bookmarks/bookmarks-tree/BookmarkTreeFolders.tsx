@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useBookmarkTree } from '@/components/bookmarks/bookmarks-tree/hooks/useBookmarkTree';
 import { Checkbox } from '@/components/ui/checkbox';
-import { faviconUrlFromWebsiteUrl } from '@/lib/websites/website.utils';
+import { WebsiteLogo } from '@/components/websites/WebsiteLogo';
 
 export const HIGHLIGHT_CLASS = 'in-data-[search-match=true]:bg-blue-400/20!';
 
@@ -70,20 +70,12 @@ export function BookmarkTreeFolders({ tree, navigableItems, checkableItems }: Bo
                                                 className={cn('group flex items-center gap-2 px-2 py-1 rounded')}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <img
-                                                    src={faviconUrlFromWebsiteUrl(data.url)}
-                                                    alt='website-icon'
-                                                    className='w-4 h-4 rounded'
-                                                />
+                                                <WebsiteLogo url={data.url} className='w-4 h-4 rounded' />
                                                 {data.name}
                                             </a>
                                         ) : (
                                             <span className='flex items-center gap-2'>
-                                                <img
-                                                    src={faviconUrlFromWebsiteUrl(data.url)}
-                                                    alt='website-icon'
-                                                    className='w-4 h-4 rounded'
-                                                />
+                                                <WebsiteLogo url={data.url} className='w-4 h-4 rounded' />
                                                 {data.name}
                                             </span>
                                         )}
