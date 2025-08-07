@@ -25,7 +25,7 @@ export default function FolderPage() {
 
     return (
         <SignedIn>
-            <div className='p-4 space-y-6 lg:p-12 2xl:p-24 flex flex-col'>
+            <div className='p-4 lg:p-12 2xl:p-24 flex flex-col gap-4'>
                 <h1 className='text-2xl font-semibold flex items-center gap-2'>
                     <Folder className='w-6 h-6' />
                     {data?.folder?.name ?? 'Loading...'}
@@ -53,7 +53,7 @@ export default function FolderPage() {
                 {/* Bookmarks */}
                 {data?.bookmarks && data?.bookmarks?.length > 0 && (
                     <div>
-                        <h2 className='text-lg font-medium mt-6'>Bookmarks</h2>
+                        <h2 className='text-lg font-medium'>Bookmarks</h2>
                         <div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 mt-2'>
                             {data.bookmarks.map((bookmark) => (
                                 <WebsiteBookmarkCard key={bookmark.website?.url} website={bookmark.website!} />

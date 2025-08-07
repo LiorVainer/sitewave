@@ -39,11 +39,11 @@ export const WebsiteSuggestionsChat = () => {
     const showTabs = websiteSuggestionsStream || localSuggestions.length > 0;
     const isMobile = useIsMobile();
     return (
-        <div className='flex flex-col justify-end space-y-6  px-0 w-full @xl/main:px-6 @4xl/main:px-[5cqw] @5xl/main:px-[15cqw] @7xl/main:px-[10cqw] lg:py-16 flex-1 overflow-hidden min-h-0'>
+        <div className='flex flex-col px-0 w-full @xl/main:px-6 @4xl/main:px-[5cqw] @5xl/main:px-[10cqw] @6xl/main:px-[15cqw] lg:py-10 overflow-hidden min-h-0 h-full gap-4'>
             <Toaster />
             <h1 className='text-2xl font-semibold'>Discover Websites</h1>
 
-            <div className='flex-1 flex flex-col gap-8 justify-between overflow-hidden'>
+            <div className='flex-1 flex flex-col gap-4 justify-between overflow-hidden'>
                 {showTabs ? (
                     <Tabs className='w-full overflow-hidden' defaultValue={'list'}>
                         <TabsList className='w-full'>
@@ -54,7 +54,7 @@ export const WebsiteSuggestionsChat = () => {
                             className='overflow-hidden flex flex-col justify-center gap-4'
                             transition={{ duration: 0 }}
                         >
-                            <TabsContent className='max-h-auto overflow-auto' value={'list'}>
+                            <TabsContent className='flex-1 min-h-0 overflow-auto' value={'list'}>
                                 {websiteSuggestionsStream ? (
                                     <StreamingWebsiteSuggestionsCards
                                         onStreamEnd={() => setWebsiteSuggestionsStream(null)}
@@ -72,13 +72,16 @@ export const WebsiteSuggestionsChat = () => {
                 ) : null}
 
                 {isMobile ? (
-                    <div className='flex flex-col overflow-hidden min-h-0 gap-2'>
-                        {!showTabs && (
-                            <div className='overflow-y-auto'>
-                                <WebsiteSuggestionsExamples onExamplePress={setCurrentPrompt} />
-                            </div>
-                        )}
-                        <div className='sticky bottom-0 pt-2 pb-safe border-t'>
+                    <div className='flex flex-col'>
+                        <div className='flex-1 min-h-0 overflow-auto'>
+                            {!showTabs && (
+                                <div className='overflow-y-auto'>
+                                    <WebsiteSuggestionsExamples onExamplePress={setCurrentPrompt} />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className='flex-none border-t pt-2 pb-safe'>
                             <WebsiteSuggestionInput
                                 value={currentPrompt}
                                 setValue={setCurrentPrompt}
