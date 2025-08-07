@@ -25,7 +25,7 @@ export default function FolderPage() {
 
     return (
         <SignedIn>
-            <div className='p-6 space-y-6'>
+            <div className='p-4 space-y-6 lg:p-12 2xl:p-24 flex flex-col'>
                 <h1 className='text-2xl font-semibold flex items-center gap-2'>
                     <Folder className='w-6 h-6' />
                     {data?.folder?.name ?? 'Loading...'}

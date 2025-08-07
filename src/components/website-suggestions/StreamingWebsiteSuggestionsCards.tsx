@@ -29,7 +29,7 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
     }, [isLoading, lastSuggestion]);
 
     return (
-        <div className='flex flex-col gap-6'>
+        <div className='flex flex-col-reverse gap-6'>
             {isLoading && (
                 <div className='text-sm text-gray-500 flex items-center justify-between'>
                     <p>Generating suggestions...</p>

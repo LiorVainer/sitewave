@@ -48,6 +48,9 @@ const config: Config = {
                 lg: 'var(--radius)',
                 xl: 'calc(var(--radius) + 4px)',
             },
+            spacing: {
+                safe: 'env(safe-area-inset-bottom)',
+            },
         },
     },
     plugins: [require('tailwindcss-animate')],
