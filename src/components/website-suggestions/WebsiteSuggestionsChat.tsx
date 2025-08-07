@@ -9,6 +9,7 @@ import { WebsiteSuggestionsExamples } from '@/components/website-suggestions/Web
 import { Toaster } from '@/components/ui/sonner';
 import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 export const WebsiteSuggestionsChat = () => {
     const {
@@ -41,9 +42,13 @@ export const WebsiteSuggestionsChat = () => {
     return (
         <div className='flex flex-col px-0 w-full @xl/main:px-6 @4xl/main:px-[5cqw] @5xl/main:px-[10cqw] @6xl/main:px-[15cqw] lg:py-10 overflow-hidden min-h-0 h-full gap-4'>
             <Toaster />
-            <h1 className='text-2xl font-semibold'>Discover Websites</h1>
-
-            <div className='flex-1 flex flex-col gap-4 justify-between overflow-hidden'>
+            <div
+                className={cn(
+                    'flex-1 flex flex-col gap-4 justify-center overflow-hidden',
+                    localSuggestions.length > 0 && 'justify-between',
+                    // isMobile && 'justify-end',
+                )}
+            >
                 {showTabs ? (
                     <Tabs className='w-full overflow-hidden' defaultValue={'list'}>
                         <TabsList className='w-full'>
@@ -72,7 +77,8 @@ export const WebsiteSuggestionsChat = () => {
                 ) : null}
 
                 {isMobile ? (
-                    <div className='flex flex-col'>
+                    <div className={cn('flex flex-col gap-4', !showTabs && 'overflow-hidden')}>
+                        <h1 className='text-2xl font-semibold'>Discover Websites</h1>
                         <div className='flex-1 min-h-0 overflow-auto'>
                             {!showTabs && (
                                 <div className='overflow-y-auto'>
@@ -93,7 +99,9 @@ export const WebsiteSuggestionsChat = () => {
                         </div>
                     </div>
                 ) : (
-                    <>
+                    <div className='flex flex-col gap-4'>
+                        <h1 className='text-2xl font-semibold'>Discover Websites</h1>
+
                         <div className='flex gap-2 items-stretch'>
                             <WebsiteSuggestionInput
                                 value={currentPrompt}
@@ -109,7 +117,7 @@ export const WebsiteSuggestionsChat = () => {
                                 <WebsiteSuggestionsExamples onExamplePress={setCurrentPrompt} />
                             </div>
                         )}
-                    </>
+                    </div>
                 )}
             </div>
         </div>
