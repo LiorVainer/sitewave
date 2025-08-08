@@ -3,6 +3,8 @@ import { WebsiteSuggestionCardSkeleton } from '@/components/website-suggestions/
 import { useStreamableValue } from 'ai/rsc';
 import { useEffect } from 'react';
 import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
+import { WebsiteSuggestionWithMandatoryFields } from '@/models/website-suggestion.model';
+import { TextShimmer } from '../ui/text-shimmer';
 
 export interface StreamingWebsiteSuggestionsCardsProps {
     onStreamEnd?: () => void;
@@ -22,14 +24,16 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
         }
         if (!lastSuggestion || !isLoading) return;
 
-        addSuggestion(lastSuggestion);
+        if (lastSuggestion.title && lastSuggestion.url && lastSuggestion.description) {
+            addSuggestion(lastSuggestion as WebsiteSuggestionWithMandatoryFields);
+        }
     }, [isLoading, lastSuggestion]);
 
     return (
-        <div className='flex flex-col gap-6'>
+        <div className='flex flex-col-reverse gap-6'>
             {isLoading && (
                 <div className='text-sm text-gray-500 flex items-center justify-between'>
-                    <p>Generating suggestions...</p>
+                    <TextShimmer>Generating suggestions...</TextShimmer>
                     <button className='text-sm underline text-red-500' type='button' onClick={() => stop()}>
                         Stop
                     </button>
@@ -37,7 +41,7 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
             )}
             <div className='grid gap-6'>
                 {localSuggestions?.map((website, index) => (
-                    <WebsiteSuggestionCard isStreaming key={index} website={website} />
+                    <WebsiteSuggestionCard isStreaming key={index} websiteSuggestion={website} />
                 ))}
             </div>
 

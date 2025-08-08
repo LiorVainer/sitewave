@@ -6,7 +6,5 @@ export type PageWrapperProps = {
 };
 
 export const PageWrapper = ({ children, className }: PageWrapperProps) => (
-    <div className={cn('bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-[100vh]', className)}>
-        {children}
-    </div>
+    <div className={cn('bg-gradient-to-br from-blue-50 via-white to-purple-50', className)}>{children}</div>
 );

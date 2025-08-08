@@ -93,7 +93,7 @@ export function WebsiteComparisonTable() {
     const columnCount = Math.max(5, columns.length || 0);
 
     return (
-        <div className='space-y-4'>
+        <div className='space-y-4 bg-white rounded-lg shadow-md border border-border'>
             {isLoadingComparison && (
                 <Table>
                     <TableHeader>
@@ -120,15 +120,12 @@ export function WebsiteComparisonTable() {
             )}
 
             {!isLoadingComparison && columns.length > 0 && rows.length > 0 && (
-                <Table className='bg-white rounded-lg table-auto'>
+                <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead
-                                        key={header.id}
-                                        className={cn(header.column.columnDef.meta?.className, cellClassName)}
-                                    >
+                                    <TableHead key={header.id} className={cn(headerClassName)}>
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}
@@ -142,8 +139,8 @@ export function WebsiteComparisonTable() {
                                     <TableCell
                                         key={cell.id}
                                         className={cn(
-                                            cell.column.columnDef.meta?.className,
                                             cell.column.getIsPinned() === 'left' ? 'sticky left-0 z-10 bg-white' : '',
+                                            cell.column.columnDef.meta?.className,
                                             cellClassName,
                                         )}
                                     >

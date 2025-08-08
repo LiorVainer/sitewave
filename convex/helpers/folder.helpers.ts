@@ -5,6 +5,7 @@ export async function getOrCreateFolderPath(
     ctx: { db: DatabaseWriter; auth: any },
     userId: string,
     folderPath: string[],
+    color: string,
 ) {
     let parentFolderId: Id<'folders'> | undefined;
 
@@ -22,6 +23,7 @@ export async function getOrCreateFolderPath(
                   userId,
                   name,
                   parentFolderId,
+                  color,
               });
     }
 

@@ -118,12 +118,27 @@ export const staticSharedComparisonColumns: ColumnDef<FullDynamicZodType>[] = [
                     href={value}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='text-blue-600 underline text-sm break-all'
+                    className='text-blue-600 underline text-sm whitespace-nowrap'
                 >
                     {value}
                 </a>
             );
         },
         enableSorting: false,
+        meta: {
+            className: 'w-auto whitespace-nowrap',
+        },
+    }),
+    columnHelper.accessor('description', {
+        id: 'description',
+        header: 'Description',
+        cell: ({ getValue }) => {
+            const value = getValue() as string;
+            return <p className='text-sm text-gray-700'>{value}</p>;
+        },
+        enableSorting: false,
+        meta: {
+            className: '',
+        },
     }),
 ];
