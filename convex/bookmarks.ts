@@ -36,11 +36,7 @@ export const getUserFoldersAndBookmarksFlat = query({
         );
 
         return {
-            folders: folders.map((f) => ({
-                _id: f._id,
-                name: f.name,
-                parentFolderId: f.parentFolderId ?? null,
-            })),
+            folders,
             bookmarks: bookmarksWithWebsites,
         };
     },
@@ -50,6 +46,7 @@ export const saveWebsiteSuggestionAsBookmark = zMutation({
     args: {
         websiteSuggestion: WebsiteSuggestionSchema,
         selectedFolderPath: z.optional(z.array(z.string())),
+        selectedFolderColor: z.string(),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
@@ -59,7 +56,9 @@ export const saveWebsiteSuggestionAsBookmark = zMutation({
         const userId = identity.subject;
 
         // 🗂 Upsert folder path and get final folder ID
-        const folderId = bookmarkFolderPath ? await getOrCreateFolderPath(ctx, userId, bookmarkFolderPath) : undefined;
+        const folderId = bookmarkFolderPath
+            ? await getOrCreateFolderPath(ctx, userId, bookmarkFolderPath, args.selectedFolderColor)
+            : undefined;
 
         // 🌐 Upsert website
         const existingWebsite = await ctx.db

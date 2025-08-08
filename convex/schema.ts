@@ -31,6 +31,7 @@ export default defineSchema({
     folders: defineTable({
         userId: v.string(),
         name: v.string(),
+        color: v.string(),
         parentFolderId: v.optional(v.id('folders')),
     })
         .index('by_userId', ['userId'])

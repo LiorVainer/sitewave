@@ -10,6 +10,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { WebsiteSuggestionInput } from '@/components/website-suggestions/WebsiteSuggestionInput';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 export const WebsiteSuggestionsChat = () => {
     const {
@@ -46,7 +47,7 @@ export const WebsiteSuggestionsChat = () => {
                 className={cn(
                     'flex-1 flex flex-col gap-4 justify-center overflow-hidden',
                     localSuggestions.length > 0 && 'justify-between',
-                    // isMobile && 'justify-end',
+                    isMobile && 'justify-end',
                 )}
             >
                 {showTabs ? (
@@ -78,7 +79,7 @@ export const WebsiteSuggestionsChat = () => {
 
                 {isMobile ? (
                     <div className={cn('flex flex-col gap-4', !showTabs && 'overflow-hidden')}>
-                        <h1 className='text-2xl font-semibold'>Discover Websites</h1>
+                        {!showTabs && <h1 className='text-2xl font-semibold'>Discover Websites</h1>}
                         <div className='flex-1 min-h-0 overflow-auto'>
                             {!showTabs && (
                                 <div className='overflow-y-auto'>
@@ -87,7 +88,12 @@ export const WebsiteSuggestionsChat = () => {
                             )}
                         </div>
 
-                        <div className='flex-none border-t pt-2 pb-safe'>
+                        <motion.div
+                            layout
+                            transition={{ type: 'spring', stiffness: 500, damping: 30, duration: 1 }}
+                            className='flex-none border-t pt-2 pb-safe'
+                        >
+                            {' '}
                             <WebsiteSuggestionInput
                                 value={currentPrompt}
                                 setValue={setCurrentPrompt}
@@ -96,24 +102,28 @@ export const WebsiteSuggestionsChat = () => {
                                 placeholder='e.g. Best tools for productivity'
                                 className='w-full'
                             />
-                        </div>
+                        </motion.div>
                     </div>
                 ) : (
                     <div className='flex flex-col gap-4'>
-                        <h1 className='text-2xl font-semibold'>Discover Websites</h1>
+                        {!showTabs && <h1 className='text-2xl font-semibold'>Discover Websites</h1>}
 
-                        <div className='flex gap-2 items-stretch'>
+                        <motion.div
+                            layout
+                            transition={{ type: 'spring', stiffness: 500, damping: 30, duration: 1 }}
+                            className='flex gap-2 items-stretch'
+                        >
                             <WebsiteSuggestionInput
                                 value={currentPrompt}
                                 setValue={setCurrentPrompt}
                                 onSubmit={handleSubmit}
                                 clearSuggestions={clearSuggestions}
                                 placeholder='e.g. Best tools for productivity'
-                                className='w-full '
+                                className='w-full'
                             />
-                        </div>
+                        </motion.div>
                         {!showTabs && (
-                            <div className='overflow-y-auto'>
+                            <div className='overflow-auto'>
                                 <WebsiteSuggestionsExamples onExamplePress={setCurrentPrompt} />
                             </div>
                         )}

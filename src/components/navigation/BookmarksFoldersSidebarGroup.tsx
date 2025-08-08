@@ -1,3 +1,5 @@
+'use client';
+
 import { useQuery } from 'convex/react';
 import { SidebarGroup, SidebarGroupLabel } from '../animate-ui/radix/sidebar';
 import { BookmarkTree } from '@/components/bookmarks/bookmarks-tree/BookmarkTree';

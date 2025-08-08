@@ -120,7 +120,7 @@ export const AppSidebar = ({
     if (!activeTeam) return null;
 
     return (
-        <SidebarProvider className='overflow-hidden min-h-0'>
+        <SidebarProvider className='overflow-hidden min-h-0 h-screen'>
             <Sidebar collapsible='icon'>
                 <SidebarHeader>
                     {/* Team Switcher */}
@@ -228,8 +228,8 @@ export const AppSidebar = ({
             </Sidebar>
 
             <SidebarInset className='h-screen'>
-                <header className='flex sticky top-0 z-30 bg-white h-16 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
-                    <div className='flex items-center gap-2'>
+                <header className='flex sticky top-0 z-30 bg-white h-16 min-h-0 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
+                    <div className='flex items-center gap-2 min-h-0'>
                         <SidebarTrigger className='-ml-1' />
                         <Separator orientation='vertical' className='mr-2 h-4' />
                         <Breadcrumb>
@@ -249,7 +249,7 @@ export const AppSidebar = ({
                         </Breadcrumb>
                     </div>
                 </header>
-                <PageWrapper className='flex flex-col gap-4 p-4 pt-0 h-full w-full md:min-h-min @container/main overflow-hidden min-h-0'>
+                <PageWrapper className='flex flex-col gap-4 p-4 pt-0 h-full w-full min-h-0 md:min-h-min @container/main overflow-hidden min-h-0'>
                     <WebsiteSuggestionsProvider>{children}</WebsiteSuggestionsProvider>
                 </PageWrapper>
             </SidebarInset>

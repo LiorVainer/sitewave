@@ -1,9 +1,10 @@
 import { FolderTreeNode, TreeNode } from '@/types/tree.types';
 import { ItemInstance } from '@headless-tree/core';
 import { PopulatedBookmarkDocument } from '@/data/data.types';
+import { Doc } from '@convex/dataModel';
 
 export function buildTreeMap(
-    folders: { _id: string; name: string; parentFolderId: string | null }[],
+    folders: Doc<'folders'>[],
     bookmarks: PopulatedBookmarkDocument[],
 ): Record<string, TreeNode> {
     const map: Record<string, TreeNode> = {};
@@ -12,8 +13,7 @@ export function buildTreeMap(
     // Add folders
     for (const folder of folders) {
         map[folder._id] = {
-            id: folder._id,
-            name: folder.name,
+            ...folder,
             type: 'folder',
             children: [],
         };
@@ -27,7 +27,7 @@ export function buildTreeMap(
     for (const bookmark of bookmarks) {
         const bookmarkId = `bookmark-${bookmark._id}`;
         map[bookmarkId] = {
-            id: bookmarkId,
+            _id: bookmarkId,
             name: bookmark.website!.name,
             type: 'bookmark',
             url: bookmark.website!.url,
@@ -40,10 +40,11 @@ export function buildTreeMap(
 
     // Inject synthetic root node
     map['root'] = {
-        id: 'root',
+        _id: 'root',
         name: 'All Folders',
         type: 'folder',
         children: childrenMap['root'] ?? [],
+        color: '',
     };
 
     // Attach children

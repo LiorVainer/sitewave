@@ -27,7 +27,7 @@ export function BookmarkTree({ data, navigableItems, onFolderSelect }: BookmarkT
     if (hideComponent) return null;
 
     return (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 w-full'>
             <BookmarkTreeToolbar onExpand={tree.expandAll} onCollapse={tree.collapseAll} />
             <BookmarkTreeSearch
                 value={searchValue}
