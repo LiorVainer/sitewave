@@ -1,13 +1,22 @@
-'use client';
 import { Tree, TreeItem } from '@/components/tree';
 import { SidebarMenu, SidebarMenuButton, useSidebar } from '@/components/animate-ui/radix/sidebar';
-import { ChevronRight, FolderIcon, FolderOpenIcon, LinkIcon } from 'lucide-react';
+import { ChevronRight, Edit, FolderIcon, FolderOpenIcon, LinkIcon, MoreHorizontal, Trash } from 'lucide-react'; // Import MoreHorizontal for three dots
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useBookmarkTree } from '@/components/bookmarks/bookmarks-tree/hooks/useBookmarkTree';
 import { Checkbox } from '@/components/ui/checkbox';
 import { WebsiteLogo } from '@/components/websites/WebsiteLogo';
 import { motion } from 'framer-motion';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuTrigger,
+} from '@/components/animate-ui/radix/dropdown-menu';
 
 export const HIGHLIGHT_CLASS = 'in-data-[search-match=true]:bg-blue-400/20!';
 export const INDENT = 15;
@@ -52,7 +61,10 @@ export function BookmarkTreeFolders({ tree, navigableItems, checkableItems }: Bo
                                         navigableItems &&
                                         router.push('/folder/' + item.getId())
                                     }
-                                    className={cn(HIGHLIGHT_CLASS, 'group flex items-center gap-2 cursor-pointer')}
+                                    className={cn(
+                                        HIGHLIGHT_CLASS,
+                                        'group flex items-center gap-2 cursor-pointer relative',
+                                    )}
                                 >
                                     <span className='flex items-center gap-2'>
                                         {data.type === 'folder' ? (
@@ -103,6 +115,38 @@ export function BookmarkTreeFolders({ tree, navigableItems, checkableItems }: Bo
                                             </span>
                                         )}
                                     </span>
+
+                                    {/* Three dots button visible only when the current item is hovered */}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <div className='absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity'>
+                                                <MoreHorizontal className='w-5 h-5 text-muted-foreground' />
+                                            </div>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className='w-56'>
+                                            <DropdownMenuLabel>{data.name}</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuGroup>
+                                                {/* Edit option */}
+                                                <DropdownMenuItem>
+                                                    <Edit className='w-4 h-4 text-muted-foreground' />
+                                                    <span>Edit</span>
+                                                    <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuGroup>
+
+                                            <DropdownMenuSeparator />
+
+                                            <DropdownMenuGroup>
+                                                {/* Delete option in red */}
+                                                <DropdownMenuItem className='text-red-600'>
+                                                    <Trash className='w-4 h-4 text-red-600' />
+                                                    <span>Delete</span>
+                                                    <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuGroup>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </SidebarMenuButton>
                             </SidebarMenu>
                         </TreeItem>
