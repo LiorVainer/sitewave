@@ -37,10 +37,10 @@ import { Bot, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } f
 import { useIsMobile } from '@/hooks/use-mobile';
 import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
 import { NavUser } from '@/components/navigation/NavUser';
-import { PageWrapper } from '@/components/layout/PageWrapper';
 import { BookmarksFoldersSidebarGroup } from '@/components/navigation/BookmarksFoldersSidebarGroup';
 import { SignedIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { PageWrapper } from '../layout/PageWrapper';
 
 const DATA = {
     user: {
@@ -120,8 +120,8 @@ export const AppSidebar = ({
     if (!activeTeam) return null;
 
     return (
-        <SidebarProvider className='overflow-hidden min-h-0 h-screen'>
-            <Sidebar collapsible='icon'>
+        <SidebarProvider className='h-full'>
+            <Sidebar collapsible='icon' className='h-full'>
                 <SidebarHeader>
                     {/* Team Switcher */}
                     <SidebarMenu>
@@ -227,8 +227,8 @@ export const AppSidebar = ({
                 <SidebarRail />
             </Sidebar>
 
-            <SidebarInset className='h-screen'>
-                <header className='flex sticky top-0 z-30 bg-white h-16 min-h-0 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
+            <SidebarInset className='overflow-hidden min-h-0 h-full'>
+                <header className='flex top-0 z-30 bg-white h-16 block min-h-0 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
                     <div className='flex items-center gap-2 min-h-0'>
                         <SidebarTrigger className='-ml-1' />
                         <Separator orientation='vertical' className='mr-2 h-4' />
@@ -249,9 +249,11 @@ export const AppSidebar = ({
                         </Breadcrumb>
                     </div>
                 </header>
-                <PageWrapper className='flex flex-col gap-4 p-4 pt-0 h-full w-full min-h-0 md:min-h-min @container/main overflow-hidden min-h-0'>
-                    <WebsiteSuggestionsProvider>{children}</WebsiteSuggestionsProvider>
-                </PageWrapper>
+                <WebsiteSuggestionsProvider>
+                    <PageWrapper className='flex h-full @container/main overflow-hidden flex-col gap-4 p-4'>
+                        {children}
+                    </PageWrapper>
+                </WebsiteSuggestionsProvider>
             </SidebarInset>
         </SidebarProvider>
     );

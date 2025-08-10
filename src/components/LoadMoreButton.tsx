@@ -1,6 +1,7 @@
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ChevronDown } from 'lucide-react'; // Import ChevronDown icon to indicate more content
 
 interface LoadMoreButtonProps {
     handleLoadMore: (amount: number) => void;
@@ -13,18 +14,11 @@ export const LoadMoreButton = ({ handleLoadMore, label = 'Load More Suggestions'
 
     return isMobile ? (
         <Button variant={'gradient'} className={'w-full'} onClick={() => handleLoadMore(5)}>
-            {label}
+            {label} <ChevronDown size={16} />
         </Button>
     ) : (
-        <button
-            className={cn(
-                'text-sm text-gray-500 underline hover:text-gray-700 hover:cursor-pointer transition-all duration-200',
-                className,
-            )}
-            type='button'
-            onClick={() => handleLoadMore(5)}
-        >
-            Load More Suggestions
-        </button>
+        <Button className={cn('font-thin', className)} type='button' onClick={() => handleLoadMore(5)}>
+            {label} <ChevronDown size={20} />
+        </Button>
     );
 };
