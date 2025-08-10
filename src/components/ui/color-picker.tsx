@@ -148,7 +148,7 @@ export const ColorPicker = ({
                         <ColorPickerAlpha />
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-between">
                     <ColorPickerOutput />
                     <ColorPickerFormat />
                 </div>
@@ -422,7 +422,7 @@ export const ColorPickerFormat = ({ className, ...props }: React.HTMLAttributes<
         const b = parseInt(hex.slice(5, 7), 16)
 
         return (
-            <div className={cn_util('flex items-center gap-1', className)} {...props}>
+            <div className={cn_util('flex flex-wrap justify-end items-center gap-1', className)} {...props}>
                 <Input type="text" value={r} readOnly className="h-8 w-16 text-xs" />
                 <Input type="text" value={g} readOnly className="h-8 w-16 text-xs" />
                 <Input type="text" value={b} readOnly className="h-8 w-16 text-xs" />
@@ -438,7 +438,7 @@ export const ColorPickerFormat = ({ className, ...props }: React.HTMLAttributes<
 
     if (mode === 'hsl') {
         return (
-            <div className={cn_util('flex items-center gap-1', className)} {...props}>
+            <div className={cn_util('flex flex-wrap justify-end items-center gap-1', className)} {...props}>
                 <Input
                     type="text"
                     value={Math.round(hue)}
