@@ -26,7 +26,7 @@ export const WebsiteBookmarkCard = ({ website }: WebsiteBookmarkCardProps) => {
     return (
         <Card className='transition hover:shadow-md border border-border py-4 @xl/main:py-6'>
             <CardContent className='space-y-4 px-4 @xl/main:px-6'>
-                <div className='flex flex-row gap-6 @xl/main:flex-row justify-between items-start '>
+                <div className='flex flex-col-reverse gap-6 @xl/main:flex-row @xl/main:justify-between items-start'>
                     <div className='flex items-center gap-3'>
                         {website?.url && <WebsiteLogo url={website?.url} />}
                         <a
@@ -39,7 +39,7 @@ export const WebsiteBookmarkCard = ({ website }: WebsiteBookmarkCardProps) => {
                         </a>
                         {website?.url && <CopyButton variant='outline' content={website?.url} size='sm' />}
                     </div>
-                    <div className='flex gap-4 @xl/main:flex-row items-start  @xl/main:items-start @xl/main:justify-end h-full'>
+                    <div className='flex gap-4 @xl/main:flex-row justify-between w-full @xl/main:items-center @xl/main:justify-end'>
                         <WebsitesVotes website={website} className='h-full' size='sm' />
                         {website.url && (
                             <div className='flex gap-2'>

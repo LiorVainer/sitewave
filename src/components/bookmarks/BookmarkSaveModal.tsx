@@ -20,6 +20,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ColorPicker } from '@/components/ui/color-picker';
 import { WebsiteLogo } from '@/components/websites/WebsiteLogo';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export type BookmarkSaveModalProps = {
     websiteSuggestion: WebsiteSuggestion;
@@ -35,6 +36,7 @@ export const BookmarkSaveModal = ({ websiteSuggestion }: BookmarkSaveModalProps)
     const [step, setStep] = useState<'folder' | 'color'>('folder');
     const [selectedFolderPath, setSelectedFolderPath] = useState<string[]>(websiteSuggestion.suggestedFolderPath);
     const [selectedColor, setSelectedColor] = useState(DEFAULT_FOLDER_COLOR);
+    const isMobile = useIsMobile();
 
     const handleSaveBookmark = async () => {
         if (!websiteSuggestion?.title || !websiteSuggestion?.url) return;
@@ -69,13 +71,13 @@ export const BookmarkSaveModal = ({ websiteSuggestion }: BookmarkSaveModalProps)
                 <DialogTitle className='border-b px-6 py-4 text-base'>
                     <div className='flex justify-between w-full gap-2'>
                         <div className='flex gap-0 flex-col'>
-                            <div className='flex gap-2'>
-                                <WebsiteLogo url={websiteSuggestion.url} />{' '}
-                                <p className=''>{websiteSuggestion.title}</p>
+                            <div className='flex gap-2 items-center'>
+                                <WebsiteLogo className={'size-4'} url={websiteSuggestion.url} />
+                                <p className='text-base leading-none'>{websiteSuggestion.title}</p>
                             </div>
-                            <p className='text-sm text-gray-500'>{websiteSuggestion.url}</p>
+                            <p className='text-sm font-thin text-gray-500'>{websiteSuggestion.url}</p>
                         </div>
-                        <p className='font-bold'>{isFolderStep ? 'Select Folder Path' : 'Pick a Folder Color'}</p>
+                        <p className='text-sm italic text-gray-500'>{isFolderStep ? 'Select Folder' : 'Pick Color'}</p>
                     </div>
                 </DialogTitle>
 
@@ -111,7 +113,7 @@ export const BookmarkSaveModal = ({ websiteSuggestion }: BookmarkSaveModalProps)
                                 <>
                                     <Folder className='w-3.5 h-3.5 shrink-0' style={{ color: selectedColor }} />
                                     <span className='truncate' style={{ color: selectedColor }}>
-                                        {selectedFolderPath.join(' / ')}
+                                        {isMobile ? selectedFolderPath.at(-1) : selectedFolderPath.join(' \\ ')}
                                     </span>
                                 </>
                             )}

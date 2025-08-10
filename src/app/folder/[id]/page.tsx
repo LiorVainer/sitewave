@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Folder } from 'lucide-react';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import { useConvexAuth, useQuery } from 'convex/react';
 import { Id } from '@convex/dataModel';
 import { SignedIn } from '@clerk/nextjs';
 import { WebsiteBookmarkCard } from '@/components/websites/WebsiteBookmarkCard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FolderPage() {
     const { id } = useParams();
@@ -19,17 +20,22 @@ export default function FolderPage() {
         isAuthenticated && folderId ? { folderId: folderId } : 'skip',
     );
 
-    const router = useRouter();
-
     if (data === null) return <p className='p-6 text-red-500'>Folder not found or access denied</p>;
 
     return (
         <SignedIn>
-            <div className='p-4 lg:p-12 2xl:p-24 flex flex-col gap-4'>
-                <h1 className='text-2xl font-semibold flex items-center gap-2'>
-                    <Folder className='w-6 h-6' />
-                    {data?.folder?.name ?? 'Loading...'}
-                </h1>
+            <div className='p-4 lg:p-12 2xl:p-24 flex flex-col gap-8'>
+                {data?.folder ? (
+                    <h1 className='text-2xl font-semibold flex items-center gap-2'>
+                        <Folder style={{ color: data?.folder.color }} className='w-6 h-6' />
+                        {data?.folder.name}
+                    </h1>
+                ) : (
+                    <div className='flex gap-2 items-center'>
+                        <Folder className='w-6 h-6' />
+                        <Skeleton className='w-20 h-8' />
+                    </div>
+                )}
 
                 {/* Subfolders */}
                 {data?.subfolders && data?.subfolders.length > 0 && (
@@ -40,7 +46,10 @@ export default function FolderPage() {
                                 <Link key={sub._id} href={`/folder/${sub._id}`}>
                                     <Card className='hover:shadow-md transition cursor-pointer'>
                                         <CardContent className='p-4 flex items-center gap-2'>
-                                            <Folder className='w-4 h-4 text-muted-foreground' />
+                                            <Folder
+                                                style={{ color: sub.color }}
+                                                className='w-4 h-4 text-muted-foreground'
+                                            />
                                             <span>{sub.name}</span>
                                         </CardContent>
                                     </Card>
