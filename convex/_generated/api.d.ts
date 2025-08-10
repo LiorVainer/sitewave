@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as bookmarks from "../bookmarks.js";
+import type * as websites from "../websites.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -25,6 +26,7 @@ import type * as bookmarks from "../bookmarks.js";
  */
 declare const fullApi: ApiFromModules<{
   bookmarks: typeof bookmarks;
+  websites: typeof websites;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

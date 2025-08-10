@@ -9,7 +9,7 @@ import { Icons } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { PageWrapper } from '@/components/general/PageWrapper';
+import { PageWrapper } from '@/components/layout/PageWrapper';
 
 export default function SignUpPage() {
     return (

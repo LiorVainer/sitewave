@@ -8,14 +8,10 @@ export const WebsiteSuggestionSchema = z.object({
 
     description: z.string().min(1).describe('A short summary of what the website does or offers'),
 
-    reason: z.string().min(1).describe("Explanation of why this site was recommended for the user's query"),
-
     tags: z
         .array(z.string())
         .optional()
         .describe("Optional tags for categorizing the website (e.g., ['ai', 'writing'])"),
-
-    favicon: z.string().optional().describe('Optional URL to the website’s favicon or logo image'),
 
     sources: z
         .object({
@@ -45,6 +41,9 @@ export const WebsiteSuggestionSchema = z.object({
 export type WebsiteSuggestion = z.infer<typeof WebsiteSuggestionSchema>;
 
 export type PartialWebsiteSuggestion = DeepPartial<WebsiteSuggestion>;
+
+export type WebsiteSuggestionWithMandatoryFields = PartialWebsiteSuggestion &
+    Pick<WebsiteSuggestion, 'url' | 'title' | 'description'>;
 
 export const WebsiteSuggestionsGenerationPayloadSchema = z.object({
     amount: z.number().min(1).max(10).describe('Number of website suggestions to generate (1-20)'),

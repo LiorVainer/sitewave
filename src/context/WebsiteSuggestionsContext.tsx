@@ -1,12 +1,16 @@
 'use client';
 
 import { createContext, Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
-import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
+import { PartialWebsiteSuggestion, WebsiteSuggestionWithMandatoryFields } from '@/models/website-suggestion.model';
 import { StreamableValue } from 'ai/rsc';
 import { ComparisonColumn } from '@/models/website-comparison.model';
 import { FullDynamicZodType } from '@/lib/zod.utils';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useWebsitesComparison } from '@/hooks/use-websites-comparison';
+import { useMutation } from 'convex/react';
+import { api } from '@convex/api';
+import { mergeWebsiteAndWebsiteSuggestion } from '@/lib/websites/converters.utils';
+import { Doc } from '@convex/dataModel';
 
 interface WebsiteSuggestionsContextType {
     localSuggestions: PartialWebsiteSuggestion[];
@@ -14,7 +18,7 @@ interface WebsiteSuggestionsContextType {
     websiteSuggestionsStream: StreamableValue<PartialWebsiteSuggestion> | null;
     setWebsiteSuggestionsStream: Dispatch<SetStateAction<StreamableValue<PartialWebsiteSuggestion> | null>>;
     clearSuggestions: () => void;
-    addSuggestion: (suggestion: PartialWebsiteSuggestion) => void;
+    addSuggestion: (suggestion: WebsiteSuggestionWithMandatoryFields) => void;
     startComparison: () => void;
     suggestedUrls: string[];
     comparisonColumns: ComparisonColumn[];
@@ -43,6 +47,8 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     const [websiteSuggestionsStream, setWebsiteSuggestionsStream] =
         useState<StreamableValue<PartialWebsiteSuggestion> | null>(null);
 
+    const addSuggestionIfNotExists = useMutation(api.websites.addWebsiteIfNotExists);
+
     const [showStreamingCards, setShowStreamingCards] = useLocalStorage('show-streaming-cards', true);
 
     const {
@@ -62,9 +68,22 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
         setLocalSuggestions([]);
     };
 
-    const addSuggestion = (suggestion: PartialWebsiteSuggestion) => {
+    const addSuggestion = async (suggestion: WebsiteSuggestionWithMandatoryFields) => {
+        const createdWebsite = await addSuggestionIfNotExists({
+            url: suggestion.url,
+            name: suggestion.title,
+            description: suggestion.description,
+        });
+
         setLocalSuggestions((prev) => {
-            return [...prev, suggestion];
+            const alreadyExists = prev.some((s) => s.url === createdWebsite?.url);
+            if (alreadyExists) return prev;
+            return [
+                ...prev,
+                createdWebsite
+                    ? mergeWebsiteAndWebsiteSuggestion({ suggestion, website: createdWebsite as Doc<'websites'> })
+                    : suggestion,
+            ];
         });
     };
 

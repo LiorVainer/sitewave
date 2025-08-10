@@ -15,21 +15,15 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarGroup,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarInset,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
     SidebarProvider,
     SidebarRail,
     SidebarTrigger,
 } from '@/components/animate-ui/radix/sidebar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/animate-ui/radix/collapsible';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,13 +33,14 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@/components/animate-ui/radix/dropdown-menu';
-import { Bot, ChevronRight, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } from 'lucide-react';
+import { Bot, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
 import { NavUser } from '@/components/navigation/NavUser';
-import { PageWrapper } from '@/components/general/PageWrapper';
 import { BookmarksFoldersSidebarGroup } from '@/components/navigation/BookmarksFoldersSidebarGroup';
 import { SignedIn } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { PageWrapper } from '../layout/PageWrapper';
 
 const DATA = {
     user: {
@@ -119,13 +114,14 @@ export const AppSidebar = ({
     children: React.ReactNode;
 }>) => {
     const isMobile = useIsMobile();
+    const router = useRouter();
     const [activeTeam, setActiveTeam] = React.useState(DATA.teams[0]);
 
     if (!activeTeam) return null;
 
     return (
-        <SidebarProvider>
-            <Sidebar collapsible='icon'>
+        <SidebarProvider className='h-full'>
+            <Sidebar collapsible='icon' className='h-full'>
                 <SidebarHeader>
                     {/* Team Switcher */}
                     <SidebarMenu>
@@ -184,42 +180,42 @@ export const AppSidebar = ({
 
                 <SidebarContent>
                     {/* Nav Main */}
-                    <SidebarGroup>
-                        <SidebarGroupLabel>Platform</SidebarGroupLabel>
-                        <SidebarMenu>
-                            {DATA.navMain.map((item) => (
-                                <Collapsible
-                                    key={item.title}
-                                    asChild
-                                    defaultOpen={item.isActive}
-                                    className='group/collapsible'
-                                >
-                                    <SidebarMenuItem>
-                                        <CollapsibleTrigger asChild>
-                                            <SidebarMenuButton tooltip={item.title}>
-                                                {item.icon && <item.icon />}
-                                                <span>{item.title}</span>
-                                                <ChevronRight className='ml-auto transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90' />
-                                            </SidebarMenuButton>
-                                        </CollapsibleTrigger>
-                                        <CollapsibleContent>
-                                            <SidebarMenuSub>
-                                                {item.items?.map((subItem) => (
-                                                    <SidebarMenuSubItem key={subItem.title}>
-                                                        <SidebarMenuSubButton asChild>
-                                                            <a href={subItem.url}>
-                                                                <span>{subItem.title}</span>
-                                                            </a>
-                                                        </SidebarMenuSubButton>
-                                                    </SidebarMenuSubItem>
-                                                ))}
-                                            </SidebarMenuSub>
-                                        </CollapsibleContent>
-                                    </SidebarMenuItem>
-                                </Collapsible>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroup>
+                    {/*<SidebarGroup>*/}
+                    {/*    <SidebarGroupLabel>Platform</SidebarGroupLabel>*/}
+                    {/*    <SidebarMenu>*/}
+                    {/*        {DATA.navMain.map((item) => (*/}
+                    {/*            <Collapsible*/}
+                    {/*                key={item.title}*/}
+                    {/*                asChild*/}
+                    {/*                defaultOpen={item.isActive}*/}
+                    {/*                className='group/collapsible'*/}
+                    {/*            >*/}
+                    {/*                <SidebarMenuItem>*/}
+                    {/*                    <CollapsibleTrigger asChild>*/}
+                    {/*                        <SidebarMenuButton tooltip={item.title}>*/}
+                    {/*                            {item.icon && <item.icon />}*/}
+                    {/*                            <span>{item.title}</span>*/}
+                    {/*                            <ChevronRight className='ml-auto transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90' />*/}
+                    {/*                        </SidebarMenuButton>*/}
+                    {/*                    </CollapsibleTrigger>*/}
+                    {/*                    <CollapsibleContent>*/}
+                    {/*                        <SidebarMenuSub>*/}
+                    {/*                            {item.items?.map((subItem) => (*/}
+                    {/*                                <SidebarMenuSubItem key={subItem.title}>*/}
+                    {/*                                    <SidebarMenuSubButton asChild>*/}
+                    {/*                                        <a href={subItem.url}>*/}
+                    {/*                                            <span>{subItem.title}</span>*/}
+                    {/*                                        </a>*/}
+                    {/*                                    </SidebarMenuSubButton>*/}
+                    {/*                                </SidebarMenuSubItem>*/}
+                    {/*                            ))}*/}
+                    {/*                        </SidebarMenuSub>*/}
+                    {/*                    </CollapsibleContent>*/}
+                    {/*                </SidebarMenuItem>*/}
+                    {/*            </Collapsible>*/}
+                    {/*        ))}*/}
+                    {/*    </SidebarMenu>*/}
+                    {/*</SidebarGroup>*/}
 
                     <SignedIn>
                         <BookmarksFoldersSidebarGroup />
@@ -231,17 +227,21 @@ export const AppSidebar = ({
                 <SidebarRail />
             </Sidebar>
 
-            <SidebarInset>
-                <header className='flex h-16 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
-                    <div className='flex items-center gap-2'>
+            <SidebarInset className='overflow-hidden min-h-0 h-full'>
+                <header className='flex top-0 z-30 bg-white h-16 block min-h-0 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
+                    <div className='flex items-center gap-2 min-h-0'>
                         <SidebarTrigger className='-ml-1' />
                         <Separator orientation='vertical' className='mr-2 h-4' />
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem className='hidden md:block'>
-                                    <BreadcrumbLink href='#'>Home</BreadcrumbLink>
+                                <BreadcrumbItem className='block'>
+                                    <BreadcrumbLink asChild>
+                                        <span className='cursor-pointer' onClick={() => router.replace('/')}>
+                                            Home
+                                        </span>
+                                    </BreadcrumbLink>
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator className='hidden md:block' />
+                                <BreadcrumbSeparator className='block' />
                                 <BreadcrumbItem>
                                     <BreadcrumbPage>Discover Websites</BreadcrumbPage>
                                 </BreadcrumbItem>
@@ -249,9 +249,11 @@ export const AppSidebar = ({
                         </Breadcrumb>
                     </div>
                 </header>
-                <PageWrapper className='flex flex-col gap-4 p-4 pt-0 flex-1 rounded-xl w-full md:min-h-min @container/main'>
-                    <WebsiteSuggestionsProvider>{children}</WebsiteSuggestionsProvider>
-                </PageWrapper>
+                <WebsiteSuggestionsProvider>
+                    <PageWrapper className='flex h-full @container/main overflow-hidden flex-col gap-4 p-4'>
+                        {children}
+                    </PageWrapper>
+                </WebsiteSuggestionsProvider>
             </SidebarInset>
         </SidebarProvider>
     );

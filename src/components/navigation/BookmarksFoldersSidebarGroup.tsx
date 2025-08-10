@@ -1,19 +1,19 @@
+'use client';
+
 import { useQuery } from 'convex/react';
-import { api } from '../../../convex/_generated/api';
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu } from '../animate-ui/radix/sidebar';
-import { FolderTreeItem } from '@/components/navigation/FolderTreeItem';
+import { SidebarGroup, SidebarGroupLabel } from '../animate-ui/radix/sidebar';
+import { BookmarkTree } from '@/components/bookmarks/bookmarks-tree/BookmarkTree';
+import { api } from '@convex/api';
 
 export const BookmarksFoldersSidebarGroup = () => {
-    const foldersWithBookmarks = useQuery(api.bookmarks.getUserFoldersWithBookmarks, {});
+    const foldersAndBookmarks = useQuery(api.bookmarks.getUserFoldersAndBookmarksFlat, {});
+
+    if (!foldersAndBookmarks) return null;
 
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Bookmarks</SidebarGroupLabel>
-            <SidebarMenu>
-                {foldersWithBookmarks?.map((folder: any) => (
-                    <FolderTreeItem key={folder._id} folder={folder} />
-                ))}
-            </SidebarMenu>
+            <BookmarkTree data={foldersAndBookmarks} navigableItems />
         </SidebarGroup>
     );
 };
