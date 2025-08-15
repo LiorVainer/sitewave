@@ -24,7 +24,7 @@ export default function FolderPage() {
 
     return (
         <SignedIn>
-            <div className='p-4 lg:p-12 2xl:p-24 flex flex-col gap-8'>
+            <div className='p-4 lg:p-12 2xl:p-24 flex flex-col gap-8 overflow-auto'>
                 {data?.folder ? (
                     <h1 className='text-2xl font-semibold flex items-center gap-2'>
                         <Folder style={{ color: data?.folder.color }} className='w-6 h-6' />

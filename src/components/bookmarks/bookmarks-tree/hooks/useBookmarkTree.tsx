@@ -143,7 +143,12 @@ export function useBookmarkTree({ data, onFolderSelect }: UseBookmarkTreeProps) 
         let current = lastSelected;
         while (current) {
             path.unshift(current.getId());
-            current = current.getParent();
+            try {
+                current = current.getParent();
+            } catch {
+                console.error('Error getting parent for item:', current?.getId());
+                break; // If there's an error, we stop traversing
+            }
         }
 
         return path; // e.g., ['Company', 'Engineering', 'Frontend']

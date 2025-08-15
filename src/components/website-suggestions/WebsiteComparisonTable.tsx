@@ -93,7 +93,7 @@ export function WebsiteComparisonTable() {
     const columnCount = Math.max(5, columns.length || 0);
 
     return (
-        <div className='space-y-4 bg-white rounded-lg shadow-md border border-border'>
+        <div className='space-y-4 bg-white rounded-lg shadow-md border border-border overflow-auto'>
             {isLoadingComparison && (
                 <Table>
                     <TableHeader>

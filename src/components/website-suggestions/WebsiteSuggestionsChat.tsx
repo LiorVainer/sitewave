@@ -1,6 +1,6 @@
 import { suggestWebsites } from '@/app/actions';
 import { WebsiteSuggestionsCards } from '@/components/website-suggestions/WebsiteSuggestionsCards';
-import { useWebsiteSuggestions } from '../../context/WebsiteSuggestionsContext';
+import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
 import { LoadMoreButton } from '@/components/LoadMoreButton';
 import { Tabs, TabsContent, TabsContents, TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
 import { WebsiteComparisonTable } from '@/components/website-suggestions/WebsiteComparisonTable';
@@ -69,7 +69,9 @@ export const WebsiteSuggestionsChat = () => {
                                     <WebsiteSuggestionsCards />
                                 )}
                             </TabsContent>
-                            <TabsContent value={'table'}>{<WebsiteComparisonTable />}</TabsContent>
+                            <TabsContent className='flex-1 min-h-0 overflow-auto' value={'table'}>
+                                {<WebsiteComparisonTable />}
+                            </TabsContent>
                             {localSuggestions.length > 0 && (
                                 <LoadMoreButton className='self-center' handleLoadMore={handleLoadMore} />
                             )}
