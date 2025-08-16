@@ -37,7 +37,7 @@ export const WebsiteSuggestionsChat = () => {
             // Create new thread with the prompt as initial message
             const threadId = await createNewThreadMutation({
                 initialMessage: currentPrompt,
-                title: `Website suggestions: ${currentPrompt.slice(0, 50)}...`,
+                title: `${currentPrompt.slice(0, 50)}...`,
             });
 
             setCurrentThreadId(threadId);
