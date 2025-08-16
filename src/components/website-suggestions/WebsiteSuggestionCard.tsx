@@ -72,6 +72,15 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                     </div>
                 </div>
 
+                {/*{websiteSuggestion?.url && (*/}
+                {/*    <WebPreview defaultUrl={websiteSuggestion.url} style={{ height: '400px' }}>*/}
+                {/*        <WebPreviewNavigation>*/}
+                {/*            <WebPreviewUrl src={websiteSuggestion.url} />*/}
+                {/*        </WebPreviewNavigation>*/}
+                {/*        <WebPreviewBody src={websiteSuggestion.url} />*/}
+                {/*    </WebPreview>*/}
+                {/*)}*/}
+
                 <div className='grid grid-cols-1 md:grid-cols-8 gap-6 items-center '>
                     <div className='col-span-1 md:col-span-5 flex flex-col justify-between gap-4 h-full'>
                         <div className='flex flex-col gap-2'>

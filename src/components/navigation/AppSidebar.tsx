@@ -35,9 +35,9 @@ import {
 } from '@/components/animate-ui/radix/dropdown-menu';
 import { Bot, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
 import { NavUser } from '@/components/navigation/NavUser';
 import { BookmarksFoldersSidebarGroup } from '@/components/navigation/BookmarksFoldersSidebarGroup';
+import { ThreadsSidebarGroup } from '@/components/navigation/ThreadsSidebarGroup';
 import { SignedIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { PageWrapper } from '../layout/PageWrapper';
@@ -219,6 +219,7 @@ export const AppSidebar = ({
 
                     <SignedIn>
                         <BookmarksFoldersSidebarGroup />
+                        <ThreadsSidebarGroup />
                     </SignedIn>
                 </SidebarContent>
                 <SidebarFooter>
@@ -249,11 +250,9 @@ export const AppSidebar = ({
                         </Breadcrumb>
                     </div>
                 </header>
-                <WebsiteSuggestionsProvider>
-                    <PageWrapper className='flex h-full @container/main overflow-hidden flex-col gap-4 p-4'>
-                        {children}
-                    </PageWrapper>
-                </WebsiteSuggestionsProvider>
+                <PageWrapper className='flex h-full @container/main overflow-hidden flex-col gap-4 p-4'>
+                    {children}
+                </PageWrapper>
             </SidebarInset>
         </SidebarProvider>
     );

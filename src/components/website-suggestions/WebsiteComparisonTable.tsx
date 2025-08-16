@@ -31,6 +31,8 @@ const headerClassName = 'px-6 py-2';
 export function WebsiteComparisonTable() {
     const { comparisonColumns: columns, comparisonRows: rows, isLoadingComparison } = useWebsiteSuggestions();
 
+    console.log({ columns, rows, isLoadingComparison });
+
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const dynamicColumns = useMemo<ColumnDef<FullDynamicZodType>[]>(
