@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import type { ComponentProps, HTMLAttributes } from 'react';
-import { isValidElement, memo } from 'react';
+import { memo } from 'react';
 import ReactMarkdown, { type Options } from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
@@ -280,12 +280,12 @@ const components: Options['components'] = {
         }
 
         // Extract code content from children safely
-        let code = '';
-        if (isValidElement(children) && children.props && typeof children.props.children === 'string') {
-            code = children.props.children;
-        } else if (typeof children === 'string') {
-            code = children;
-        }
+        const code = '';
+        // if (isValidElement(children) && children.props && typeof children.props.children === 'string') {
+        //     code = children.props.children;
+        // } else if (typeof children === 'string') {
+        //     code = children;
+        // }
 
         return (
             <CodeBlock className={cn('my-4 h-auto', className)} code={code} language={language}>
