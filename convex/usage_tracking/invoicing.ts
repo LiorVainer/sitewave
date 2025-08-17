@@ -95,6 +95,13 @@ const PRICING: Record<string, Record<string, { inputPrice: number; cachedInputPr
             outputPrice: 1.2,
         },
     },
+    gemini: {
+        'gemini-2.0-flash-exp': {
+            inputPrice: 0.1,
+            cachedInputPrice: 0.1,
+            outputPrice: 0.4,
+        },
+    },
 };
 
 async function createInvoice(

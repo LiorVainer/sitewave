@@ -26,6 +26,7 @@
         "@clerk/nextjs": "^6.26.0",
         "@convex-dev/agent": "^0.1.18",
         "@convex-dev/agent-playground": "^0.0.17",
+        "@convex-dev/rate-limiter": "^0.2.12",
         "@headless-tree/core": "^1.2.1",
         "@headless-tree/react": "^1.2.1",
         "@icons-pack/react-simple-icons": "^13.7.0",
