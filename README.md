@@ -1,6 +1,8 @@
 # 🌊 Sitewave
 
-**Sitewave** is a smart assistant for discovering useful websites, saving them to folders, and revisiting them through persistent chat history. It brings together AI-powered suggestions, engaging UI, and a full bookmarking experience with video context.
+**Sitewave** is a smart assistant that uses **Gemini AI** to help users discover useful websites, understand their purpose, and organize them into searchable folders. It offers a rich, animated UI and persistent chat memory to revisit suggestions later.
+
+> 🔮 Everything is **AI-powered** — currently backed by the **Gemini API**, which provides typed, validated website suggestions in real-time.
 
 ---
 
@@ -13,12 +15,12 @@ Make web discovery and organization effortless, delightful, and deeply personali
 ## 🧠 Core Flow
 
 1. **User prompts AI** with a topic or request
-2. AI responds with **animated, streamed website suggestions**
+2. **Gemini API** responds with **animated, streamed website suggestions**
 3. Each suggestion includes:
    - ✅ Title, URL, description, favicon
    - 🔍 Suggested folder path (for organizing)
    - 💬 Reason for suggestion
-   - 🎞️ First matching video (YouTube or other source)
+   - 🎞️ First matching video (automatically searched)
    - 📌 Bookmark/save button
 4. User can:
    - Copy URL
@@ -31,18 +33,17 @@ Make web discovery and organization effortless, delightful, and deeply personali
 
 ## 💬 Chat System
 
-- Users can start **multiple chats** per topic
-- Each chat has its own stream of AI suggestions
-- Full **chat history** is saved and queryable
-- Great for going back to suggestions that weren’t bookmarked
+- Users can start **multiple chats**, each saved in history
+- Revisit past chats to recover suggestions not yet bookmarked
+- Ideal for ongoing research, idea collection, or themed browsing
 
 ---
 
-## 💡 Features
+## 💡 AI-Powered Features
 
 | Feature                        | Description |
 |-------------------------------|-------------|
-| 🌐 Website Suggestion         | AI recommends websites based on prompt |
+| 🌐 Website Suggestion         | **Gemini API** recommends websites based on prompt |
 | ⏳ Streaming Animation        | Suggestions appear one-by-one with animation |
 | 🧠 Zod Schema Validation      | Ensures typed, structured suggestions |
 | 🎞️ Video Preview             | Embedded preview of first matched video |
@@ -63,5 +64,4 @@ Make web discovery and organization effortless, delightful, and deeply personali
 - **Zod** – schema validation
 - **Convex** – persistent storage for chats, suggestions, bookmarks
 - **Framer Motion** – UI animations
-
----
+- **Gemini API** – powering all AI responses
