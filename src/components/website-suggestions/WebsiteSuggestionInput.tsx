@@ -101,7 +101,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                     rows={1}
                     className={cn(
                         '!min-h-0 max-h-full resize-none',
-                        'bg-white/0 w-full border-0 shadow-none p-0 md:text-lg rounded-none',
+                        'bg-white/0 w-full border-0 shadow-none p-0 md:text-md rounded-none',
                         'leading-[1.25rem]',
                     )}
                     style={{ overflow: 'hidden' }}

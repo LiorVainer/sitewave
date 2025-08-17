@@ -21,7 +21,7 @@ export const ChatMessages = ({}: ChatMessagesProps) => {
             console.log('Stream ended, starting comparison');
             startComparison();
         }
-    }, [currentThreadId, isStreaming, startComparison, threadSuggestions.length]);
+    }, [currentThreadId, threadSuggestions.length]);
 
     return (
         <div className='flex flex-col gap-6 overflow-auto'>

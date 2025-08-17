@@ -41,6 +41,7 @@ import { ThreadsSidebarGroup } from '@/components/navigation/ThreadsSidebarGroup
 import { SignedIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { PageWrapper } from '../layout/PageWrapper';
+import { AppLogo } from '@/components/brand/AppLogo';
 
 const DATA = {
     user: {
@@ -132,9 +133,7 @@ export const AppSidebar = ({
                                         size='lg'
                                         className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                                     >
-                                        <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
-                                            <activeTeam.logo className='size-4' />
-                                        </div>
+                                        <AppLogo />
                                         <div className='grid flex-1 text-left text-sm leading-tight'>
                                             <span className='truncate font-semibold'>{activeTeam.name}</span>
                                             <span className='truncate text-xs'>{activeTeam.plan}</span>
