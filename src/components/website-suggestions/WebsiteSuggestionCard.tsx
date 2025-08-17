@@ -122,8 +122,17 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                         </div>
                     </div>
                     {thumbnail && videoUrl && (
-                        <a href={videoUrl} target='_blank' rel='noopener noreferrer' className='col-span-3'>
-                            <img src={thumbnail} alt={video?.title} className='w-full aspect-16/9 rounded-xl' />
+                        <a
+                            href={videoUrl}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='col-span-3 hidden md:block'
+                        >
+                            <img
+                                src={thumbnail}
+                                alt={video?.title}
+                                className='hidden md:block w-full aspect-16/9 rounded-xl'
+                            />
                         </a>
                     )}
                 </div>

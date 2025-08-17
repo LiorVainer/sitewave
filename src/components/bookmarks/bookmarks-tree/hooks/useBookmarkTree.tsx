@@ -130,10 +130,6 @@ export function useBookmarkTree({ data, onFolderSelect }: UseBookmarkTreeProps) 
 
     const selectedFolderPath = useMemo(() => {
         const selected = tree.getSelectedItems();
-        console.log(
-            'Selected items:',
-            selected.map((item) => item.getItemName()),
-        );
         if (selected.length === 0) return null;
 
         const lastSelected = selected.at(-1);

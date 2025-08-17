@@ -26,6 +26,7 @@ interface WebsiteSuggestionsContextType {
     currentThreadId: string | null;
     setCurrentThreadId: (threadId: string | null) => void;
     threadMessages: UIMessage[];
+    isLoadingThreadMessages: boolean;
     isStreaming: boolean;
     // Extracted suggestions from thread messages
     threadSuggestions: WebsiteSuggestionWithMandatoryFields[];
@@ -48,7 +49,7 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
 
     const addSuggestionIfNotExists = useMutation(api.websites.addWebsiteIfNotExists);
 
-    const threadMessages = useThreadMessages(
+    const { isLoading: isLoadingThreadMessages, results: threadMessages } = useThreadMessages(
         api.threads.listThreadMessages,
         currentThreadId ? { threadId: currentThreadId } : 'skip',
         { initialNumItems: 10 },
@@ -56,8 +57,8 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
 
     // Extract website suggestions from thread messages
     const threadSuggestions = useMemo(() => {
-        if (!threadMessages.results) return [];
-        const messages = toUIMessages(threadMessages.results);
+        if (!threadMessages) return [];
+        const messages = toUIMessages(threadMessages);
         const suggestions: WebsiteSuggestionWithMandatoryFields[] = messages
             .filter((message) => message.role === 'assistant' && message.content)
             .map((message) => {
@@ -71,16 +72,16 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
             .filter((suggestion) => suggestion?.title && suggestion?.url && suggestion?.description);
 
         return suggestions;
-    }, [threadMessages.results]);
+    }, [threadMessages]);
 
     // Check if streaming is active - now also check for website generation
     const isStreaming = useMemo(() => {
-        if (!threadMessages.results) return false;
-        const messages = toUIMessages(threadMessages.results);
+        if (!threadMessages) return false;
+        const messages = toUIMessages(threadMessages);
         return (
             messages.some((msg) => msg.status === 'streaming') || (!!currentThreadId && threadSuggestions.length < 5) // Assume generating until we have expected amount
         );
-    }, [threadMessages.results, currentThreadId, threadSuggestions.length]);
+    }, [threadMessages, currentThreadId, threadSuggestions.length]);
 
     const {
         clearComparison,
@@ -117,7 +118,8 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 setShowStreamingCards,
                 currentThreadId,
                 setCurrentThreadId,
-                threadMessages: toUIMessages(threadMessages.results) || [],
+                threadMessages: toUIMessages(threadMessages) || [],
+                isLoadingThreadMessages,
                 isStreaming,
                 threadSuggestions,
             }}

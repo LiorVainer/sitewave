@@ -22,6 +22,7 @@ export const WebsiteSuggestionsChat = () => {
         setCurrentThreadId,
         isStreaming,
         threadSuggestions,
+        isLoadingThreadMessages,
     } = useWebsiteSuggestions();
 
     const createNewThreadMutation = useMutation(api.threads.createNewThread);
@@ -70,7 +71,7 @@ export const WebsiteSuggestionsChat = () => {
             <div
                 className={cn(
                     'flex-1 flex flex-col gap-4 lg:gap-6 justify-center overflow-hidden',
-                    threadSuggestions.length > 0 && 'justify-between',
+                    (isLoadingThreadMessages || threadSuggestions.length > 0) && 'justify-between',
                     isMobile && 'justify-end',
                 )}
             >

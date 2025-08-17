@@ -155,8 +155,6 @@ ${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url})`).join('\n')}
             },
         );
 
-        console.log({ columns, rows: rowsResult.object });
-
         const rows = rowsResult.object.flat();
 
         if (!Array.isArray(columns) || !Array.isArray(rows)) {

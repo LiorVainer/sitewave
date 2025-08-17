@@ -1,35 +1,60 @@
 import { components, internal } from './_generated/api';
 import { v } from 'convex/values';
-import { ActionCtx, mutation, MutationCtx, query, QueryCtx } from './_generated/server';
+import { action, ActionCtx, internalAction, mutation, MutationCtx, query, QueryCtx } from './_generated/server';
 import { paginationOptsValidator } from 'convex/server';
 import { createThread, getThreadMetadata, listMessages, syncStreams, vStreamArgs } from '@convex-dev/agent';
+import { websiteAgent } from './agents/websiteAgent';
+import z from 'zod';
 
 // Create new thread with initial prompt - this replaces the server action
 export const createNewThread = mutation({
     args: {
-        initialMessage: v.string(), // This is the prompt from UI
+        initialMessage: v.string(),
         title: v.optional(v.string()),
     },
     handler: async (ctx, { initialMessage, title }) => {
-        // Create thread with the initial message (prompt)
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error('Not authenticated');
 
         const threadId = await createThread(ctx, components.agent, {
-            // userId: await getAuthUserId(ctx), // Uncomment when auth is set up
             title: title || 'Website Suggestions',
             userId: identity.subject,
         });
 
-        // Schedule the async action to generate website suggestions
         await ctx.scheduler.runAfter(0, internal.websiteSuggestions.generateSuggestions, {
             threadId,
             prompt: initialMessage,
-            amount: 5, // Default amount
-            existingUrls: [], // Empty for new thread
+            amount: 5,
+            existingUrls: [],
         });
 
+        await ctx.scheduler.runAfter(1000 * 5, internal.threads.updateThreadTitle, { threadId });
+
         return threadId;
+    },
+});
+
+export const updateThreadTitle = internalAction({
+    args: { threadId: v.string() },
+    handler: async (ctx, { threadId }) => {
+        await authorizeThreadAccess(ctx, threadId);
+        const { thread } = await websiteAgent.continueThread(ctx, { threadId });
+        const {
+            object: { title, summary },
+        } = await thread.generateObject(
+            {
+                mode: 'json',
+                schemaDescription:
+                    "Generate a title and summary for the thread. The title should be a single sentence that captures the main topic of the thread. The summary should be a short description of the thread that could be used to describe it to someone who hasn't read it.",
+                schema: z.object({
+                    title: z.string().describe('The new title for the thread'),
+                    summary: z.string().describe('The new summary for the thread'),
+                }),
+                prompt: 'Generate a title and summary for this thread.',
+            },
+            { storageOptions: { saveMessages: 'none' } },
+        );
+        await thread.updateMetadata({ title, summary });
     },
 });
 
@@ -83,13 +108,13 @@ export const getThreadDetails = query({
     },
 });
 
-// Helper function for authorization when needed
-export async function authorizeThreadAccess(ctx: QueryCtx | MutationCtx | ActionCtx, threadId: string) {
-    // For now, allow access to all threads
-    // In production, you'd implement proper user authorization here
-    const metadata = await getThreadMetadata(ctx, components.agent, { threadId });
-    return metadata;
-}
+export const deleteThread = action({
+    args: { threadId: v.string() },
+    handler: async (ctx, { threadId }) => {
+        await authorizeThreadAccess(ctx, threadId, true);
+        await websiteAgent.deleteThreadSync(ctx, { threadId });
+    },
+});
 
 export const listThreadMessages = query({
     args: {
@@ -115,3 +140,20 @@ export const listThreadMessages = query({
         return { ...paginated, streams };
     },
 });
+
+export async function authorizeThreadAccess(
+    ctx: QueryCtx | MutationCtx | ActionCtx,
+    threadId: string,
+    requireUser?: boolean,
+) {
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity ? identity.subject : null;
+
+    if (requireUser && !userId) {
+        throw new Error('Unauthorized: user is required');
+    }
+    const { userId: threadUserId } = await getThreadMetadata(ctx, components.agent, { threadId });
+    if (requireUser && threadUserId !== userId) {
+        throw new Error('Unauthorized: user does not match thread user');
+    }
+}
