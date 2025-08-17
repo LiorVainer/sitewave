@@ -146,7 +146,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                     variant='gradient'
                     disabled={!canSubmit}
                     className={cn(
-                        'w-9 h-9 transform-gpu',
+                        'w-9 h-9 transform-gpu hover:scale-105 active:scale-95',
                         !canSubmit && 'opacity-50 cursor-not-allowed hover:scale-100',
                     )}
                 >

@@ -49,6 +49,10 @@ export default defineSchema({
         .index('by_folderId', ['folderId'])
         .index('by_websiteId', ['websiteId']),
 
+    guests: defineTable({
+        sessionId: v.string(),
+    }).index('by_sessionId', ['sessionId']),
+
     websiteComparisons: defineTable({
         threadId: v.string(),
         columns: v.array(v.any()), // Use v.any() for columns/rows, or define a stricter schema if desired

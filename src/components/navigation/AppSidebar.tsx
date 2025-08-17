@@ -15,6 +15,7 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
+    SidebarGroup,
     SidebarHeader,
     SidebarInset,
     SidebarMenu,
@@ -37,11 +38,12 @@ import { Bot, ChevronsUpDown, Folder, Frame, Plus, Settings2, Sparkles, Star } f
 import { useIsMobile } from '@/hooks/use-mobile';
 import { NavUser } from '@/components/navigation/NavUser';
 import { BookmarksFoldersSidebarGroup } from '@/components/navigation/BookmarksFoldersSidebarGroup';
-import { ThreadsSidebarGroup } from '@/components/navigation/ThreadsSidebarGroup';
+import { ThreadsSidebarGroup } from '@/components/threads/ThreadsSidebarGroup';
 import { SignedIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { PageWrapper } from '../layout/PageWrapper';
 import { AppLogo } from '@/components/brand/AppLogo';
+import { SidebarNewChatButton } from '@/components/navigation/SidebarNewChatButton';
 
 const DATA = {
     user: {
@@ -177,7 +179,7 @@ export const AppSidebar = ({
                     {/* Team Switcher */}
                 </SidebarHeader>
 
-                <SidebarContent>
+                <SidebarContent className='overflow-hidden'>
                     {/* Nav Main */}
                     {/*<SidebarGroup>*/}
                     {/*    <SidebarGroupLabel>Platform</SidebarGroupLabel>*/}
@@ -215,11 +217,17 @@ export const AppSidebar = ({
                     {/*        ))}*/}
                     {/*    </SidebarMenu>*/}
                     {/*</SidebarGroup>*/}
-
-                    <SignedIn>
-                        <BookmarksFoldersSidebarGroup />
+                    <SidebarGroup>
+                        <SidebarMenu>
+                            <SidebarNewChatButton />
+                        </SidebarMenu>
+                    </SidebarGroup>
+                    <div className='overflow-y-auto h-full'>
+                        <SignedIn>
+                            <BookmarksFoldersSidebarGroup />
+                        </SignedIn>
                         <ThreadsSidebarGroup />
-                    </SignedIn>
+                    </div>
                 </SidebarContent>
                 <SidebarFooter>
                     <NavUser />
