@@ -11,7 +11,6 @@ import tsEslint from 'typescript-eslint';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
-import unicorn from 'eslint-plugin-unicorn';
 import promise from 'eslint-plugin-promise';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,12 +23,12 @@ const compat = new FlatCompat({
 
 // /** @type {import("eslint").FlatConfig[]} */
 export default defineConfig([
-    { ignores: ['dist', 'src/components/ui/**', 'src/components/animate-ui/**'] },
+    { ignores: ['dist', 'src/components/ui/**', 'src/components/animate-ui/**', '.copilot/**'] },
     js.configs.recommended,
     ...tsEslint.configs.recommended,
     // reactHooks.configs['recommended-latest'],
     reactRefresh.configs.recommended,
-    unicorn.configs.recommended,
+    // unicorn.configs.recommended,
     // sonarjs.configs.recommended,
     promise.configs['flat/recommended'],
     eslintConfigPrettier,
@@ -72,6 +71,10 @@ export default defineConfig([
             'sonarjs/void-use': 'off',
             'unicorn/no-abusive-eslint-disable': 'off',
             'unicorn/prefer-string-raw': 'off',
+            'unicorn/no-array-for-each': 'off',
+            'unicorn/import-style': 'off',
+            'unicorn/consistent-function-scoping': 'off',
+            'unicorn/prefer-global-this': 'off',
             '@typescript-eslint/ban-ts-comment': 'warn',
             'react/no-unescaped-entities': 'off',
         },

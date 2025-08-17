@@ -1,7 +1,12 @@
 // convex/websites.ts
 // convex/websites.ts
-import { mutation, query } from './_generated/server';
+import { action, mutation, query } from './_generated/server';
 import { v } from 'convex/values';
+import { websiteAgent } from './agents/websiteAgent';
+import { usageHandler } from './usage_tracking/usageHandler';
+import { internal } from './_generated/api';
+import { generateZodSchemaFromColumns } from './lib/zod.utils';
+import { WebsiteComparisonColumnsSchema } from '../src/models/website-comparison.model';
 
 export const getWebsiteByUrl = query({
     args: { url: v.string() },
@@ -94,5 +99,77 @@ export const rateWebsite = mutation({
         newRatings.push({ userId, rating, comment });
 
         await ctx.db.patch(websiteId, { ratings: newRatings });
+    },
+});
+
+export const generateWebsiteComparison = action({
+    args: {
+        threadId: v.string(),
+        websites: v.array(v.any()),
+    },
+    handler: async (ctx, { threadId, websites }) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error('Not authenticated');
+
+        const userId = identity.subject;
+
+        const columnsPrompt = `Given the following websites, generate a list of relevant comparison columns. Each column should have:
+- id (snake_case),
+- header (UI display label),
+- accessorKey (same as id).
+
+Always Dont Include the following columns:
+1. "url" - the website URL
+2. "title" - the website title
+3. "description" - a brief description of the website
+
+They are not relevant for comparison.
+
+Websites:
+${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url})`).join('\n')}
+`;
+        const columnsResult = await websiteAgent.generateObject(
+            ctx,
+            { usageHandler, userId },
+            {
+                prompt: columnsPrompt,
+                schema: WebsiteComparisonColumnsSchema,
+                mode: 'json',
+                output: 'array',
+            },
+        );
+
+        const columns = columnsResult.object.flat();
+        const dynamicSchema = generateZodSchemaFromColumns(columns);
+
+        // Use the agent to generate rows
+        const rowsPrompt = `You are generating a structured website comparison table.\n\nWebsites:\n${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url})`).join('\n')}\n`;
+        const rowsResult = await websiteAgent.generateObject(
+            ctx,
+            { usageHandler, userId },
+            {
+                prompt: rowsPrompt,
+                schema: dynamicSchema.array(),
+                mode: 'json',
+                output: 'array',
+            },
+        );
+
+        const rows = rowsResult.object.flat();
+
+        if (!Array.isArray(columns) || !Array.isArray(rows)) {
+            throw new TypeError('Invalid response format from website agent');
+        }
+
+        await ctx.runMutation(internal.websiteSuggestions.createOrUpdateWebsiteComparison, {
+            columns,
+            rows,
+            threadId,
+        });
+
+        return {
+            columns,
+            rows,
+        };
     },
 });

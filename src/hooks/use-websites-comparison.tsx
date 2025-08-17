@@ -1,77 +1,61 @@
 'use client';
 
-import { FullDynamicZodType, generateZodSchemaFromColumns } from '@/lib/zod.utils';
-import { ComparisonColumn, WebsiteComparisonColumnsSchema } from '@/models/website-comparison.model';
-import { useEffect, useState } from 'react';
-import { experimental_useObject as useObject } from '@ai-sdk/react';
+import { FullDynamicZodType } from '@/lib/zod.utils';
+import { ComparisonColumn } from '@/models/website-comparison.model';
+import { useState } from 'react';
 import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
-import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useAction, useQuery } from 'convex/react';
+import { api } from '@convex/api';
 
 interface UseWebsitesComparisonProps {
     websitesSuggestions: PartialWebsiteSuggestion[];
+    comparisonData?: { columns: ComparisonColumn[]; rows: FullDynamicZodType[] } | null;
+    threadId?: string | null;
 }
 
-export const useWebsitesComparison = ({ websitesSuggestions }: UseWebsitesComparisonProps) => {
-    const [columns, setColumns] = useLocalStorage<ComparisonColumn[]>('comparison-columns', []);
-    const [rows, setRows] = useLocalStorage<FullDynamicZodType[]>('comparison-rows', []);
-    const {
-        object: columnList,
-        submit: submitColumns,
-        isLoading: isLoadingColumns,
-    } = useObject({
-        api: '/api/ai/website-comparison/columns',
-        schema: WebsiteComparisonColumnsSchema,
-    });
-    const rowsSchema = generateZodSchemaFromColumns(columns);
-
-    const {
-        object: rowList,
-        submit: submitRows,
-        isLoading: isLoadingRows,
-    } = useObject({
-        api: '/api/ai/website-comparison/rows',
-        schema: rowsSchema,
-    });
-
+export const useWebsitesComparison = ({ websitesSuggestions, threadId }: UseWebsitesComparisonProps) => {
+    const generateWebsiteComparison = useAction(api.websites.generateWebsiteComparison);
     const [step, setStep] = useState<'idle' | 'columns' | 'rows'>('idle');
+    const [isLoading, setIsLoading] = useState(false);
+    const comparisonData = useQuery(
+        api.websiteSuggestions.getWebsiteComparisonByThread,
+        threadId ? { threadId } : 'skip',
+    );
 
-    const startComparison = () => {
-        clearComparison();
+    // Always use columns/rows from Convex if available
+    const columns = comparisonData?.columns || [];
+    const rows = comparisonData?.rows || [];
+
+    const startComparison = async () => {
+        if (!threadId || websitesSuggestions.length === 0) return;
+        setIsLoading(true);
         setStep('columns');
-        void submitColumns({ websites: websitesSuggestions });
+        try {
+            // Use Convex agent to generate columns and rows
+            await generateWebsiteComparison({
+                threadId,
+                websites: websitesSuggestions,
+            });
+        } finally {
+            setIsLoading(false);
+            setStep('idle');
+        }
     };
-
-    useEffect(() => {
-        if (!isLoadingColumns && columnList && columnList?.length > 0 && step === 'columns') {
-            setColumns(columnList as ComparisonColumn[]);
-            setStep('rows');
-            submitRows({ websites: websitesSuggestions, columns: columnList });
-        }
-    }, [columnList, isLoadingColumns, step, submitRows, websitesSuggestions, setColumns]);
-
-    useEffect(() => {
-        if (!isLoadingRows && rowList?.length) {
-            setRows(rowList as FullDynamicZodType[]);
-        }
-    }, [rowList, isLoadingRows, setRows]);
 
     const clearComparison = () => {
-        setRows([]);
-        setColumns([]);
+        // No-op: comparison is now managed by Convex and context
     };
-
-    const isLoading = isLoadingColumns || isLoadingRows;
 
     return {
         step,
         isLoading,
         startComparison,
         clearComparison,
-        columns: columns as ComparisonColumn[],
-        rows: rows as FullDynamicZodType[],
-        isLoadingColumns,
-        isLoadingRows,
-        columnList,
-        rowList,
+        columns,
+        rows,
+        isLoadingColumns: isLoading && step === 'columns',
+        isLoadingRows: isLoading && step === 'rows',
+        columnList: columns,
+        rowList: rows,
     };
 };

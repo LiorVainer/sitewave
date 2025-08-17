@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import {Tabs as TabsPrimitive} from 'radix-ui';
-import {type HTMLMotionProps, motion, type Transition} from 'motion/react';
+import { Tabs as TabsPrimitive } from 'radix-ui';
+import { type HTMLMotionProps, motion, type Transition } from 'motion/react';
 
-import {cn} from '@/lib/utils';
-import {MotionHighlight, MotionHighlightItem} from '@/components/animate-ui/effects/motion-highlight';
+import { cn } from '@/lib/utils';
+import { MotionHighlight, MotionHighlightItem } from '@/components/animate-ui/effects/motion-highlight';
 
 type TabsProps = React.ComponentProps<typeof TabsPrimitive.Root>;
 
@@ -173,7 +173,11 @@ function TabsContents({
         }
     }, [children]);
 
-    return <div className={className} ref={containerRef}>{children}</div>;
+    return (
+        <div className={className} ref={containerRef}>
+            {children}
+        </div>
+    );
 }
 
 export {

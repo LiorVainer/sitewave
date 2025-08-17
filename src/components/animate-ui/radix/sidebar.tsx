@@ -1,25 +1,25 @@
 'use client';
 
 import * as React from 'react';
-import {Slot} from 'radix-ui';
-import {cva, VariantProps} from 'class-variance-authority';
-import {PanelLeftIcon} from 'lucide-react';
-import {type Transition} from 'motion/react';
+import { Slot } from 'radix-ui';
+import { cva, VariantProps } from 'class-variance-authority';
+import { PanelLeftIcon } from 'lucide-react';
+import { type Transition } from 'motion/react';
 
-import {cn} from '@/lib/utils';
-import {useIsMobile} from '@/hooks/use-mobile';
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
-import {Separator} from '@/components/ui/separator';
-import {Skeleton} from '@/components/ui/skeleton';
-import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from '@/components/animate-ui/radix/sheet';
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/animate-ui/radix/tooltip';
-import {MotionHighlight, MotionHighlightItem} from '@/components/animate-ui/effects/motion-highlight';
+import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/animate-ui/radix/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/animate-ui/radix/tooltip';
+import { MotionHighlight, MotionHighlightItem } from '@/components/animate-ui/effects/motion-highlight';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = '16rem';
-const SIDEBAR_WIDTH_MOBILE = '18rem';
+const SIDEBAR_WIDTH = '22rem';
+const SIDEBAR_WIDTH_MOBILE = '19rem';
 const SIDEBAR_WIDTH_ICON = '3rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 
