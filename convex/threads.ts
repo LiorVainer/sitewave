@@ -11,14 +11,19 @@ export const createNewThread = mutation({
     args: {
         initialMessage: v.string(),
         title: v.optional(v.string()),
+        guestId: v.optional(v.id('guests')),
     },
-    handler: async (ctx, { initialMessage, title }) => {
+    handler: async (ctx, { initialMessage, title, guestId }) => {
         const identity = await ctx.auth.getUserIdentity();
-        if (!identity) throw new Error('Not authenticated');
+
+        // Check if we have either authenticated user or guest
+        if (!identity && !guestId) {
+            throw new Error('Not authenticated and no guest ID provided');
+        }
 
         const threadId = await createThread(ctx, components.agent, {
             title: title || 'Website Suggestions',
-            userId: identity.subject,
+            userId: identity?.subject || guestId,
         });
 
         await ctx.scheduler.runAfter(0, internal.websiteSuggestions.generateSuggestions, {
@@ -61,16 +66,26 @@ export const updateThreadTitle = internalAction({
 export const listThreads = query({
     args: {
         paginationOpts: paginationOptsValidator,
+        guestId: v.optional(v.id('guests')),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, { paginationOpts, guestId }) => {
         const identity = await ctx.auth.getUserIdentity();
-        if (!identity) throw new Error('Not authenticated');
+
+        console.log({ guestId });
+
+        // Must have either authenticated user or guestId
+        if (!identity && !guestId) {
+            throw new Error('Not authenticated and no guest ID provided');
+        }
+
+        const userId = identity?.subject || guestId;
         const threads = await ctx.runQuery(components.agent.threads.listThreadsByUserId, {
-            paginationOpts: args.paginationOpts,
-            userId: identity.subject,
+            paginationOpts,
+            userId,
         });
 
-        // Add formatted creation date and other metadata
+        console.log(`Loaded ${threads.page.length} threads for user ${userId}`);
+
         const threadsWithMetadata = await Promise.all(
             threads.page.map(async (thread) => {
                 const metadata = await getThreadMetadata(ctx, components.agent, {
@@ -141,17 +156,36 @@ export const listThreadMessages = query({
     },
 });
 
+export const renameThread = action({
+    args: {
+        threadId: v.string(),
+        newTitle: v.string(),
+        guestId: v.optional(v.id('guests')),
+    },
+    handler: async (ctx, { threadId, newTitle, guestId }) => {
+        await authorizeThreadAccess(ctx, threadId, true, guestId);
+
+        // Update thread metadata with new title
+        const { thread } = await websiteAgent.continueThread(ctx, { threadId });
+        await thread.updateMetadata({ title: newTitle });
+
+        return { success: true };
+    },
+});
+
 export async function authorizeThreadAccess(
     ctx: QueryCtx | MutationCtx | ActionCtx,
     threadId: string,
     requireUser?: boolean,
+    guestId?: string,
 ) {
     const identity = await ctx.auth.getUserIdentity();
-    const userId = identity ? identity.subject : null;
+    const userId = identity ? identity.subject : guestId;
 
     if (requireUser && !userId) {
         throw new Error('Unauthorized: user is required');
     }
+
     const { userId: threadUserId } = await getThreadMetadata(ctx, components.agent, { threadId });
     if (requireUser && threadUserId !== userId) {
         throw new Error('Unauthorized: user does not match thread user');

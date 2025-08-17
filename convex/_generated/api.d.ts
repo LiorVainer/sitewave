@@ -11,6 +11,7 @@
 import type * as agents_websiteAgent from "../agents/websiteAgent.js";
 import type * as bookmarks from "../bookmarks.js";
 import type * as crons from "../crons.js";
+import type * as guests from "../guests.js";
 import type * as playground from "../playground.js";
 import type * as threads from "../threads.js";
 import type * as usage_tracking_invoicing from "../usage_tracking/invoicing.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   "agents/websiteAgent": typeof agents_websiteAgent;
   bookmarks: typeof bookmarks;
   crons: typeof crons;
+  guests: typeof guests;
   playground: typeof playground;
   threads: typeof threads;
   "usage_tracking/invoicing": typeof usage_tracking_invoicing;

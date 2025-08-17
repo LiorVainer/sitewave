@@ -10,6 +10,7 @@ import { useMutation } from 'convex/react';
 import { api } from '@convex/api';
 import { toUIMessages, UIMessage, useThreadMessages } from '@convex-dev/agent/react';
 import { parseAsString, useQueryState } from 'nuqs';
+import { useGuestSession } from '@/hooks/use-guest-session';
 
 interface WebsiteSuggestionsContextType {
     clearSuggestions: () => void;
@@ -30,6 +31,8 @@ interface WebsiteSuggestionsContextType {
     isStreaming: boolean;
     // Extracted suggestions from thread messages
     threadSuggestions: WebsiteSuggestionWithMandatoryFields[];
+    // Guest session
+    guestId: string | null;
 }
 
 export const WebsiteSuggestionsContext = createContext<WebsiteSuggestionsContextType | undefined>(undefined);
@@ -46,6 +49,8 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     const [currentThreadId, setCurrentThreadId] = useQueryState('threadId', parseAsString);
 
     const [showStreamingCards, setShowStreamingCards] = useLocalStorage('show-streaming-cards', true);
+
+    const { guestId } = useGuestSession();
 
     const addSuggestionIfNotExists = useMutation(api.websites.addWebsiteIfNotExists);
 
@@ -122,6 +127,7 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 isLoadingThreadMessages,
                 isStreaming,
                 threadSuggestions,
+                guestId,
             }}
         >
             {children}

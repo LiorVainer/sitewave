@@ -106,6 +106,7 @@ export const generateWebsiteComparison = action({
     args: {
         threadId: v.string(),
         websites: v.array(v.any()),
+        guestId: v.optional(v.id('guests')),
     },
     handler: async (ctx, { threadId, websites }) => {
         const identity = await ctx.auth.getUserIdentity();

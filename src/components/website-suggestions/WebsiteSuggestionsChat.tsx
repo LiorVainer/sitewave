@@ -8,9 +8,10 @@ import { WebsiteSuggestionInput } from '@/components/website-suggestions/Website
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { useAction, useMutation } from 'convex/react';
+import { useAction, useConvexAuth, useMutation } from 'convex/react';
 import { api } from '@convex/api';
 import { ChatMessages } from '@/components/website-suggestions/ChatMessages';
+import { useGuestSession } from '@/hooks/use-guest-session';
 
 export const WebsiteSuggestionsChat = () => {
     const {
@@ -22,8 +23,10 @@ export const WebsiteSuggestionsChat = () => {
         setCurrentThreadId,
         isStreaming,
         threadSuggestions,
-        isLoadingThreadMessages,
     } = useWebsiteSuggestions();
+
+    const { isAuthenticated } = useConvexAuth();
+    const { ensureGuestExists } = useGuestSession();
 
     const createNewThreadMutation = useMutation(api.threads.createNewThread);
     const loadMoreSuggestionsMutation = useAction(api.websiteSuggestions.loadMoreSuggestions);
@@ -35,11 +38,23 @@ export const WebsiteSuggestionsChat = () => {
         clearSuggestions();
 
         try {
-            // Create new thread with the prompt as initial message
-            const threadId = await createNewThreadMutation({
-                initialMessage: currentPrompt,
-                title: `${currentPrompt.slice(0, 50)}...`,
-            });
+            let threadId: string;
+
+            if (isAuthenticated) {
+                // User is authenticated, create thread normally
+                threadId = await createNewThreadMutation({
+                    initialMessage: currentPrompt,
+                    title: `${currentPrompt.slice(0, 50)}...`,
+                });
+            } else {
+                // User is not authenticated, ensure guest exists first
+                const currentGuestId = await ensureGuestExists();
+                threadId = await createNewThreadMutation({
+                    initialMessage: currentPrompt,
+                    title: `${currentPrompt.slice(0, 50)}...`,
+                    guestId: currentGuestId,
+                });
+            }
 
             setCurrentThreadId(threadId);
         } catch (error) {
