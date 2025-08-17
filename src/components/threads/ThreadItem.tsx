@@ -15,10 +15,10 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
 import { api } from '@convex/api';
 import { Id } from '@convex/dataModel';
 import { motion } from 'framer-motion';
+import { useUser } from '@/context/UserContext';
 
 interface ThreadItemProps {
     thread: {
@@ -33,7 +33,7 @@ interface ThreadItemProps {
 }
 
 export const ThreadItem = ({ thread, isActive, onSelect, onDelete }: ThreadItemProps) => {
-    const { guestId } = useWebsiteSuggestions();
+    const { guestId } = useUser();
     const [isRenaming, setIsRenaming] = useState(false);
     const [renameValue, setRenameValue] = useState('');
     const [isHovered, setIsHovered] = useState(false);

@@ -12,7 +12,7 @@ export interface StreamingWebsiteSuggestionsCardsProps {
 const MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS = 3;
 
 export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsiteSuggestionsCardsProps) => {
-    const { threadSuggestions, startComparison, threadMessages, isStreaming, currentThreadId } =
+    const { threadSuggestions, startComparison, threadMessages, isGenerating, currentThreadId } =
         useWebsiteSuggestions();
 
     const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (threadSuggestions?.length ?? 0), 1);
@@ -36,11 +36,11 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
 
     // Handle stream end
     useEffect(() => {
-        if (!isStreaming && currentThreadId && threadSuggestions.length > 0) {
+        if (!isGenerating && currentThreadId && threadSuggestions.length > 0) {
             startComparison();
             onStreamEnd?.();
         }
-    }, [isStreaming, currentThreadId, threadSuggestions.length, startComparison, onStreamEnd]);
+    }, [isGenerating, currentThreadId, threadSuggestions.length, startComparison, onStreamEnd]);
 
     // Show progress based on thread suggestions vs expected amount
     const expectedCount = 5; // Default amount from generateSuggestions
@@ -59,12 +59,12 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
             </motion.div>
 
             {/* Display skeletons if streaming and we haven't reached the expected count */}
-            {isStreaming && progressCount < expectedCount && (
+            {isGenerating && progressCount < expectedCount && (
                 <WebsiteSuggestionCardSkeleton count={Math.min(skeletonCount, expectedCount - progressCount)} />
             )}
 
             {/* Show streaming status with progress */}
-            {isStreaming && (
+            {isGenerating && (
                 <div className='text-sm text-gray-500 flex items-center justify-between'>
                     <TextShimmer>
                         {`Generating suggestions... (${progressCount.toString()}/${expectedCount.toString()})`}
@@ -74,7 +74,7 @@ export const StreamingWebsiteSuggestionsCards = ({ onStreamEnd }: StreamingWebsi
             )}
 
             {/* Show generation progress in development */}
-            {process.env.NODE_ENV === 'development' && isStreaming && generationMessages.length > 0 && (
+            {process.env.NODE_ENV === 'development' && isGenerating && generationMessages.length > 0 && (
                 <div className='text-xs text-gray-400 border rounded p-2 max-h-32 overflow-y-auto'>
                     <div className='font-semibold mb-1'>Debug - Generation Progress:</div>
                     {generationMessages.slice(-3).map((msg, i) => (

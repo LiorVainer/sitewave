@@ -11,9 +11,10 @@ export const createNewThread = mutation({
     args: {
         initialMessage: v.string(),
         title: v.optional(v.string()),
+        suggestionsAmountToGenerate: v.number(),
         guestId: v.optional(v.id('guests')),
     },
-    handler: async (ctx, { initialMessage, title, guestId }) => {
+    handler: async (ctx, { initialMessage, title, guestId, suggestionsAmountToGenerate }) => {
         const identity = await ctx.auth.getUserIdentity();
 
         // Check if we have either authenticated user or guest
@@ -29,7 +30,7 @@ export const createNewThread = mutation({
         await ctx.scheduler.runAfter(0, internal.websiteSuggestions.generateSuggestions, {
             threadId,
             prompt: initialMessage,
-            amount: 5,
+            amount: suggestionsAmountToGenerate,
             existingUrls: [],
         });
 

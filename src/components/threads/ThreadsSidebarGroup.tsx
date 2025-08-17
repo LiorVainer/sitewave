@@ -1,6 +1,12 @@
 'use client';
 
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem } from '@/components/animate-ui/radix/sidebar';
+import {
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuItem,
+    useSidebar,
+} from '@/components/animate-ui/radix/sidebar';
 import { Dialog } from '@/components/ui/dialog';
 import { ThreadItem } from './ThreadItem';
 import { LoadMoreThreadsButton } from '../navigation/LoadMoreThreadsButton';
@@ -22,8 +28,15 @@ export function ThreadsSidebarGroup() {
         loadMoreThreads,
     } = useThreadsData();
 
+    const sidebar = useSidebar();
+    const hideComponent = sidebar && sidebar.state === 'collapsed';
+
     if (status !== 'LoadingFirstPage' && (!threads || threads.length === 0)) {
         return <EmptyThreadsState />;
+    }
+
+    if (hideComponent) {
+        return null;
     }
 
     return (

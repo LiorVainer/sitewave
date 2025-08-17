@@ -1,4 +1,5 @@
 import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
+import { useUser } from '@/context/UserContext';
 import { LoadMoreButton } from '@/components/LoadMoreButton';
 import { Tabs, TabsContent, TabsContents, TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
 import { WebsiteComparisonTable } from '@/components/website-suggestions/WebsiteComparisonTable';
@@ -8,10 +9,11 @@ import { WebsiteSuggestionInput } from '@/components/website-suggestions/Website
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { useAction, useConvexAuth, useMutation } from 'convex/react';
+import { useAction, useMutation } from 'convex/react';
 import { api } from '@convex/api';
 import { ChatMessages } from '@/components/website-suggestions/ChatMessages';
-import { useGuestSession } from '@/hooks/use-guest-session';
+import { Id } from '@convex/dataModel';
+import { AMOUNT_OF_SUGGESTIONS_PER_GENERATION } from '@/constants/prompts.const';
 
 export const WebsiteSuggestionsChat = () => {
     const {
@@ -21,40 +23,32 @@ export const WebsiteSuggestionsChat = () => {
         suggestedUrls,
         currentThreadId,
         setCurrentThreadId,
-        isStreaming,
+        isGenerating,
+        setIsGenerating,
         threadSuggestions,
     } = useWebsiteSuggestions();
 
-    const { isAuthenticated } = useConvexAuth();
-    const { ensureGuestExists } = useGuestSession();
+    const { isAuthenticated, guestId } = useUser();
 
     const createNewThreadMutation = useMutation(api.threads.createNewThread);
     const loadMoreSuggestionsMutation = useAction(api.websiteSuggestions.loadMoreSuggestions);
 
-    const handleSubmit = async (amount: number) => {
+    const handleSubmit = async () => {
         if (!currentPrompt) return;
+        const promptToSubmit = currentPrompt;
         setCurrentPrompt('');
 
         clearSuggestions();
 
         try {
-            let threadId: string;
-
-            if (isAuthenticated) {
-                // User is authenticated, create thread normally
-                threadId = await createNewThreadMutation({
-                    initialMessage: currentPrompt,
-                    title: `${currentPrompt.slice(0, 50)}...`,
-                });
-            } else {
-                // User is not authenticated, ensure guest exists first
-                const currentGuestId = await ensureGuestExists();
-                threadId = await createNewThreadMutation({
-                    initialMessage: currentPrompt,
-                    title: `${currentPrompt.slice(0, 50)}...`,
-                    guestId: currentGuestId,
-                });
-            }
+            setIsGenerating(true);
+            const threadId = await createNewThreadMutation({
+                initialMessage: promptToSubmit,
+                title: `${promptToSubmit.slice(0, 50)}...`,
+                suggestionsAmountToGenerate: AMOUNT_OF_SUGGESTIONS_PER_GENERATION,
+                guestId: !isAuthenticated && guestId ? (guestId as Id<'guests'>) : undefined,
+            });
+            setIsGenerating(false);
 
             setCurrentThreadId(threadId);
         } catch (error) {
@@ -62,22 +56,23 @@ export const WebsiteSuggestionsChat = () => {
         }
     };
 
-    const handleLoadMore = async (amount: number) => {
-        if (!currentPrompt || !currentThreadId) return;
+    const handleLoadMore = async () => {
+        if (!currentThreadId) return;
 
         try {
+            setIsGenerating(true);
             await loadMoreSuggestionsMutation({
+                amount: AMOUNT_OF_SUGGESTIONS_PER_GENERATION,
                 threadId: currentThreadId,
-                prompt: currentPrompt,
-                amount,
                 existingUrls: suggestedUrls,
             });
+            setIsGenerating(false);
         } catch (error) {
             console.error('Error loading more suggestions:', error);
         }
     };
 
-    const showTabs = currentThreadId && (isStreaming || threadSuggestions.length > 0);
+    const showTabs = currentThreadId && (isGenerating || threadSuggestions.length > 0);
     const isMobile = useIsMobile();
 
     return (
@@ -106,7 +101,7 @@ export const WebsiteSuggestionsChat = () => {
                             <TabsContent className='flex-1 min-h-0 overflow-auto' value={'table'}>
                                 <WebsiteComparisonTable />
                             </TabsContent>
-                            {threadSuggestions.length > 0 && !isStreaming && (
+                            {threadSuggestions.length > 0 && !isGenerating && (
                                 <LoadMoreButton className='self-center' handleLoadMore={handleLoadMore} />
                             )}
                         </TabsContents>

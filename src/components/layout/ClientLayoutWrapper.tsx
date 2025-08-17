@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 import { AppSidebar } from '@/components/navigation/AppSidebar';
 import { WebsiteSuggestionsProvider } from '@/context/WebsiteSuggestionsContext';
+import { UserProvider } from '@/context/UserContext';
 
 export const ClientLayoutWrapper = ({ children }: { children: ReactNode }) => {
     const pathname = usePathname();
@@ -15,8 +16,10 @@ export const ClientLayoutWrapper = ({ children }: { children: ReactNode }) => {
     return isExcluded ? (
         <>{children}</>
     ) : (
-        <WebsiteSuggestionsProvider>
-            <AppSidebar>{children}</AppSidebar>
-        </WebsiteSuggestionsProvider>
+        <UserProvider>
+            <WebsiteSuggestionsProvider>
+                <AppSidebar>{children}</AppSidebar>
+            </WebsiteSuggestionsProvider>
+        </UserProvider>
     );
 };

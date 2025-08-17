@@ -10,5 +10,5 @@ interface LoadMoreThreadsButtonProps {
 export const LoadMoreThreadsButton = ({ onLoadMore, canLoadMore }: LoadMoreThreadsButtonProps) => {
     if (!canLoadMore) return null;
 
-    return <Button onClick={onLoadMore}>Load more chats...</Button>;
+    return <Button onClick={onLoadMore}>Load more chats</Button>;
 };

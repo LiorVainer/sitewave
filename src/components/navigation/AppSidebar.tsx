@@ -15,7 +15,6 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarGroup,
     SidebarHeader,
     SidebarInset,
     SidebarMenu,
@@ -180,48 +179,7 @@ export const AppSidebar = ({
                 </SidebarHeader>
 
                 <SidebarContent className='overflow-hidden'>
-                    {/* Nav Main */}
-                    {/*<SidebarGroup>*/}
-                    {/*    <SidebarGroupLabel>Platform</SidebarGroupLabel>*/}
-                    {/*    <SidebarMenu>*/}
-                    {/*        {DATA.navMain.map((item) => (*/}
-                    {/*            <Collapsible*/}
-                    {/*                key={item.title}*/}
-                    {/*                asChild*/}
-                    {/*                defaultOpen={item.isActive}*/}
-                    {/*                className='group/collapsible'*/}
-                    {/*            >*/}
-                    {/*                <SidebarMenuItem>*/}
-                    {/*                    <CollapsibleTrigger asChild>*/}
-                    {/*                        <SidebarMenuButton tooltip={item.title}>*/}
-                    {/*                            {item.icon && <item.icon />}*/}
-                    {/*                            <span>{item.title}</span>*/}
-                    {/*                            <ChevronRight className='ml-auto transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90' />*/}
-                    {/*                        </SidebarMenuButton>*/}
-                    {/*                    </CollapsibleTrigger>*/}
-                    {/*                    <CollapsibleContent>*/}
-                    {/*                        <SidebarMenuSub>*/}
-                    {/*                            {item.items?.map((subItem) => (*/}
-                    {/*                                <SidebarMenuSubItem key={subItem.title}>*/}
-                    {/*                                    <SidebarMenuSubButton asChild>*/}
-                    {/*                                        <a href={subItem.url}>*/}
-                    {/*                                            <span>{subItem.title}</span>*/}
-                    {/*                                        </a>*/}
-                    {/*                                    </SidebarMenuSubButton>*/}
-                    {/*                                </SidebarMenuSubItem>*/}
-                    {/*                            ))}*/}
-                    {/*                        </SidebarMenuSub>*/}
-                    {/*                    </CollapsibleContent>*/}
-                    {/*                </SidebarMenuItem>*/}
-                    {/*            </Collapsible>*/}
-                    {/*        ))}*/}
-                    {/*    </SidebarMenu>*/}
-                    {/*</SidebarGroup>*/}
-                    <SidebarGroup>
-                        <SidebarMenu>
-                            <SidebarNewChatButton />
-                        </SidebarMenu>
-                    </SidebarGroup>
+                    <SidebarNewChatButton />
                     <div className='overflow-y-auto h-full'>
                         <SignedIn>
                             <BookmarksFoldersSidebarGroup />
@@ -236,7 +194,7 @@ export const AppSidebar = ({
             </Sidebar>
 
             <SidebarInset className='overflow-hidden min-h-0 h-full'>
-                <header className='flex top-0 z-30 bg-white h-16 block min-h-0 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
+                <header className='flex top-0 z-30 bg-white h-16 min-h-0 shrink-0 items-center justify-between w-full gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4'>
                     <div className='flex items-center gap-2 min-h-0'>
                         <SidebarTrigger className='-ml-1' />
                         <Separator orientation='vertical' className='mr-2 h-4' />

@@ -8,3 +8,5 @@ export const PROMPTS_EXAMPLES = {
     Coding: 'Find tools or platforms that make learning to code more interactive or fun.',
     Research: 'I need AI-powered tools for academic or market research.',
 };
+
+export const AMOUNT_OF_SUGGESTIONS_PER_GENERATION = 5;

@@ -2,19 +2,17 @@ import { action, internalAction, internalMutation, query } from './_generated/se
 import { components, internal } from './_generated/api';
 import { v } from 'convex/values';
 import { websiteAgent } from './agents/websiteAgent';
-import { saveMessage } from '@convex-dev/agent';
+import { listMessages, saveMessage } from '@convex-dev/agent';
 import { z } from 'zod';
 import { WebsiteSuggestionSchema } from '../src/models/website-suggestion.model';
 
 export const loadMoreSuggestions = action({
     args: {
         threadId: v.string(),
-        prompt: v.string(),
         amount: v.number(),
         existingUrls: v.array(v.string()),
     },
     handler: async (ctx, args) => {
-        // Delegate to the main action
         await ctx.runAction(internal.websiteSuggestions.generateSuggestions, args);
 
         return 1;
@@ -25,7 +23,7 @@ export const loadMoreSuggestions = action({
 export const generateSuggestions = internalAction({
     args: {
         threadId: v.string(),
-        prompt: v.string(),
+        prompt: v.optional(v.string()),
         amount: v.number(),
         existingUrls: v.array(v.string()),
     },
@@ -34,13 +32,20 @@ export const generateSuggestions = internalAction({
         const { thread } = await websiteAgent.continueThread(ctx, { threadId });
 
         try {
-            const { messageId: promptMessageId } = await saveMessage(ctx, components.agent, {
+            const savePromptResult = prompt
+                ? await saveMessage(ctx, components.agent, {
+                      threadId,
+                      prompt,
+                  })
+                : undefined;
+
+            const firstThreadMessage = await listMessages(ctx, components.agent, {
                 threadId,
-                prompt,
+                paginationOpts: { numItems: 1, cursor: null },
             });
 
             // Create the generation prompt for all suggestions at once
-            const generationPrompt = `Generate ${amount} website suggestions based on the following context: ${prompt}. 
+            const generationPrompt = `Generate ${amount} website suggestions based on the following context: ${prompt ?? firstThreadMessage.page.at(0)?.message?.content ?? 'No prompt provided'}. . 
             Do not include any of these URLs: ${existingUrls.join(', ')}.
             
             For each website suggestion, provide:
@@ -59,63 +64,62 @@ export const generateSuggestions = internalAction({
                 schema: z.array(WebsiteSuggestionSchema),
                 mode: 'json',
                 output: 'array',
-                promptMessageId, // Associate with the prompt message
+                promptMessageId: savePromptResult?.messageId, // Associate with the prompt message
             });
 
             const suggestions = result.object.flat();
             console.log(`Generated ${suggestions.length} suggestions for thread ${threadId}`);
 
-            // Process suggestions in parallel for enrichment and saving
-            await Promise.all(
-                suggestions.map(async (suggestion, index) => {
+            // Process suggestions sequentially to avoid race conditions with saveMessage
+            for (let index = 0; index < suggestions.length; index++) {
+                const suggestion = suggestions[index];
+                try {
+                    console.log(`Processing suggestion ${index + 1}/${suggestions.length}: ${suggestion.title}`);
+
+                    // Enrich with YouTube videos
+                    let enrichedSuggestion = suggestion;
                     try {
-                        console.log(`Processing suggestion ${index + 1}/${suggestions.length}: ${suggestion.title}`);
-
-                        // Enrich with YouTube videos
-                        let enrichedSuggestion = suggestion;
-                        try {
-                            const videos = await ctx.runAction(internal.youtube.fetchYouTubeVideos, {
-                                title: suggestion.title,
-                            });
-
-                            enrichedSuggestion = {
-                                ...suggestion,
-                                videosOfWebsite: videos,
-                            };
-
-                            console.log(`Enriched ${suggestion.title} with ${videos.length} videos`);
-                        } catch (videoError) {
-                            console.warn(`Failed to fetch videos for ${suggestion.title}:`, videoError);
-                            // Continue with suggestion without videos
-                        }
-
-                        // Save the enriched suggestion as a message
-                        await saveMessage(ctx, components.agent, {
-                            threadId,
-                            message: {
-                                role: 'assistant',
-                                content: JSON.stringify(enrichedSuggestion),
-                            },
+                        const videos = await ctx.runAction(internal.youtube.fetchYouTubeVideos, {
+                            title: suggestion.title,
                         });
 
-                        console.log(`Saved suggestion ${index + 1}/${suggestions.length}: ${suggestion.title}`);
-                    } catch (error) {
-                        console.error(`Failed to process suggestion ${index + 1} (${suggestion.title}):`, error);
+                        enrichedSuggestion = {
+                            ...suggestion,
+                            videosOfWebsite: videos,
+                        };
 
-                        // Save error message for this specific suggestion
-                        await saveMessage(ctx, components.agent, {
-                            threadId,
-                            message: {
-                                role: 'assistant',
-                                content: `Failed to process suggestion "${suggestion.title}": ${JSON.stringify(error)}`,
-                            },
-                        });
+                        console.log(`Enriched ${suggestion.title} with ${videos.length} videos`);
+                    } catch (videoError) {
+                        console.warn(`Failed to fetch videos for ${suggestion.title}:`, videoError);
+                        // Continue with suggestion without videos
                     }
-                }),
-            );
+
+                    // Save the enriched suggestion as a message
+                    await saveMessage(ctx, components.agent, {
+                        threadId,
+                        message: {
+                            role: 'assistant',
+                            content: JSON.stringify(enrichedSuggestion),
+                        },
+                    });
+
+                    console.log(`Saved suggestion ${index + 1}/${suggestions.length}: ${suggestion.title}`);
+                } catch (error) {
+                    console.error(`Failed to process suggestion ${index + 1} (${suggestion.title}):`, error);
+
+                    // Save error message for this specific suggestion
+                    await saveMessage(ctx, components.agent, {
+                        threadId,
+                        message: {
+                            role: 'assistant',
+                            content: `Failed to process suggestion "${suggestion.title}": ${JSON.stringify(error)}`,
+                        },
+                    });
+                }
+            }
 
             console.log(`Completed processing all ${suggestions.length} suggestions for thread ${threadId}`);
-            return { threadId, generatedCount: suggestions.length, promptMessageId };
+            return { threadId, generatedCount: suggestions.length };
         } catch (error) {
             console.error(`Failed to generate suggestions for thread ${threadId}:`, error);
 

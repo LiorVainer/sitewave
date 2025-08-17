@@ -10,7 +10,6 @@ import { useMutation } from 'convex/react';
 import { api } from '@convex/api';
 import { toUIMessages, UIMessage, useThreadMessages } from '@convex-dev/agent/react';
 import { parseAsString, useQueryState } from 'nuqs';
-import { useGuestSession } from '@/hooks/use-guest-session';
 
 interface WebsiteSuggestionsContextType {
     clearSuggestions: () => void;
@@ -23,16 +22,15 @@ interface WebsiteSuggestionsContextType {
     setCurrentPrompt: Dispatch<SetStateAction<string>>;
     showStreamingCards: boolean;
     setShowStreamingCards: Dispatch<SetStateAction<boolean>>;
-    // New Convex-specific properties using URL params
+    // Thread-related properties using URL params
     currentThreadId: string | null;
     setCurrentThreadId: (threadId: string | null) => void;
     threadMessages: UIMessage[];
     isLoadingThreadMessages: boolean;
-    isStreaming: boolean;
+    isGenerating: boolean;
+    setIsGenerating: Dispatch<SetStateAction<boolean>>;
     // Extracted suggestions from thread messages
     threadSuggestions: WebsiteSuggestionWithMandatoryFields[];
-    // Guest session
-    guestId: string | null;
 }
 
 export const WebsiteSuggestionsContext = createContext<WebsiteSuggestionsContextType | undefined>(undefined);
@@ -45,12 +43,9 @@ export const useWebsiteSuggestions = () => {
 
 export const WebsiteSuggestionsProvider = ({ children }: { children: React.ReactNode }) => {
     const [currentPrompt, setCurrentPrompt] = useLocalStorage('suggest-websites-prompt', '');
-
     const [currentThreadId, setCurrentThreadId] = useQueryState('threadId', parseAsString);
-
     const [showStreamingCards, setShowStreamingCards] = useLocalStorage('show-streaming-cards', true);
-
-    const { guestId } = useGuestSession();
+    const [isGenerating, setIsGenerating] = useLocalStorage('is-generating-websites', false);
 
     const addSuggestionIfNotExists = useMutation(api.websites.addWebsiteIfNotExists);
 
@@ -78,15 +73,6 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
 
         return suggestions;
     }, [threadMessages]);
-
-    // Check if streaming is active - now also check for website generation
-    const isStreaming = useMemo(() => {
-        if (!threadMessages) return false;
-        const messages = toUIMessages(threadMessages);
-        return (
-            messages.some((msg) => msg.status === 'streaming') || (!!currentThreadId && threadSuggestions.length < 5) // Assume generating until we have expected amount
-        );
-    }, [threadMessages, currentThreadId, threadSuggestions.length]);
 
     const {
         clearComparison,
@@ -125,9 +111,9 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 setCurrentThreadId,
                 threadMessages: toUIMessages(threadMessages) || [],
                 isLoadingThreadMessages,
-                isStreaming,
+                isGenerating,
+                setIsGenerating,
                 threadSuggestions,
-                guestId,
             }}
         >
             {children}
