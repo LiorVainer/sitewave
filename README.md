@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+---
+title: "Sitewave Project Overview"
+description: "AI-powered assistant for discovering, organizing, and saving website resources"
+---
 
-## Getting Started
+# 🌊 Sitewave
 
-First, run the development server:
+**Sitewave** is a smart assistant for discovering useful websites, saving them to folders, and revisiting them through persistent chat history. It brings together AI-powered suggestions, engaging UI, and a full bookmarking experience with video context.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Vision
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Make web discovery and organization effortless, delightful, and deeply personalized — driven by natural language and enhanced by smart metadata, folders, and visual context.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🧠 Core Flow
 
-To learn more about Next.js, take a look at the following resources:
+1. **User prompts AI** with a topic or request
+2. AI responds with **animated, streamed website suggestions**
+3. Each suggestion includes:
+   - ✅ Title, URL, description, favicon
+   - 🔍 Suggested folder path (for organizing)
+   - 💬 Reason for suggestion
+   - 🎞️ First matching video (YouTube or other source)
+   - 📌 Bookmark/save button
+4. User can:
+   - Copy URL
+   - Save suggestion to a folder
+   - View video preview
+   - Search saved bookmarks in a **folder tree**
+   - Revisit past suggestions from **chat history**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 💬 Chat System
 
-## Deploy on Vercel
+- Users can start **multiple chats** per topic
+- Each chat has its own stream of AI suggestions
+- Full **chat history** is saved and queryable
+- Great for going back to suggestions that weren’t bookmarked
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 💡 Features
+
+| Feature                        | Description |
+|-------------------------------|-------------|
+| 🌐 Website Suggestion         | AI recommends websites based on prompt |
+| ⏳ Streaming Animation        | Suggestions appear one-by-one with animation |
+| 🧠 Zod Schema Validation      | Ensures typed, structured suggestions |
+| 🎞️ Video Preview             | Embedded preview of first matched video |
+| 📁 Folder Path Suggestion     | AI recommends a path like `Tools > AI > Research` |
+| 🌳 Folder Tree Navigation     | Users can search/bookmark in a hierarchical structure |
+| 💬 Persistent Chats           | Each chat session retains its own suggestion history |
+| 🔖 Bookmarks                  | Save suggestions and manage them in folders |
+| 🔄 Revisit Suggestions        | View past unbookmarked suggestions |
+
+---
+
+## 📦 Tech Stack
+
+- **Next.js 15** w/ App Router
+- **Tailwind CSS** + **shadcn/ui**
+- **Lucide-react** icons
+- **@ai-sdk/react** – streaming object AI responses
+- **Zod** – schema validation
+- **Convex** – persistent storage for chats, suggestions, bookmarks
+- **Framer Motion** – UI animations
+
+---
