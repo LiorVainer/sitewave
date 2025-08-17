@@ -1,8 +1,3 @@
----
-title: "Sitewave Project Overview"
-description: "AI-powered assistant for discovering, organizing, and saving website resources"
----
-
 # 🌊 Sitewave
 
 **Sitewave** is a smart assistant for discovering useful websites, saving them to folders, and revisiting them through persistent chat history. It brings together AI-powered suggestions, engaging UI, and a full bookmarking experience with video context.
