@@ -20,7 +20,7 @@ export const BookmarksFoldersSidebarGroup = () => {
             {isPending && !foldersAndBookmarks ? (
                 <SidebarGroupSkeleton itemsAmount={BOOKMARKS_FOLDERS_SKELETON_ITEMS_AMOUNT} />
             ) : (
-                <BookmarkTree data={foldersAndBookmarks} navigableItems />
+                foldersAndBookmarks && <BookmarkTree data={foldersAndBookmarks} navigableItems />
             )}
         </SidebarGroup>
     );
