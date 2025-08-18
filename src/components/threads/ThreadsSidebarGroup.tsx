@@ -43,7 +43,7 @@ export function ThreadsSidebarGroup() {
         <SidebarGroup>
             <SidebarGroupLabel>Chats</SidebarGroupLabel>
             <SidebarMenu>
-                {status === 'LoadingFirstPage' && <SidebarGroupSkeleton itemsAmount={THREADS_PAGE_SIZE} />}
+                {status === 'LoadingFirstPage' && !threads && <SidebarGroupSkeleton itemsAmount={THREADS_PAGE_SIZE} />}
                 {threads.map((thread) => (
                     <SidebarMenuItem key={thread._id}>
                         <ThreadItem

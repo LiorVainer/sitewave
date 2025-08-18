@@ -17,10 +17,10 @@ export const BookmarksFoldersSidebarGroup = () => {
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Bookmarks</SidebarGroupLabel>
-            {isPending ? (
+            {isPending && !foldersAndBookmarks ? (
                 <SidebarGroupSkeleton itemsAmount={BOOKMARKS_FOLDERS_SKELETON_ITEMS_AMOUNT} />
             ) : (
-                foldersAndBookmarks && <BookmarkTree data={foldersAndBookmarks} navigableItems />
+                <BookmarkTree data={foldersAndBookmarks} navigableItems />
             )}
         </SidebarGroup>
     );
