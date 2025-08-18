@@ -30,8 +30,9 @@ export function ThreadsSidebarGroup() {
 
     const sidebar = useSidebar();
     const hideComponent = sidebar && sidebar.state === 'collapsed';
+    const noData = !threads || threads.length === 0;
 
-    if (status !== 'LoadingFirstPage' && (!threads || threads.length === 0)) {
+    if (status !== 'LoadingFirstPage' && noData) {
         return <EmptyThreadsState />;
     }
 
@@ -43,7 +44,7 @@ export function ThreadsSidebarGroup() {
         <SidebarGroup>
             <SidebarGroupLabel>Chats</SidebarGroupLabel>
             <SidebarMenu>
-                {status === 'LoadingFirstPage' && !threads && <SidebarGroupSkeleton itemsAmount={THREADS_PAGE_SIZE} />}
+                {status === 'LoadingFirstPage' && noData && <SidebarGroupSkeleton itemsAmount={THREADS_PAGE_SIZE} />}
                 {threads.map((thread) => (
                     <SidebarMenuItem key={thread._id}>
                         <ThreadItem
