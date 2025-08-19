@@ -9,12 +9,10 @@ import z from 'zod';
 // Create new thread with initial prompt - this replaces the server action
 export const createNewThread = mutation({
     args: {
-        initialMessage: v.string(),
         title: v.optional(v.string()),
-        suggestionsAmountToGenerate: v.number(),
         guestId: v.optional(v.id('guests')),
     },
-    handler: async (ctx, { initialMessage, title, guestId, suggestionsAmountToGenerate }) => {
+    handler: async (ctx, { title, guestId }) => {
         const identity = await ctx.auth.getUserIdentity();
 
         // Check if we have either authenticated user or guest
@@ -25,13 +23,6 @@ export const createNewThread = mutation({
         const threadId = await createThread(ctx, components.agent, {
             title: title || 'Website Suggestions',
             userId: identity?.subject || guestId,
-        });
-
-        await ctx.scheduler.runAfter(0, internal.websiteSuggestions.generateSuggestions, {
-            threadId,
-            prompt: initialMessage,
-            amount: suggestionsAmountToGenerate,
-            existingUrls: [],
         });
 
         await ctx.scheduler.runAfter(1000 * 5, internal.threads.updateThreadTitle, { threadId });
@@ -66,10 +57,9 @@ export const updateThreadTitle = internalAction({
 
 export const listThreads = query({
     args: {
-        paginationOpts: paginationOptsValidator,
         guestId: v.optional(v.id('guests')),
     },
-    handler: async (ctx, { paginationOpts, guestId }) => {
+    handler: async (ctx, { guestId }) => {
         const identity = await ctx.auth.getUserIdentity();
 
         console.log({ guestId });
@@ -81,7 +71,6 @@ export const listThreads = query({
 
         const userId = identity?.subject || guestId;
         const threads = await ctx.runQuery(components.agent.threads.listThreadsByUserId, {
-            paginationOpts,
             userId,
         });
 
@@ -103,10 +92,7 @@ export const listThreads = query({
             }),
         );
 
-        return {
-            ...threads,
-            page: threadsWithMetadata,
-        };
+        return threadsWithMetadata;
     },
 });
 

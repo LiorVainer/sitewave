@@ -17,7 +17,7 @@ export const LoadMoreButton = ({ handleLoadMore, label = 'Load More Suggestions'
             {label} <ChevronDown size={16} />
         </Button>
     ) : (
-        <Button className={cn('font-thin', className)} type='button' onClick={() => handleLoadMore(5)}>
+        <Button className={cn('font-medium w-full py-5', className)} type='button' onClick={() => handleLoadMore(5)}>
             {label} <ChevronDown size={20} />
         </Button>
     );

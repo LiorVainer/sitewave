@@ -6,7 +6,6 @@ import { ComparisonColumn } from '@/models/website-comparison.model';
 import { FullDynamicZodType } from '@/lib/zod.utils';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useWebsitesComparison } from '@/hooks/use-websites-comparison';
-import { useMutation } from 'convex/react';
 import { api } from '@convex/api';
 import { toUIMessages, UIMessage, useThreadMessages } from '@convex-dev/agent/react';
 import { parseAsString, useQueryState } from 'nuqs';
@@ -31,7 +30,11 @@ interface WebsiteSuggestionsContextType {
     setIsGenerating: Dispatch<SetStateAction<boolean>>;
     // Extracted suggestions from thread messages
     threadSuggestions: WebsiteSuggestionWithMandatoryFields[];
+    // Add loadMore function
+    loadMoreThreadMessages: (numOfItems: number) => void;
 }
+
+export const THREADS_MESSAGES_PAGE_SIZE = 10;
 
 export const WebsiteSuggestionsContext = createContext<WebsiteSuggestionsContextType | undefined>(undefined);
 
@@ -47,13 +50,13 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     const [showStreamingCards, setShowStreamingCards] = useLocalStorage('show-streaming-cards', true);
     const [isGenerating, setIsGenerating] = useLocalStorage('is-generating-websites', false);
 
-    const addSuggestionIfNotExists = useMutation(api.websites.addWebsiteIfNotExists);
-
-    const { isLoading: isLoadingThreadMessages, results: threadMessages } = useThreadMessages(
-        api.threads.listThreadMessages,
-        currentThreadId ? { threadId: currentThreadId } : 'skip',
-        { initialNumItems: 10 },
-    );
+    const {
+        isLoading: isLoadingThreadMessages,
+        results: threadMessages,
+        loadMore,
+    } = useThreadMessages(api.threads.listThreadMessages, currentThreadId ? { threadId: currentThreadId } : 'skip', {
+        initialNumItems: THREADS_MESSAGES_PAGE_SIZE,
+    });
 
     // Extract website suggestions from thread messages
     const threadSuggestions = useMemo(() => {
@@ -114,6 +117,7 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
                 isGenerating,
                 setIsGenerating,
                 threadSuggestions,
+                loadMoreThreadMessages: loadMore,
             }}
         >
             {children}

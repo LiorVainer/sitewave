@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAction, usePaginatedQuery } from 'convex/react';
+import { useAction } from 'convex/react';
 import { useRouter } from 'next/navigation';
 import { api } from '@convex/api';
 import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
@@ -9,6 +9,7 @@ import { useUser } from '@/context/UserContext';
 import { Id } from '@convex/dataModel';
 import { useIsMobile } from './use-mobile';
 import { useSidebar } from '@/components/animate-ui/radix/sidebar';
+import { useQueryWithStatus } from '@/lib/convex';
 
 export const THREADS_PAGE_SIZE = 10;
 
@@ -24,15 +25,14 @@ export const useThreadsData = () => {
 
     const shouldSkipQuery = !isAuthenticated && isCreatingGuest;
 
-    const {
-        results: threads,
-        status,
-        loadMore,
-    } = usePaginatedQuery(
+    // Use cached query like bookmarks do instead of usePaginatedQuery
+    const { data: threads, isPending } = useQueryWithStatus(
         api.threads.listThreads,
         shouldSkipQuery ? 'skip' : { guestId: (guestId as Id<'guests'>) || undefined },
-        { initialNumItems: THREADS_PAGE_SIZE },
     );
+
+    // Map isPending to status format expected by the component
+    const status = isPending ? 'LoadingFirstPage' : threads && threads.length > 0 ? 'Exhausted' : 'Exhausted';
 
     const handleThreadSelect = (selectedThreadId: string) => {
         if (isMobile) {
@@ -67,13 +67,12 @@ export const useThreadsData = () => {
     };
 
     const loadMoreThreads = () => {
-        if (status === 'CanLoadMore') {
-            loadMore(THREADS_PAGE_SIZE);
-        }
+        // For now, disable load more since we're using regular query instead of paginated
+        // You could implement this later with cursor-based pagination if needed
     };
 
     return {
-        threads,
+        threads: threads || [],
         status,
         currentThreadId,
         threadToDelete,

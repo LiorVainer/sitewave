@@ -32,13 +32,13 @@ export function ThreadsSidebarGroup() {
     const hideComponent = sidebar && sidebar.state === 'collapsed';
     const noData = !threads || (threads && threads.length === 0);
 
+    console.log({ status, threads, noData });
+
     if (status !== 'LoadingFirstPage' && noData) {
         return <EmptyThreadsState />;
     }
 
-    if (hideComponent) {
-        return null;
-    }
+    if (hideComponent) return null;
 
     return (
         <SidebarGroup>

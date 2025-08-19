@@ -2,36 +2,47 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
-import { ResponseStream } from '@/components/ui/response-stream';
-import { PartialWebsiteSuggestion, WebsiteSuggestion } from '@/models/website-suggestion.model';
+import { WebsiteSuggestion } from '@/models/website-suggestion.model';
 import { Folder } from 'lucide-react';
 import { api } from '@convex/api';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { Button } from '../ui/button';
-import { WebsitesVotes } from '@/components/website-suggestions/WebsitesVotes';
 import { AuthSensitiveWrapper } from '@/components/wrappers/AuthSensitiveWrapper';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { BookmarkSaveModal } from '@/components/bookmarks/BookmarkSaveModal';
 import { WebsiteLogo } from '@/components/websites/WebsiteLogo';
+import { WebsitesVotes } from '@/components/website-suggestions/WebsitesVotes';
+import { useEffect } from 'react';
 
-interface SuggestionCardProps {
-    websiteSuggestion?: PartialWebsiteSuggestion;
-    isStreaming?: boolean;
+interface WebsiteSuggestionCardProps {
+    websiteSuggestion: WebsiteSuggestion;
 }
 
 const RESPONSE_STREAM_SPEED = 30; // Adjust speed as needed
 
-export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }: SuggestionCardProps) => {
+export const WebsiteSuggestionCard = ({ websiteSuggestion }: WebsiteSuggestionCardProps) => {
     const video = websiteSuggestion?.videosOfWebsite?.[0];
     const videoUrl = video?.url;
     const videoId = videoUrl?.split('v=')[1]?.split('&')[0];
     // Fallback thumbnail sizes: default → mqdefault → hqdefault
     const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
+    const addWebsiteIfNotExists = useMutation(api.websites.addWebsiteIfNotExists);
 
     const website = useQuery(
         api.websites.getWebsiteByUrl,
         websiteSuggestion?.url ? { url: websiteSuggestion.url } : 'skip',
     );
+
+    useEffect(() => {
+        if (!website) {
+            // Only call if website doesn't exist
+            void addWebsiteIfNotExists({
+                url: websiteSuggestion.url,
+                name: websiteSuggestion.title,
+                description: websiteSuggestion.description,
+            });
+        }
+    }, [addWebsiteIfNotExists, website, websiteSuggestion.description, websiteSuggestion.title, websiteSuggestion.url]);
 
     return (
         <Card className='transition hover:shadow-md border border-border py-4 @xl/main:py-6'>
@@ -45,30 +56,24 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                             rel='noopener noreferrer'
                             className='text-lg font-semibold text-blue-600 hover:underline text-nowrap'
                         >
-                            {isStreaming ? (
-                                <ResponseStream textStream={websiteSuggestion?.title ?? ''} mode='typewriter' />
-                            ) : (
-                                websiteSuggestion?.title
-                            )}
+                            {websiteSuggestion?.title}
                         </a>
                         {websiteSuggestion?.url && (
                             <CopyButton variant='outline' content={websiteSuggestion?.url} size='sm' />
                         )}
                     </div>
-                    <div className='flex gap-4 @xl/main:flex-row justify-between w-full @xl/main:items-center @xl/main:justify-end'>
+                    <div className='flex flex-row-reverse gap-4 justify-between w-full @xl/main:items-center justify-between'>
+                        <div className='flex gap-2'>
+                            <AuthSensitiveWrapper>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button size='sm'>Save</Button>
+                                    </DialogTrigger>
+                                    <BookmarkSaveModal websiteSuggestion={websiteSuggestion as WebsiteSuggestion} />
+                                </Dialog>
+                            </AuthSensitiveWrapper>
+                        </div>
                         {website && <WebsitesVotes website={website} />}
-                        {websiteSuggestion?.url && !isStreaming && (
-                            <div className='flex gap-2'>
-                                <AuthSensitiveWrapper>
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button size='sm'>Save</Button>
-                                        </DialogTrigger>
-                                        <BookmarkSaveModal websiteSuggestion={websiteSuggestion as WebsiteSuggestion} />
-                                    </Dialog>
-                                </AuthSensitiveWrapper>
-                            </div>
-                        )}
                     </div>
                 </div>
 
@@ -84,16 +89,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion, isStreaming = false }
                 <div className='grid grid-cols-1 md:grid-cols-8 gap-6 items-center '>
                     <div className='col-span-1 md:col-span-5 flex flex-col justify-between gap-4 h-full'>
                         <div className='flex flex-col gap-2'>
-                            {isStreaming ? (
-                                <ResponseStream
-                                    speed={RESPONSE_STREAM_SPEED}
-                                    textStream={websiteSuggestion?.description ?? ''}
-                                    mode='typewriter'
-                                    className='text-sm text-gray-700'
-                                />
-                            ) : (
-                                <p className='text-sm text-gray-700'>{websiteSuggestion?.description}</p>
-                            )}
+                            <p className='text-sm text-gray-700'>{websiteSuggestion?.description}</p>
                         </div>
 
                         <div className='flex flex-col gap-2'>

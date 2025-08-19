@@ -1,6 +1,5 @@
 import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
 import { useUser } from '@/context/UserContext';
-import { LoadMoreButton } from '@/components/LoadMoreButton';
 import { Tabs, TabsContent, TabsContents, TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
 import { WebsiteComparisonTable } from '@/components/website-suggestions/WebsiteComparisonTable';
 import { WebsiteSuggestionsExamples } from '@/components/website-suggestions/WebsiteSuggestionsExamples';
@@ -31,7 +30,7 @@ export const WebsiteSuggestionsChat = () => {
     const { isAuthenticated, guestId } = useUser();
 
     const createNewThreadMutation = useMutation(api.threads.createNewThread);
-    const loadMoreSuggestionsMutation = useAction(api.websiteSuggestions.loadMoreSuggestions);
+    const generateSuggestionsAction = useAction(api.websiteSuggestions.generateSuggestions);
 
     const handleSubmit = async () => {
         if (!currentPrompt) return;
@@ -41,34 +40,31 @@ export const WebsiteSuggestionsChat = () => {
         clearSuggestions();
 
         try {
+            // Set generating to true when starting the process
             setIsGenerating(true);
+
+            // First create the thread
             const threadId = await createNewThreadMutation({
-                initialMessage: promptToSubmit,
                 title: `${promptToSubmit.slice(0, 50)}...`,
-                suggestionsAmountToGenerate: AMOUNT_OF_SUGGESTIONS_PER_GENERATION,
                 guestId: !isAuthenticated && guestId ? (guestId as Id<'guests'>) : undefined,
             });
-            setIsGenerating(false);
 
+            // Set the current thread ID immediately after creation
             setCurrentThreadId(threadId);
-        } catch (error) {
-            console.error('Error creating thread:', error);
-        }
-    };
 
-    const handleLoadMore = async () => {
-        if (!currentThreadId) return;
-
-        try {
-            setIsGenerating(true);
-            await loadMoreSuggestionsMutation({
+            // Then generate suggestions
+            await generateSuggestionsAction({
+                prompt: promptToSubmit,
+                threadId,
                 amount: AMOUNT_OF_SUGGESTIONS_PER_GENERATION,
-                threadId: currentThreadId,
                 existingUrls: suggestedUrls,
             });
+
+            // Set generating to false only when everything is complete
             setIsGenerating(false);
         } catch (error) {
-            console.error('Error loading more suggestions:', error);
+            console.error('Error creating thread or generating suggestions:', error);
+            setIsGenerating(false);
         }
     };
 
@@ -80,13 +76,13 @@ export const WebsiteSuggestionsChat = () => {
             <Toaster />
             <div
                 className={cn(
-                    'flex-1 flex flex-col gap-4 lg:gap-6 justify-center overflow-hidden',
+                    'flex-1 flex flex-col gap-2 lg:gap-6 justify-center overflow-hidden',
                     (currentThreadId || threadSuggestions.length > 0) && 'justify-between',
                     isMobile && 'justify-end',
                 )}
             >
                 {showTabs ? (
-                    <Tabs className='w-full overflow-hidden' defaultValue={'list'}>
+                    <Tabs className='w-full overflow-hidden flex-1' defaultValue={'list'}>
                         <TabsList className='w-full'>
                             <TabsTrigger value='list'>List</TabsTrigger>
                             <TabsTrigger value='table'>Table</TabsTrigger>
@@ -101,9 +97,6 @@ export const WebsiteSuggestionsChat = () => {
                             <TabsContent className='flex-1 min-h-0 overflow-auto' value={'table'}>
                                 <WebsiteComparisonTable />
                             </TabsContent>
-                            {threadSuggestions.length > 0 && !isGenerating && (
-                                <LoadMoreButton className='self-center' handleLoadMore={handleLoadMore} />
-                            )}
                         </TabsContents>
                     </Tabs>
                 ) : null}
@@ -111,13 +104,15 @@ export const WebsiteSuggestionsChat = () => {
                 {isMobile ? (
                     <div className={cn('flex flex-col gap-4', !showTabs && 'overflow-hidden')}>
                         {!showTabs && <h1 className='text-2xl font-semibold'>Discover Websites</h1>}
-                        <div className='flex-1 min-h-0 overflow-auto'>
-                            {!showTabs && (
-                                <div className='overflow-y-auto'>
-                                    <WebsiteSuggestionsExamples onExamplePress={setCurrentPrompt} />
-                                </div>
-                            )}
-                        </div>
+                        {!showTabs && (
+                            <div className='flex-1 min-h-0 overflow-auto'>
+                                {!showTabs && (
+                                    <div className='overflow-y-auto'>
+                                        <WebsiteSuggestionsExamples onExamplePress={setCurrentPrompt} />
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <motion.div
                             layout

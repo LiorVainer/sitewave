@@ -13,14 +13,28 @@ export const loadMoreSuggestions = action({
         existingUrls: v.array(v.string()),
     },
     handler: async (ctx, args) => {
-        await ctx.runAction(internal.websiteSuggestions.generateSuggestions, args);
+        await ctx.runAction(internal.websiteSuggestions.generateSuggestionsInternal, args);
+
+        return 1;
+    },
+});
+
+export const generateSuggestions = action({
+    args: {
+        threadId: v.string(),
+        amount: v.number(),
+        prompt: v.optional(v.string()),
+        existingUrls: v.array(v.string()),
+    },
+    handler: async (ctx, args) => {
+        await ctx.runAction(internal.websiteSuggestions.generateSuggestionsInternal, args);
 
         return 1;
     },
 });
 
 // Generate website suggestions with optional prompt message creation
-export const generateSuggestions = internalAction({
+export const generateSuggestionsInternal = internalAction({
     args: {
         threadId: v.string(),
         prompt: v.optional(v.string()),
@@ -39,13 +53,17 @@ export const generateSuggestions = internalAction({
                   })
                 : undefined;
 
-            const firstThreadMessage = await listMessages(ctx, components.agent, {
+            const firstThreadMessageQueryResult = await listMessages(ctx, components.agent, {
                 threadId,
                 paginationOpts: { numItems: 1, cursor: null },
             });
 
+            const firstThreadObject = firstThreadMessageQueryResult.page.at(0);
+            const firstThreadMessage = firstThreadObject ? firstThreadObject.message : null;
+            const firstThreadMessageId = firstThreadObject?._id;
+
             // Create the generation prompt for all suggestions at once
-            const generationPrompt = `Generate ${amount} website suggestions based on the following context: ${prompt ?? firstThreadMessage.page.at(0)?.message?.content ?? 'No prompt provided'}. . 
+            const generationPrompt = `Generate ${amount} website suggestions based on the following context: ${prompt ?? firstThreadMessage ?? 'No prompt provided'} 
             Do not include any of these URLs: ${existingUrls.join(', ')}.
             
             For each website suggestion, provide:
@@ -64,7 +82,7 @@ export const generateSuggestions = internalAction({
                 schema: z.array(WebsiteSuggestionSchema),
                 mode: 'json',
                 output: 'array',
-                promptMessageId: savePromptResult?.messageId, // Associate with the prompt message
+                promptMessageId: savePromptResult?.messageId ?? firstThreadMessageId, // Associate with the prompt message
             });
 
             const suggestions = result.object.flat();
