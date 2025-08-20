@@ -1,5 +1,5 @@
 // See the docs at https://docs.convex.dev/agents/usage-tracking
-import { internalMutation } from '../_generated/server';
+import { internalMutation, query } from '../_generated/server';
 import { v } from 'convex/values';
 import { UsageHandler, vProviderMetadata, vUsage } from '@convex-dev/agent';
 import { internal } from '../_generated/api';
@@ -41,4 +41,26 @@ export const insertRawUsage = internalMutation({
             billingPeriod,
         });
     },
+});
+
+export const tokensPerDay = query(async (ctx) => {
+    const usageRecords = await ctx.db.query('rawUsage').collect();
+    const usageByDay: Record<string, { input: number; output: number; total: number }> = {};
+
+    for (const record of usageRecords) {
+        // Use _creationTime or your own timestamp field
+        const date = new Date(record._creationTime).toISOString().split('T')[0];
+        const input = record.usage?.promptTokens ?? 0;
+        const output = record.usage?.completionTokens ?? 0;
+        const total = record.usage?.totalTokens ?? 0;
+
+        if (!usageByDay[date]) {
+            usageByDay[date] = { input: 0, output: 0, total: 0 };
+        }
+        usageByDay[date].input += input;
+        usageByDay[date].output += output;
+        usageByDay[date].total += total;
+    }
+
+    return usageByDay;
 });

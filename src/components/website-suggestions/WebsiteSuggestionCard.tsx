@@ -62,7 +62,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion }: WebsiteSuggestionCa
                             <CopyButton variant='outline' content={websiteSuggestion?.url} size='sm' />
                         )}
                     </div>
-                    <div className='flex flex-row-reverse gap-4 justify-between w-full @xl/main:items-center justify-between'>
+                    <div className='flex flex-row-reverse gap-4 justify-between lg:justify-end w-full @xl/main:items-center justify-between'>
                         <div className='flex gap-2'>
                             <AuthSensitiveWrapper>
                                 <Dialog>
