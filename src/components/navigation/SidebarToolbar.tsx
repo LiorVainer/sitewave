@@ -3,11 +3,13 @@
 import { Button } from '@/components/ui/button';
 import { useWebsiteSuggestions } from '@/context/WebsiteSuggestionsContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { MessageSquare } from 'lucide-react';
+import { Bookmark, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SidebarGroup, SidebarMenu, useSidebar } from '@/components/animate-ui/radix/sidebar';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { CreateBookmarkModal } from '@/components/bookmarks/CreateBookmarkModal';
 
-export const SidebarNewChatButton = () => {
+export const SidebarToolbar = () => {
     const { setCurrentPrompt } = useWebsiteSuggestions();
     const router = useRouter();
 
@@ -27,9 +29,18 @@ export const SidebarNewChatButton = () => {
     if (hideComponent) return null;
 
     return (
-        <SidebarGroup>
-            <SidebarMenu>
-                <Button variant='gradient' className='py-5 w-full gap-2' onClick={handleNewChat}>
+        <SidebarGroup className='w-full'>
+            <SidebarMenu className='flex lg:flex-row w-full gap-2'>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button size='sm' variant='default' className='flex-1 py-2 lg:py-5'>
+                            <Bookmark size={16} className='-ms-1' />
+                            New Bookmark
+                        </Button>
+                    </DialogTrigger>
+                    <CreateBookmarkModal />
+                </Dialog>
+                <Button variant='gradient' className='lg:py-5 flex-1 gap-2' onClick={handleNewChat}>
                     <MessageSquare size={18} />
                     New Chat
                 </Button>

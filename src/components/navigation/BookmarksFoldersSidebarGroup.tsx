@@ -15,7 +15,7 @@ export const BookmarksFoldersSidebarGroup = () => {
     );
 
     return (
-        <SidebarGroup>
+        <SidebarGroup className='flex flex-col gap-4'>
             <SidebarGroupLabel>Bookmarks</SidebarGroupLabel>
             {isPending && !foldersAndBookmarks ? (
                 <SidebarGroupSkeleton itemsAmount={BOOKMARKS_FOLDERS_SKELETON_ITEMS_AMOUNT} />

@@ -42,7 +42,7 @@ import { SignedIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { PageWrapper } from '../layout/PageWrapper';
 import { AppLogo } from '@/components/brand/AppLogo';
-import { SidebarNewChatButton } from '@/components/navigation/SidebarNewChatButton';
+import { SidebarToolbar } from '@/components/navigation/SidebarToolbar';
 
 const DATA = {
     user: {
@@ -179,7 +179,8 @@ export const AppSidebar = ({
                 </SidebarHeader>
 
                 <SidebarContent className='overflow-hidden'>
-                    <SidebarNewChatButton />
+                    {/*<SidebarNewBookmarkDialog />*/}
+                    <SidebarToolbar />
                     <div className='overflow-y-auto h-full'>
                         <SignedIn>
                             <BookmarksFoldersSidebarGroup />

@@ -5,6 +5,7 @@ import { websiteAgent } from './agents/websiteAgent';
 import { listMessages, saveMessage } from '@convex-dev/agent';
 import { z } from 'zod';
 import { WebsiteSuggestionSchema } from '../src/models/website-suggestion.model';
+import { usageHandler } from './usage_tracking/usageHandler';
 
 export const loadMoreSuggestions = action({
     args: {
@@ -173,6 +174,45 @@ export const createOrUpdateWebsiteComparison = internalMutation({
         } else {
             return await ctx.db.insert('websiteComparisons', { threadId, columns, rows });
         }
+    },
+});
+
+export const getWebsiteInfoFromUrl = action({
+    args: {
+        url: v.string(),
+    },
+    handler: async (ctx, { url }) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error('Not authenticated');
+
+        const userId = identity.subject;
+
+        // Use the agent to analyze the URL and get website information
+        const websiteInfoPrompt = `Analyze the website at URL: ${url}
+
+Please extract the following information:
+- title: The main title or name of the website
+- description: A clear, concise description of what the website does or offers
+- suggestedFolderPath: An array of folder names that would be appropriate for organizing this bookmark (e.g., ['AI', 'Tools'] for an AI tool website)
+- tags: Relevant tags for categorizing this website
+
+Make sure the title is accurate and the description is informative but concise.`;
+
+        const websiteInfoResult = await websiteAgent.generateObject(
+            ctx,
+            { usageHandler, userId },
+            {
+                prompt: websiteInfoPrompt,
+                schema: WebsiteSuggestionSchema.omit({ url: true }),
+                mode: 'json',
+                output: 'object',
+            },
+        );
+
+        return {
+            url,
+            ...websiteInfoResult.object,
+        };
     },
 });
 

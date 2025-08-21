@@ -31,10 +31,11 @@ export function useBookmarkTree({ data, onFolderSelect }: UseBookmarkTreeProps) 
         let newSelected: string[];
 
         if (typeof value === 'function') {
-            const newSelected = value(selectedItems);
+            newSelected = value(selectedItems);
             _setSelectedItems(newSelected);
         } else {
             newSelected = value;
+            console.log('Here:', newSelected);
             _setSelectedItems(newSelected);
         }
 
@@ -44,6 +45,7 @@ export function useBookmarkTree({ data, onFolderSelect }: UseBookmarkTreeProps) 
 
         const lastSelectedItemPath = getSelectedFolderPath(lastSelectedItem);
 
+        // Always call onFolderSelect when provided to maintain proper tree state
         if (onFolderSelect) {
             onFolderSelect(lastSelectedItemPath?.slice(1) ?? []);
         }

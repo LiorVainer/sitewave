@@ -66,5 +66,7 @@ export const getSelectedFolderPath = (selected: ItemInstance<TreeNode>) => {
         current = current.getParent();
     }
 
+    console.log({ path });
+
     return path;
 };
