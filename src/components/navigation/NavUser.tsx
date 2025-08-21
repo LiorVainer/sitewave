@@ -1,6 +1,6 @@
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/animate-ui/radix/sidebar';
 import { SignedIn, SignedOut, useClerk } from '@clerk/nextjs';
-import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut, LucideLogIn, Sparkles } from 'lucide-react';
+import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut, LucideLogIn, Moon, Sparkles, Sun } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,10 +13,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import * as React from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useThemeToggle } from '@/hooks/use-theme';
 import Link from 'next/link';
 
 export const NavUser = () => {
     const { user, openUserProfile, signOut } = useClerk();
+    const { isDarkMode, toggleTheme } = useThemeToggle();
     const isMobile = useIsMobile();
 
     return (
@@ -87,6 +89,10 @@ export const NavUser = () => {
                                     <DropdownMenuItem>
                                         <CreditCard />
                                         Billing
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={toggleTheme}>
+                                        {isDarkMode ? <Sun /> : <Moon />}
+                                        {isDarkMode ? 'Light Mode' : 'Dark Mode'}
                                     </DropdownMenuItem>
                                     {/*<DropdownMenuItem>*/}
                                     {/*    <Bell />*/}

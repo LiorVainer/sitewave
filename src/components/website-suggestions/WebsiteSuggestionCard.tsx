@@ -45,7 +45,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion }: WebsiteSuggestionCa
     }, [addWebsiteIfNotExists, website, websiteSuggestion.description, websiteSuggestion.title, websiteSuggestion.url]);
 
     return (
-        <Card className='transition hover:shadow-md border border-border py-4 @xl/main:py-6'>
+        <Card className='transition hover:shadow-md dark:hover:shadow-lg border border-border py-4 @xl/main:py-6'>
             <CardContent className='space-y-4 px-4 @xl/main:px-6'>
                 <div className='flex flex-col-reverse gap-6 @xl/main:flex-row @xl/main:justify-between items-start'>
                     <div className='flex items-center gap-3'>
@@ -54,7 +54,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion }: WebsiteSuggestionCa
                             href={websiteSuggestion?.url ?? '#'}
                             target='_blank'
                             rel='noopener noreferrer'
-                            className='text-lg font-semibold text-blue-600 hover:underline text-nowrap'
+                            className='text-lg font-semibold text-blue-600 dark:text-blue-400 hover:underline text-nowrap'
                         >
                             {websiteSuggestion?.title}
                         </a>
@@ -89,16 +89,16 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion }: WebsiteSuggestionCa
                 <div className='grid grid-cols-1 md:grid-cols-8 gap-6 items-center '>
                     <div className='col-span-1 md:col-span-5 flex flex-col justify-between gap-4 h-full'>
                         <div className='flex flex-col gap-2'>
-                            <p className='text-sm text-gray-700'>{websiteSuggestion?.description}</p>
+                            <p className='text-sm text-gray-700 dark:text-gray-300'>{websiteSuggestion?.description}</p>
                         </div>
 
                         <div className='flex flex-col gap-2'>
                             {websiteSuggestion?.tags && websiteSuggestion?.tags?.length > 0 && (
-                                <div className='flex flex-wrap gap-2 text-xs text-gray-500 pt-1'>
+                                <div className='flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 pt-1'>
                                     {websiteSuggestion.tags.map((tag, idx) => (
                                         <span
                                             key={idx}
-                                            className='bg-muted px-2 py-0.5 rounded-full border border-border'
+                                            className='bg-muted dark:bg-slate-800 px-2 py-0.5 rounded-full border border-border dark:border-slate-600'
                                         >
                                             #{tag}
                                         </span>
@@ -108,7 +108,7 @@ export const WebsiteSuggestionCard = ({ websiteSuggestion }: WebsiteSuggestionCa
 
                             {websiteSuggestion?.suggestedFolderPath &&
                                 websiteSuggestion?.suggestedFolderPath?.length > 0 && (
-                                    <div className='flex items-center gap-1 text-xs text-purple-500'>
+                                    <div className='flex items-center gap-1 text-xs text-purple-500 dark:text-purple-400'>
                                         <Folder className='w-3.5 h-3.5 shrink-0' />
                                         <span className='truncate'>
                                             {websiteSuggestion.suggestedFolderPath.join(' / ')}

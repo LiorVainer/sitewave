@@ -111,7 +111,7 @@ export const ThreadItem = ({ thread, isActive, onSelect, onDelete }: ThreadItemP
                             e.stopPropagation();
                             onDelete(thread._id);
                         }}
-                        className='hidden md:absolute md:block right-2 top-1/2 md:-translate-y-1/2 z-50'
+                        className='hidden md:absolute md:block right-2 top-1/2 md:-translate-y-1/2 z-50 dark:bg-background bg-white rounded-md shadow-md'
                         initial={{ opacity: 0 }}
                         animate={isHovered ? { opacity: 1 } : { opacity: 0 }}
                         transition={{ duration: 0.2, ease: 'easeOut' }}

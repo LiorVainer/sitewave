@@ -83,8 +83,9 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
             className={cn(
                 'relative isolate flex gap-4 items-center box-border',
                 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200/50',
+                'dark:bg-gradient-to-r dark:from-slate-800 dark:to-purple-900/50 dark:border-slate-600/50',
                 'transition-colors duration-300 flex-1 p-2 border rounded-lg overflow-hidden',
-                state === 'loading' && 'bg-gray-50',
+                state === 'loading' && 'bg-gray-50 dark:bg-slate-700',
                 className,
             )}
         >
@@ -101,7 +102,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                     rows={1}
                     className={cn(
                         '!min-h-0 max-h-full resize-none',
-                        'bg-white/0 w-full border-0 shadow-none p-0 md:text-md rounded-none',
+                        'w-full border-0 shadow-none p-0 md:text-md rounded-none',
                         'leading-[1.25rem]',
                     )}
                     style={{ overflow: 'hidden' }}
