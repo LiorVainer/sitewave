@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { SidebarGroup, SidebarMenu, useSidebar } from '@/components/animate-ui/radix/sidebar';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { CreateBookmarkModal } from '@/components/bookmarks/CreateBookmarkModal';
+import { SignedIn } from '@clerk/nextjs';
 
 export const SidebarToolbar = () => {
     const { setCurrentPrompt } = useWebsiteSuggestions();
@@ -31,15 +32,17 @@ export const SidebarToolbar = () => {
     return (
         <SidebarGroup className='w-full'>
             <SidebarMenu className='flex lg:flex-row w-full gap-2'>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button size='sm' variant='default' className='flex-1 py-2 lg:py-5'>
-                            <Bookmark size={16} className='-ms-1' />
-                            New Bookmark
-                        </Button>
-                    </DialogTrigger>
-                    <CreateBookmarkModal />
-                </Dialog>
+                <SignedIn>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button size='sm' variant='default' className='flex-1 py-2 lg:py-5'>
+                                <Bookmark size={16} className='-ms-1' />
+                                New Bookmark
+                            </Button>
+                        </DialogTrigger>
+                        <CreateBookmarkModal />
+                    </Dialog>
+                </SignedIn>
                 <Button variant='gradient' className='lg:py-5 flex-1 gap-2' onClick={handleNewChat}>
                     <MessageSquare size={18} />
                     New Chat
