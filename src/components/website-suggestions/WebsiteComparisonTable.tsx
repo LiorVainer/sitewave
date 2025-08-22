@@ -31,8 +31,6 @@ const headerClassName = 'px-6 py-2';
 export function WebsiteComparisonTable() {
     const { comparisonColumns: columns, comparisonRows: rows, isLoadingComparison } = useWebsiteSuggestions();
 
-    console.log({ columns, rows, isLoadingComparison });
-
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const dynamicColumns = useMemo<ColumnDef<FullDynamicZodType>[]>(
@@ -95,7 +93,7 @@ export function WebsiteComparisonTable() {
     const columnCount = Math.max(5, columns.length || 0);
 
     return (
-        <div className='space-y-4 bg-white rounded-lg shadow-md border border-border overflow-auto'>
+        <div className='space-y-4 bg-background rounded-lg shadow-md border border-border overflow-auto'>
             {isLoadingComparison && (
                 <Table>
                     <TableHeader>

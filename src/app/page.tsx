@@ -1,7 +1,8 @@
 'use client';
 
-import { WebsiteSuggestionsChat } from '@/components/website-suggestions/WebsiteSuggestionsChat';
+import { NpmPackage } from '@/components/npm-package/NpmPackage';
 
 export default function Home() {
-    return <WebsiteSuggestionsChat />;
+    // return <WebsiteSuggestionsChat />;
+    return <NpmPackage />;
 }

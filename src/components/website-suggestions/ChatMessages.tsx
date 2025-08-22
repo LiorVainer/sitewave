@@ -174,7 +174,7 @@ export const ChatMessages = ({}: ChatMessagesProps) => {
                     return (
                         <div
                             key={index}
-                            className='rounded-lg bg-muted px-4 py-2 text-sm text-gray-800 w-fit max-w-2xl'
+                            className='rounded-lg bg-muted px-4 py-2 text-sm text-foreground w-fit max-w-2xl'
                         >
                             {message.content}
                         </div>
