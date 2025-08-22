@@ -56,7 +56,7 @@ export const staticMobileComparisonColumns: ColumnDef<FullDynamicZodType>[] = [
             const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=32`;
 
             return (
-                <div className='w-6 h-6 flex items-center bg-transparent justify-center'>
+                <div className='w-6 h-6 flex items-center bg-background justify-center'>
                     <img
                         src={faviconUrl}
                         alt='favicon'
