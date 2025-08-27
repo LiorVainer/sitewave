@@ -3,19 +3,18 @@
 import { FullDynamicZodType } from '@/lib/zod.utils';
 import { ComparisonColumn } from '@/models/website-comparison.model';
 import { useState } from 'react';
-import { PartialWebsiteSuggestion } from '@/models/website-suggestion.model';
+import { WebsiteSuggestion } from '@/models/website-suggestion.model';
 import { useAction, useQuery } from 'convex/react';
 import { api } from '@convex/api';
 
 interface UseWebsitesComparisonProps {
-    websitesSuggestions: PartialWebsiteSuggestion[];
+    websitesSuggestions: WebsiteSuggestion[];
     comparisonData?: { columns: ComparisonColumn[]; rows: FullDynamicZodType[] } | null;
     threadId?: string | null;
 }
 
 export const useWebsitesComparison = ({ websitesSuggestions, threadId }: UseWebsitesComparisonProps) => {
     const generateWebsiteComparison = useAction(api.websites.generateWebsiteComparison);
-    const [step, setStep] = useState<'idle' | 'columns' | 'rows'>('idle');
     const [isLoading, setIsLoading] = useState(false);
     const comparisonData = useQuery(
         api.websiteSuggestions.getWebsiteComparisonByThread,
@@ -29,7 +28,6 @@ export const useWebsitesComparison = ({ websitesSuggestions, threadId }: UseWebs
     const startComparison = async () => {
         if (!threadId || websitesSuggestions.length === 0) return;
         setIsLoading(true);
-        setStep('columns');
         try {
             // Use Convex agent to generate columns and rows
             await generateWebsiteComparison({
@@ -38,23 +36,16 @@ export const useWebsitesComparison = ({ websitesSuggestions, threadId }: UseWebs
             });
         } finally {
             setIsLoading(false);
-            setStep('idle');
         }
     };
 
-    const clearComparison = () => {
-        // No-op: comparison is now managed by Convex and context
-    };
+    console.log('Comparison Data:', { columns, rows, isLoading });
 
     return {
-        step,
         isLoading,
         startComparison,
-        clearComparison,
         columns,
         rows,
-        isLoadingColumns: isLoading && step === 'columns',
-        isLoadingRows: isLoading && step === 'rows',
         columnList: columns,
         rowList: rows,
     };

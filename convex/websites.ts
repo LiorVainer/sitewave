@@ -114,18 +114,12 @@ export const generateWebsiteComparison = action({
 
         const userId = identity.subject;
 
-        const columnsPrompt = `Given the following websites, generate a list of relevant comparison columns. Each column should have:
-- id (snake_case),
-- header (UI display label),
-- accessorKey (same as id).
+        const first: { message?: { content?: string } } | null = (await ctx.runQuery(internal.threads.getFirstMessage, {
+            threadId,
+        })) as { message?: { content?: string } } | null;
 
-Always Dont Include the following columns:
-1. "url" - the website URL
-2. "title" - the website title
-3. "description" - a brief description of the website
-
-They are not relevant for comparison.
-
+        const columnsPrompt = `Given the following websites suggestions that the user got as a response to his following prompt: ${first?.message?.content ?? ''}
+be creative and helpful for the user and generate a list of 5 to 10 relevant comparison columns that would help the user compare these websites in a table format.
 Websites:
 ${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url})`).join('\n')}
 `;
@@ -141,10 +135,12 @@ ${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url})`).join('\n')}
         );
 
         const columns = columnsResult.object.flat();
+
+        console.log({ columns });
         const dynamicSchema = generateZodSchemaFromColumns(columns);
 
         // Use the agent to generate rows
-        const rowsPrompt = `You are generating a structured website comparison table.\n\nWebsites:\n${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url})`).join('\n')}\n`;
+        const rowsPrompt = `You are generating a structured website comparison table.\n\nWebsites:\n${websites.map((w, i) => `${i + 1}. ${w.title} (${w.url}), description: ${w.description}`).join('\n')}\n`;
         const rowsResult = await websiteAgent.generateObject(
             ctx,
             { usageHandler, userId },

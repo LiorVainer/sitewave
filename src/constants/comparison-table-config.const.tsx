@@ -129,16 +129,16 @@ export const staticSharedComparisonColumns: ColumnDef<FullDynamicZodType>[] = [
             className: 'w-auto whitespace-nowrap',
         },
     }),
-    columnHelper.accessor('description', {
-        id: 'description',
-        header: 'Description',
-        cell: ({ getValue }) => {
-            const value = getValue() as string;
-            return <p className='text-sm text-gray-700'>{value}</p>;
-        },
-        enableSorting: false,
-        meta: {
-            className: '',
-        },
-    }),
+    // columnHelper.accessor('description', {
+    //     id: 'description',
+    //     header: 'Description',
+    //     cell: ({ getValue }) => {
+    //         const value = getValue() as string;
+    //         return <p className='text-sm text-gray-700'>{value}</p>;
+    //     },
+    //     enableSorting: false,
+    //     meta: {
+    //         className: '',
+    //     },
+    // }),
 ];

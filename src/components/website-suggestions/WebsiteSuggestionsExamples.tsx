@@ -13,10 +13,10 @@ export const WebsiteSuggestionsExamples = ({ onExamplePress }: WebsiteSuggestion
                     onExamplePress(prompt);
                 }}
                 variant='ghost'
-                className='h-[100px] bg-background flex flex-col border-1 flex-wrap items-start'
+                className='h-[100px] bg-background/30 dark:hover:bg-background/50 dark:border-background/40 bg-none flex flex-col border-1 flex-wrap items-start'
                 key={subject}
             >
-                <h2 className='text-sm font-semibold text-forground/80 -800'>{subject}</h2>
+                <h2 className='text-sm font-semibold text-forground/70 -800'>{subject}</h2>
                 <p className='text-xs text-muted-foreground break-words whitespace-normal leading-snug line-clamp-4 text-left'>
                     {prompt}
                 </p>

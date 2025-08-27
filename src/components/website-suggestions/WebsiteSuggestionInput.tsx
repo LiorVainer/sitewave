@@ -82,10 +82,10 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
             transition={{ type: 'tween', duration: 0.22, ease: [0.25, 0.8, 0.3, 1] }}
             className={cn(
                 'relative isolate flex gap-4 items-center box-border',
-                'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200/50',
-                'dark:bg-gradient-to-r dark:from-slate-800 dark:to-purple-900/50 dark:border-slate-600/50',
+                'bg-background/70 border border-foreground/10',
+                'dark:bg-background/30 dark:border-background/40 dark:bg-none',
                 'transition-colors duration-300 flex-1 p-2 border rounded-lg overflow-hidden',
-                state === 'loading' && 'bg-gray-50 dark:bg-slate-700',
+                state === 'loading' && 'bg-gray-50 dark:bg-muted-background',
                 className,
             )}
         >

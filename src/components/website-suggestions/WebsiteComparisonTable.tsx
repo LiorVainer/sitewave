@@ -31,8 +31,6 @@ const headerClassName = 'px-6 py-2';
 export function WebsiteComparisonTable() {
     const { comparisonColumns: columns, comparisonRows: rows, isLoadingComparison } = useWebsiteSuggestions();
 
-    console.log({ columns, rows, isLoadingComparison });
-
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const dynamicColumns = useMemo<ColumnDef<FullDynamicZodType>[]>(
@@ -61,7 +59,30 @@ export function WebsiteComparisonTable() {
                                 </div>
                             </Button>
                         ),
-                        cell: (info) => info.getValue(),
+                        cell: (info) => {
+                            const value = info.getValue();
+
+                            if (typeof value === 'boolean') {
+                                return (
+                                    <span
+                                        className={cn(
+                                            'px-2 py-1 rounded text-xs font-medium',
+                                            value
+                                                ? 'bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-300'
+                                                : 'bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-300',
+                                        )}
+                                    >
+                                        {value ? 'Yes' : 'No'}
+                                    </span>
+                                );
+                            }
+
+                            if (value == null || value === '') {
+                                return <span className='text-gray-400 italic'>—</span>;
+                            }
+
+                            return String(value);
+                        },
                         enablePinning: true,
                     }),
                 ),
@@ -141,7 +162,9 @@ export function WebsiteComparisonTable() {
                                     <TableCell
                                         key={cell.id}
                                         className={cn(
-                                            cell.column.getIsPinned() === 'left' ? 'sticky left-0 z-10 bg-white' : '',
+                                            cell.column.getIsPinned() === 'left'
+                                                ? 'sticky left-0 z-10 bg-background'
+                                                : '',
                                             cell.column.columnDef.meta?.className,
                                             cellClassName,
                                         )}

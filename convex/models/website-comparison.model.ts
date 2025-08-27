@@ -32,4 +32,5 @@ export const StaticZodFields = {
     favicon: z.string().optional().describe('Optional URL to the website’s favicon or logo image'),
     title: z.string().describe('Website title (pinned)'),
     url: z.string().describe('Website URL'),
+    // description: z.string().optional().describe('Optional description of the website'),
 };

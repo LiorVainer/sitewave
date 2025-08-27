@@ -1,6 +1,15 @@
 import { components, internal } from './_generated/api';
 import { v } from 'convex/values';
-import { action, ActionCtx, internalAction, mutation, MutationCtx, query, QueryCtx } from './_generated/server';
+import {
+    action,
+    ActionCtx,
+    internalAction,
+    internalQuery,
+    mutation,
+    MutationCtx,
+    query,
+    QueryCtx,
+} from './_generated/server';
 import { paginationOptsValidator } from 'convex/server';
 import { createThread, getThreadMetadata, listMessages, syncStreams, vStreamArgs } from '@convex-dev/agent';
 import { websiteAgent } from './agents/websiteAgent';
@@ -178,3 +187,17 @@ export async function authorizeThreadAccess(
         throw new Error('Unauthorized: user does not match thread user');
     }
 }
+
+export const getFirstMessage = internalQuery({
+    args: { threadId: v.string() },
+    handler: async (ctx, { threadId }) => {
+        const paginated = await listMessages(ctx, components.agent, {
+            threadId,
+            excludeToolMessages: true,
+            paginationOpts: { cursor: null, numItems: 1 },
+        });
+        const first = paginated.page.at(0) ?? null;
+
+        return first;
+    },
+});

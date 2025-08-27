@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, Dispatch, SetStateAction, useContext, useMemo } from 'react';
-import { WebsiteSuggestionWithMandatoryFields } from '@/models/website-suggestion.model';
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useMemo } from 'react';
+import { WebsiteSuggestion, WebsiteSuggestionWithMandatoryFields } from '@/models/website-suggestion.model';
 import { ComparisonColumn } from '@/models/website-comparison.model';
 import { FullDynamicZodType } from '@/lib/zod.utils';
 import { useLocalStorage } from '@/hooks/use-local-storage';
@@ -62,14 +62,14 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     const threadSuggestions = useMemo(() => {
         if (!threadMessages) return [];
         const messages = toUIMessages(threadMessages);
-        const suggestions: WebsiteSuggestionWithMandatoryFields[] = messages
+        const suggestions: WebsiteSuggestion[] = messages
             .filter((message) => message.role === 'assistant' && message.content)
             .map((message) => {
                 try {
                     const parsed = JSON.parse(message.content);
-                    return parsed as WebsiteSuggestionWithMandatoryFields;
+                    return parsed as WebsiteSuggestion;
                 } catch {
-                    return {} as WebsiteSuggestionWithMandatoryFields;
+                    return {} as WebsiteSuggestion;
                 }
             })
             .filter((suggestion) => suggestion?.title && suggestion?.url && suggestion?.description);
@@ -78,7 +78,6 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     }, [threadMessages]);
 
     const {
-        clearComparison,
         startComparison,
         columns: comparisonColumns,
         rows: comparisonRows,
@@ -93,9 +92,15 @@ export const WebsiteSuggestionsProvider = ({ children }: { children: React.React
     }, [threadSuggestions]);
 
     const clearSuggestions = () => {
-        clearComparison();
         setCurrentThreadId(null);
     };
+
+    useEffect(() => {
+        if (!isGenerating && currentThreadId && threadSuggestions.length > 0) {
+            console.log('Stream ended, starting comparison');
+            startComparison();
+        }
+    }, [currentThreadId, threadSuggestions.length]);
 
     return (
         <WebsiteSuggestionsContext.Provider

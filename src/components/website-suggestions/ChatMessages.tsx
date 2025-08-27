@@ -19,7 +19,6 @@ export const ChatMessages = ({}: ChatMessagesProps) => {
         isGenerating,
         threadSuggestions,
         currentThreadId,
-        startComparison,
         suggestedUrls,
         setIsGenerating,
         loadMoreThreadMessages,
@@ -29,8 +28,6 @@ export const ChatMessages = ({}: ChatMessagesProps) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const loadMoreSuggestionsMutation = useAction(api.websiteSuggestions.loadMoreSuggestions);
     const isAutoLoadingRef = useRef(false);
-
-    console.log({ threadMessages, isGenerating, isLoadingThreadMessages });
 
     const skeletonCount = Math.max(MAX_AMOUNT_OF_LOADING_WEBSITES_SKELETONS - (threadSuggestions?.length ?? 0), 1);
 
@@ -141,13 +138,6 @@ export const ChatMessages = ({}: ChatMessagesProps) => {
         return () => cancelAnimationFrame(rafId);
     }, []); // Empty dependency array ensures this runs only on mount
 
-    useEffect(() => {
-        if (!isGenerating && currentThreadId && threadSuggestions.length > 0) {
-            console.log('Stream ended, starting comparison');
-            startComparison();
-        }
-    }, [currentThreadId, threadSuggestions.length]);
-
     return (
         <div ref={scrollContainerRef} className='flex flex-col gap-6 h-full'>
             <div className='grid gap-6'>
@@ -174,7 +164,7 @@ export const ChatMessages = ({}: ChatMessagesProps) => {
                     return (
                         <div
                             key={index}
-                            className='rounded-lg bg-muted px-4 py-2 text-sm text-foreground w-fit max-w-2xl'
+                            className='rounded-lg bg-background px-4 py-2 text-sm text-foreground w-fit max-w-2xl'
                         >
                             {message.content}
                         </div>
@@ -186,9 +176,7 @@ export const ChatMessages = ({}: ChatMessagesProps) => {
                 {/* Show streaming status with progress */}
                 {isGenerating && (
                     <div className='text-sm text-gray-500 flex items-center justify-between'>
-                        <TextShimmer>
-                            {`Generating suggestions... (${progressCount.toString()}/${expectedCount.toString()})`}
-                        </TextShimmer>
+                        <TextShimmer>{`Generating suggestions...`}</TextShimmer>
                     </div>
                 )}
 
