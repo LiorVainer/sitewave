@@ -85,7 +85,7 @@ export const WebsiteSuggestionInput: FC<WebsiteSuggestionInputProps> = ({
                 'bg-background/70 border border-foreground/10',
                 'dark:bg-background/30 dark:border-background/40 dark:bg-none',
                 'transition-colors duration-300 flex-1 p-2 border rounded-lg overflow-hidden',
-                state === 'loading' && 'bg-gray-50 dark:bg-muted-background',
+                state === 'loading' && 'bg-gray-50 dark:bg-background/50',
                 className,
             )}
         >
